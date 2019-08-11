@@ -1,9 +1,9 @@
 [![CircleCI](https://circleci.com/gh/Streampunk/ledger.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/Streampunk/ledger)
-# Ledger
+# node-nmos-is04
 
-Ledger is a [Node.js](http://nodejs.org/) Javascript implementation of the [Advanced Media Workflow Association's](http://www.amwa.tv/) [Networked Media Open Specifications](http://www.nmos.tv/) [discovery and registration APIs](https://github.com/AMWA-TV/nmos-discovery-registration) version 1.0.
+node-nmos-is04 node.js module supports [Advanced Media Workflow Association's](http://www.amwa.tv/) [Networked Media Open Specifications](http://www.nmos.tv/) IS-04 v1.2 Node, Discovery, Registration & Query APIs. This repo is forked from [Ledger](https://github.com/Streampunk/ledger).
 
-Currently, this is a fairly complete implementation of the node, registration and query APIs. (Work on the support of the v1.1 changes and the peer-to-peer API is still in progress.)
+This fork and update to v1.2 is very much a work-in-progress.
 
 ## Installation
 
