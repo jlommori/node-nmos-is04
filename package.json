@@ -1,7 +1,7 @@
 {
-  "name": "nmos-ledger",
-  "version": "1.0.20",
-  "description": "NMOS discovery and registration APIs",
+  "name": "node-nmos-is04",
+  "version": "0.0.1",
+  "description": "Node.js Module for NMOS IS-04 Node, Discovery, Registration & Query",
   "main": "index.js",
   "bin": {
     "nmos-ledger": "./bin/nmos-ledger"
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Streampunk/ledger.git"
+    "url": "git+https://github.com/jlommori/node-nmos-is04"
   },
   "keywords": [
     "AMWA",
@@ -37,10 +37,10 @@
     "JT-NM",
     "NMOS"
   ],
-  "author": "Streampunk Media Ltd.",
+  "author": "Jeremy Lommori",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Streampunk/ledger/issues"
+    "url": "https://github.com/jlommori/node-nmos-is04/issues"
   },
-  "homepage": "https://github.com/Streampunk/ledger#readme"
+  "homepage": "https://github.com/jlommori/node-nmos-is04#readme"
 }
