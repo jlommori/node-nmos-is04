@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: DeviceTypes.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,53 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: DeviceTypes.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* Copyright 2016 Streampunk Media Ltd.
 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-    <h3> </h3>
+    http://www.apache.org/licenses/LICENSE-2.0
 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
 
+// Types of device - v1.0
 
+/**
+ * Types of [device]{@link Device}.
+ * @readonly
+ * @enum {string}
+ */
+var deviceTypes = {
+  /** Value &lt;code>urn:x-nmos:device:pipeline&lt;/code>. */
+  pipeline: "urn:x-nmos:device:pipeline",
+  /** Value &lt;code>urn:x-nmos:device:generic&lt;/code>. */
+  generic: "urn:x-nmos:device:generic"
+};
 
+/** Check if a value is a valid device type. */
+deviceTypes.validDeviceType = function (f) {
+  return f === deviceTypes.generic || f === deviceTypes.pipeline;
+};
 
-
-
-
-
-
-    
-
-
-
-
-
+module.exports = Object.freeze(deviceTypes);
+</code></pre>
+        </article>
+    </section>
 
 
 

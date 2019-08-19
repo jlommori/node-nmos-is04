@@ -10,9 +10,12 @@
     "test": "test"
   },
   "dependencies": {
+    "ajv": "^6.10.2",
     "async": "^2.6.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "lodash": "^4.17.15",
+    "mdns": "^2.5.1",
     "mdns-js": "git+https://github.com/Streampunk/nmos-mdns-js#master",
     "promise": "^8.0.1",
     "seamless-immutable": "^7.1.3",

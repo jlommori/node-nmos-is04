@@ -1,4 +1,32 @@
-/* Copyright 2016 Streampunk Media Ltd.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Node.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Node.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* Copyright 2016 Streampunk Media Ltd.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,33 +47,30 @@ var Versionned = require('./Versionned.js');
 var Capabilities = require('./Capabilities.js');
 var Resource = require('./Resource.js');
 var os = require('os')
-let _ = require('lodash')
 
 /**
- * Instantiate a Node object. All params are optional, as any required items are generated automatically and optional items, such as services or api_endpoints, can be added after the node is created.
+ * Create a Node
  * @extends Resource
  */
 class Node extends Resource {
   /**
-   * @param {string} [id]         Inherited from {@link Resource}
-   * @param {string} [version]         Inherited from {@link Resource}
-   * @param {string} [label]         Inherited from {@link Resource}
-   * @param {string} [description]         Inherited from {@link Resource}
-   * @param {Object[]} [caps]         Inherited from {@link Resource}
-   * @param {string[]} [tags]         Inherited from {@link Resource}
-   * @param {string} [href]          HTTP access href for the Node's API (deprecated).
-   * @param {Object[]} [services]      Array of objects containing a URN format type and href.
-   * @param {Object[]} [clocks]        {@link Clocks} made available to Devices owned by this Node.
-   * @param {(string | string[])} [interfaces]  Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
+      Instantiate a Node object. All params are optional, as any required items are generated automatically
+      and optional items, such as services or api_endpoints, can be added after the node is created.
+   * @param {string} href          HTTP access href for the Node's API (deprecated).
+   * @param {Object[]} services      Array of objects containing a URN format type and href.
+   * @param {Object[]} clocks        [Clocks]{@link clocks} Clocks made available to Devices owned by this Node.
+   * @param {(string | string[])} [interfaces]  Network Interfaces made available to devices owned by this Node.
+                                   Port Ids &amp; Chassis Ids are used to inform topology discoery via IS-06 and require
+                                   that interfaces implement ARP at a minimum, and ideally LLDP. Optional parameter to only
+                                   include a specific interfaces or an array of interfaces. null returns all interfaces.
    */
   constructor(id, version, label, description, caps, tags, href, services, clocks, interfaces) {
     super(id, version, label, description, caps, tags)
     this.href = this.constructor.generateHref(href)
-    this.api = this.constructor.generateAPI(this.constructor.generateInterfaces(interfaces))
+    this.api = this.constructor.generateAPI()
     this.services = this.constructor.generateServices(services)
     this.clocks = this.constructor.generateClocks(clocks)
     this.interfaces = this.constructor.generateInterfaces(interfaces)
-    this.hostname = ''
   }
 
   /**
@@ -63,19 +88,10 @@ class Node extends Resource {
    * generate API object for Node. Auto updated when node server is spun up
    * @return {Object} Object with URL fragments required to connect to the Node API
    */
-  static generateAPI(ifaces) {
-    let endpoints = []
-    _.each(ifaces, (iface) => {
-      _.each(iface, (i) => {
-        endpoints.push({
-          host: i.address,
-          protocol: "http"
-        })
-      })
-    })
+  static generateAPI() {
     return {
       versions: ["v1.1,v1.2"],
-      endpoints: endpoints
+      endpoints: []
     }
   }
 
@@ -103,7 +119,7 @@ class Node extends Resource {
    * [generateInterfaces description]
    * @param  {(string | string[])} [interfaces] Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
    * @return {object[]}            Network Interfaces made available to devices owned by this Node.
-                                   Port Ids & Chassis Ids are used to inform topology discoery via IS-06 and require
+                                   Port Ids &amp; Chassis Ids are used to inform topology discoery via IS-06 and require
                                    that interfaces implement ARP at a minimum, and ideally LLDP.
    */
   static generateInterfaces(interfaces) {
@@ -128,3 +144,26 @@ class Node extends Resource {
 }
 
 module.exports = Node;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Node.html">Node</a></li><li><a href="Resource.html">Resource</a></li></ul><h3>Global</h3><ul><li><a href="global.html#capabilities">capabilities</a></li><li><a href="global.html#deviceTypes">deviceTypes</a></li><li><a href="global.html#formats">formats</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateLabel">generateLabel</a></li><li><a href="global.html#generateVersion">generateVersion</a></li><li><a href="global.html#transports">transports</a></li><li><a href="global.html#valid">valid</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Aug 17 2019 15:41:41 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

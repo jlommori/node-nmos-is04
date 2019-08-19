@@ -87,7 +87,9 @@
 
     
 
-     
+    
+
+    
 
     
 
@@ -140,7 +142,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="model_Capabilities.js.html">model/Capabilities.js</a>, <a href="model_Capabilities.js.html#line24">line 24</a>
+        <a href="Capabilities.js.html">Capabilities.js</a>, <a href="Capabilities.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -164,7 +166,7 @@
 
 
 <div class="description">
-    Types of <a href="Device.html">device</a>.
+    Types of device.
 </div>
 
 
@@ -225,7 +227,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:device:pipeline</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:device:pipeline</code>.</td>
         </tr>
 
     
@@ -248,7 +250,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:device:generic</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:device:generic</code>.</td>
         </tr>
 
     
@@ -287,7 +289,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="model_DeviceTypes.js.html">model/DeviceTypes.js</a>, <a href="model_DeviceTypes.js.html#line23">line 23</a>
+        <a href="DeviceTypes.js.html">DeviceTypes.js</a>, <a href="DeviceTypes.js.html#line23">line 23</a>
     </li></ul></dd>
     
 
@@ -311,7 +313,7 @@
 
 
 <div class="description">
-    A URN describing the data format of a video, audio or event[flow]{@link Flow<p>Sub-classifications of these core URNs may also be encountered within thisAPI version (such as urn:x-ipstudio:format:video.raw), and should still beinterpreted correctly by consumers up to the boundaries above.</p>
+    A URN describing the data format of a video, audio or event[flow]{@link Flow<p>Sub-classifications of these core URNs may also be encountered within thisAPI version (such as urn:x-nmos:format:video.raw), and should still beinterpreted correctly by consumers up to the boundaries above.</p>
 </div>
 
 
@@ -372,7 +374,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:format:video</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:format:video</code>.</td>
         </tr>
 
     
@@ -395,14 +397,14 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:format:audio</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:format:audio</code>.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>event</code></td>
+                <td class="name"><code>data</code></td>
             
 
             <td class="type">
@@ -418,7 +420,30 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:format:event</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:format:data</code>.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mux_sdi</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Value <code>urn:x-nmos:format:mux:sdi</code>/</td>
         </tr>
 
     
@@ -457,7 +482,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="model_Formats.js.html">model/Formats.js</a>, <a href="model_Formats.js.html#line28">line 28</a>
+        <a href="Formats.js.html">Formats.js</a>, <a href="Formats.js.html#line28">line 28</a>
     </li></ul></dd>
     
 
@@ -481,7 +506,7 @@
 
 
 <div class="description">
-    A URN describing the protocol used to send data (video, audio, events etc.)over a network.<p>For example, an RTP Transmitter sending to a multicast group should use thetransport 'urn:x-ipstudio:transport:rtp.mcast', but a receiver supportingboth unicast and multicast should present the transport'urn:x-ipstudio:transport:rtp' to indicate its less restrictive state.</p>
+    A URN describing the protocol used to send data (video, audio, events etc.)over a network.<p>For example, an RTP Transmitter sending to a multicast group should use thetransport 'urn:x-nmos:transport:rtp.mcast', but a receiver supportingboth unicast and multicast should present the transport'urn:x-nmos:transport:rtp' to indicate its less restrictive state.</p>
 </div>
 
 
@@ -542,7 +567,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:transport:rtp</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:transport:rtp</code>.</td>
         </tr>
 
     
@@ -565,7 +590,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:transport:rtp.ucast</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:transport:rtp.ucast</code>.</td>
         </tr>
 
     
@@ -588,7 +613,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:transport:rtp.mcast</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:transport:rtp.mcast</code>.</td>
         </tr>
 
     
@@ -611,7 +636,7 @@
 
             
 
-            <td class="description last">Value <code>urn:x-ipstudio:transport:dash</code>.</td>
+            <td class="description last">Value <code>urn:x-nmos:transport:dash</code>.</td>
         </tr>
 
     
@@ -650,7 +675,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="model_Transports.js.html">model/Transports.js</a>, <a href="model_Transports.js.html#line29">line 29</a>
+        <a href="Transports.js.html">Transports.js</a>, <a href="Transports.js.html#line29">line 29</a>
     </li></ul></dd>
     
 
@@ -677,14 +702,17 @@
 
     
 
-    <h4 class="name" id="statusError"><span class="type-signature"></span>statusError<span class="signature">(status, message)</span><span class="type-signature"> &rarr; {Error}</span></h4>
+    
+    <h4 class="name" id="generateID"><span class="type-signature"></span>generateID<span class="signature">(id<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
 
     
 
 
 
 <div class="description">
-    Add a status code to an error object.
+    Generate an identifier when one is not provided,
+otherwise pass this one through. No validation takes place.
 </div>
 
 
@@ -708,6 +736,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -720,30 +750,7 @@
 
         <tr>
             
-                <td class="name"><code>status</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Status code for the error.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
+                <td class="name"><code>id</code></td>
             
 
             <td class="type">
@@ -756,10 +763,20 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">Error message describing the error.</td>
+            <td class="description last">Identifier to pass through.</td>
         </tr>
 
     
@@ -800,7 +817,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="api_NodeStore.js.html">api/NodeStore.js</a>, <a href="api_NodeStore.js.html#line23">line 23</a>
+        <a href="Versionned.js.html">Versionned.js</a>, <a href="Versionned.js.html#line72">line 72</a>
     </li></ul></dd>
     
 
@@ -827,7 +844,8 @@
 
         
 <div class="param-desc">
-    The newly created error with status set.
+    Value passed to the method or a generated pseudo-random
+                     UUID for no arguments, null or undefined.
 </div>
 
 
@@ -838,13 +856,474 @@
     </dt>
     <dd>
         
-<span class="param-type">Error</span>
+<span class="param-type">string</span>
 
 
     </dd>
 </dl>
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="generateLabel"><span class="type-signature"></span>generateLabel<span class="signature">(label<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a label when one is not provided, otherwise
+pass the given one through. No validation takes place.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Label to pass through.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Versionned.js.html">Versionned.js</a>, <a href="Versionned.js.html#line103">line 103</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Value passed to the method or an empty string for
+                        no arguments, null or undefined.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="generateVersion"><span class="type-signature"></span>generateVersion<span class="signature">(version<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a version number when one is not provided,
+otherwise pass the given one through. No validation takes place.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Version number to pass through.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Versionned.js.html">Versionned.js</a>, <a href="Versionned.js.html#line86">line 86</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Value passed to the method or a generated version
+                          number from the current clock with no arguments,
+                          null or undefined.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="valid"><span class="type-signature"></span>valid<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Checks that all the properties of this resource are valid. The is a syntactic
+check and does not check semantics such as references to other objects can be
+checked. Valid includes:
+<ul>
+ <li>Required properties are defined and not null.</li>
+ <li>Identifiers a valid UUIDs.</li>
+ <li>Enumerations are known values and/or match expected patterns.</li>
+ <li>Values are of the expected type.</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Versionned.js.html">Versionned.js</a>, <a href="Versionned.js.html#line233">line 233</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Is the resource valid?
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
 
 
 
@@ -864,13 +1343,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Device.html">Device</a></li><li><a href="Flow.html">Flow</a></li><li><a href="Node.html">Node</a></li><li><a href="NodeAPI.html">NodeAPI</a></li><li><a href="NodeRAMStore.html">NodeRAMStore</a></li><li><a href="Versionned.html">Versionned</a></li></ul><h3>Interfaces</h3><ul><li><a href="NodeStore.html">NodeStore</a></li></ul><h3>Global</h3><ul><li><a href="global.html#capabilities">capabilities</a></li><li><a href="global.html#deviceTypes">deviceTypes</a></li><li><a href="global.html#formats">formats</a></li><li><a href="global.html#statusError">statusError</a></li><li><a href="global.html#transports">transports</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Node.html">Node</a></li><li><a href="Resource.html">Resource</a></li></ul><h3>Global</h3><ul><li><a href="global.html#capabilities">capabilities</a></li><li><a href="global.html#deviceTypes">deviceTypes</a></li><li><a href="global.html#formats">formats</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateLabel">generateLabel</a></li><li><a href="global.html#generateVersion">generateVersion</a></li><li><a href="global.html#transports">transports</a></li><li><a href="global.html#valid">valid</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Dec 21 2015 17:19:49 GMT+0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Aug 17 2019 15:41:41 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
