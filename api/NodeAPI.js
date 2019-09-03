@@ -13,23 +13,22 @@
   limitations under the License.
 */
 
-var express = require('express');
-var bodyparser = require('body-parser');
-var immutable = require('seamless-immutable');
-var NodeStore = require('./NodeStore.js');
-var mdns = require('mdns');
-var http = require('http');
-var Sender = require('../model/Sender.js');
-var getResourceName = require('./Util.js').getResourceName;
-var Promise = require('promise');
-var assert = require('assert');
+const express = require('express');
+const bodyparser = require('body-parser');
+const immutable = require('seamless-immutable');
+let NodeStore = require('./NodeStore.js');
+const mdns = require('mdns');
+const http = require('http');
+let Sender = require('../model/Sender.js');
+const getResourceName = require('./Util.js').getResourceName;
+// const Promise = require('promise');
+const assert = require('assert');
 const EventEmitter = require('events');
-var _ = require('lodash');
-var os = require('os')
+const _ = require('lodash');
+const os = require('os')
 const util = require('util')
 
-var knownResourceTypes = ['device', 'flow', 'source', 'receiver', 'sender'];
-  // self is treated as a special case
+const knownResourceTypes = ['device', 'flow', 'source', 'receiver', 'sender'];
 
 
 class NodeAPI extends EventEmitter {
@@ -44,6 +43,8 @@ class NodeAPI extends EventEmitter {
     this.server = null;
     this.healthcheck = null;
 
+    console.log('nodeAPI constructor', this.store)
+
     this.app.use((req, res, next) => {
       // TODO enhance this to better supports CORS
       res.header("Access-Control-Allow-Origin", "*");
@@ -57,13 +58,6 @@ class NodeAPI extends EventEmitter {
         next();
       }
     });
-
-    // this.app.get('/sdp/:id.sdp', (req, res, next) => {
-    //   var sdp = sdps[req.params.id];
-    //   if (!sdp) return next();
-    //   res.set('Content-Type', 'application/sdp');
-    //   res.send(new Buffer(sdp));
-    // });
 
     this.app.use(bodyparser.json());
 
@@ -261,12 +255,13 @@ class NodeAPI extends EventEmitter {
       };
     });
 
-    this.startMDNS(node);
+    return this
   }
 
   stop() {
     console.log('Node NMOS-IS04 Node server at http://%s:%s shutting down', host, port);
     this.server.close()
+    return this
   }
 
   startMDNS(node) {
@@ -275,9 +270,13 @@ class NodeAPI extends EventEmitter {
     //TODO parameter check for node
     var browser = null;
     var mdnsService = null;
-    var regConnected = false;
-    var regAddress = null;
-    var regPort = null;
+    let regServer = {
+      exists: false,
+      connected: false,
+      address: null,
+      port: null
+    }
+
     var candidates = [];
     var hostname;
     let port = this.port
@@ -286,7 +285,6 @@ class NodeAPI extends EventEmitter {
       endpoint.port = port
     })
 
-    console.log(util.inspect(node, {depth: 4}))
     if (node.label)
       hostname = node.label.replace(/ /g,"_").toLowerCase();
     else hostname = "node_" + os.hostname().match(/([^\.]*)\.?.*/)[1] + '-' + process.pid;

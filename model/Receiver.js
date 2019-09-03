@@ -1,117 +1,115 @@
-// /* Copyright 2016 Streampunk Media Ltd.
-//
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License.
-// */
-//
-// var Versionned = require('./Versionned.js');
-// var immutable = require('seamless-immutable');
-//
-// // Describes a receiver
-//
-// function Receiver(id, version, label, description,
-//   format, caps, tags, device_id, transport, subscription) {
-//   //  Globally unique identifier for the Receiver
-//   this.id = this.generateID(id);
-//   // String formatted PTP timestamp (<seconds>:<nanoseconds>) indicating
-//   // precisely when an attribute of the resource last changed.
-//   this.version = this.generateVersion(version);
-//   // Freeform string label for the Receiver
-//   this.label = this.generateLabel(label);
-//   // Detailed description of the Receiver
-//   this.description = this.generateDescription(description);
-//   // Type of Flow accepted by the Receiver as a URN
-//   this.format = this.generateFormat(format);
-//   // Capabilities (not yet defined)
-//   this.caps = this.generateCaps(caps);
-//   // Key value set of freeform string tags to aid in filtering sources.
-//   // Values should be represented as an array of strings. Can be empty.
-//   this.tags = this.generateTags(tags);
-//   // Device ID which this Receiver forms part of.
-//   this.device_id = this.generateDeviceID(device_id);
-//   // Transport type accepted by the Receiver in URN format
-//   this.transport = this.generateTransport(transport);
-//   // Object containing the 'sender_id' currently subscribed to. Sender_id
-//   // should be null on initialisation.
-//   this.subscription = this.generateSubscription(subscription);
-//   return immutable(this, { prototype : Receiver.prototype });
-// }
-//
-// Receiver.prototype.validID = Versionned.prototype.validID;
-// Receiver.prototype.generateID = Versionned.prototype.generateID;
-// Receiver.prototype.validVersion = Versionned.prototype.validVersion;
-// Receiver.prototype.generateVersion = Versionned.prototype.generateVersion;
-// Receiver.prototype.validLabel = Versionned.prototype.validLabel;
-// Receiver.prototype.generateLabel = Versionned.prototype.generateLabel;
-//
-// Receiver.prototype.validDescription = Versionned.prototype.validLabel;
-// Receiver.prototype.generateDescription = Versionned.prototype.generateLabel;
-//
-// Receiver.prototype.validFormat = Versionned.prototype.validFormat;
-// Receiver.prototype.generateFormat = Versionned.prototype.generateFormat;
-//
-// Receiver.prototype.validCaps = Versionned.prototype.validCaps;
-// Receiver.prototype.generateCaps = Versionned.prototype.generateCaps;
-//
-// Receiver.prototype.validTags = Versionned.prototype.validTags;
-// Receiver.prototype.generateTags = Versionned.prototype.generateTags;
-//
-// Receiver.prototype.validDeviceID = Versionned.prototype.validID;
-// Receiver.prototype.generateDeviceID = Versionned.prototype.generateID;
-//
-// Receiver.prototype.validTransport = Versionned.prototype.validTransport;
-// Receiver.prototype.generateTransport = Versionned.prototype.generateTransport;
-//
-// Receiver.prototype.validSubscription = function (s) {
-//   if (arguments.length === 0) return this.validSubscription(this.subscription);
-//   return typeof s === 'object' &&
-//     s !== null &&
-//     s.hasOwnProperty('sender_id') &&
-//     (s.sender_id === null || this.validID(s.sender_id));
-// }
-// Receiver.prototype.generateSubscription = function (s) {
-//   if (arguments.length === 0 || s === null || s === undefined)
-//     return { sender_id: null };
-//   else return s;
-// }
-//
-// Receiver.prototype.valid = function() {
-//   return this.validID(this.id) &&
-//     this.validVersion(this.version) &&
-//     this.validLabel(this.label) &&
-//     this.validDescription(this.description) &&
-//     this.validFormat(this.format) &&
-//     this.validCaps(this.caps) &&
-//     this.validTags(this.tags) &&
-//     this.validDeviceID(this.device_id) &&
-//     this.validTransport(this.transport) &&
-//     this.validSubscription(this.subscription);
-// }
-//
-// Receiver.prototype.stringify = function() { return JSON.stringify(this); }
-// Receiver.prototype.parse = function (json) {
-//   if (json === null || json === undefined || arguments.length === 0 ||
-//       (typeof json !== 'string' && typeof json !== 'object'))
-//     throw "Cannot parse JSON to a Receiver value because it is not a valid input.";
-//   var parsed = (typeof json === 'string') ? JSON.parse(json) : json;
-//   return new Receiver(parsed.id, parsed.version, parsed.label,
-//     parsed.description, parsed.format, parsed.caps, parsed.tags,
-//     parsed.device_id, parsed.transport, parsed.subscription);
-// }
-//
-// Receiver.isReceiver = function (x) {
-//   return x !== null &&
-//     typeof x === 'object' &&
-//     x.constructor === Receiver.prototype.constructor;
-// }
-//
-// module.exports = Receiver;
+
+const Resource = require('./Resource.js')
+const _ = require('lodash')
+
+class Receiver extends Resource {
+  constructor(params) {
+    if (params == undefined) { throw("Receiver requires parameters to be created")}
+    if (params.receiver_type == undefined) { throw("Receiver requires receiver_type to be created")}
+
+    this.device_id = this.constructor.generateDeviceID(params.device)
+    this.transport = this.constructor.generateTransport(params.transport)
+    this.interface_bindings = this.constructor.generateInterfaceBindings(params.interface_bindings)
+    this.subscription = { receiver_id: null, active: false }
+    this.format = this.generateFormat(params.receiver_type)
+    let caps = this.generateCaps(params.caps, params.receiver_type)
+
+    super({
+      id: params.id,
+      version: params.version,
+      label: params.label,
+      description: params.description,
+      tags: params.tags,
+      caps: caps
+    })
+  }
+
+  static generateDeviceID(device_id) {
+    if (arguments === 0 || device_id == null || device_id == undefined) {
+      throw('Device ID required to create Receiver')
+    }
+
+    if (device_id.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)) {
+      return device_id
+    } else {
+      throw("Invalid UUID provided for Device ID")
+    }
+  }
+
+  static generateTransport(transport) {
+    if (arguments == 0 || transport == null || transport || undefined) {
+      throw("Transport type is required to create Receiver")
+    } else {
+      let trans_enum = ["urn:x-nmos:transport:rtp", "urn:x-nmos:transport:rtp.ucast", "urn:x-nmos:transport:rtp.mcast", "urn:x-nmos:transport:dash"]
+
+      if (_.findIndex(trans_enum, transport) != -1) {
+        return transport
+      } else {
+        throw("Invalid Transport type provided")
+      }
+    }
+  }
+
+  static generateInterfaceBindings(interface_bindings) {
+    if (arguments == 0 || interface_bindings == null || interface_bindings == undefined) {
+      throw("Interface Binding is required to create Receiver")
+    } else {
+      return interface_bindings
+    }
+  }
+
+  static generateFormat(type) {
+    return `urn:x-nmos:format:${type}`
+  }
+
+  static generateCaps(caps, type) {
+    if (arguments == 0 || caps == null || caps == undefined || typeof caps != 'object') {
+      throw("Capabilties are required to create Receiver")
+    }
+
+    let video_enum = ["video/raw", "video/H264", "video/vc2"]
+    let audio_enum = ["audio/L24", "audio/L20", "audio/L16", "audio/L8"]
+    let data_enum = ["video/smpte291"]
+    let mux_enum = ["video/smpte2022-6"]
+
+    let capabilities = []
+    _.each(caps, (cap) => {
+      if (type == "video") {
+        if (_.findIndex(video_enum, cap) != -1) {
+          capabilities.push(cap)
+        } else {
+          console.warn("Invalid video capability provided")
+        }
+      } else if (type == "audio") {
+        if (_.findIndex(audio_enum, cap) != -1) {
+          capabilities.push(cap)
+        } else {
+          console.warn("Invalid audio capability provided")
+        }
+      } else if (type == "data") {
+        if (_.findIndex(data_enum, cap) != -1) {
+          capabilities.push(cap)
+        } else {
+          console.warn("Invalid data capability provided")
+        }
+      } else if (type == "mux") {
+        if (_.findIndex(mux_enum, cap) != -1) {
+          capabilities.push(cap)
+        } else {
+          console.warn("Invalid mux capability provided")
+        }
+      }
+    })
+
+    return capabilities
+  }
+
+
+  //TODO: Add validation against JSON Schema from NMOS
+  valid() {
+    return true
+  }
+
+}
+
+module.exports = Receiver

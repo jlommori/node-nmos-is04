@@ -13,6 +13,9 @@
   limitations under the License.
 */
 
+var Node = require('../model/Node.js');
+var Device = require('../model/Device.js')
+
 function extractVersions(v) {
   var m = v.match(/^([0-9]+):([0-9]+)$/)
   return [+m[1], +m[2]];
@@ -47,11 +50,66 @@ function getFirstExternalNetworkInterface() {
   return nias.find(function (x) { return x.internal === false && x.family === 'IPv4'; });
 }
 
+function isType(x, type) {
+  if (x == null || typeof x !== 'object') {
+    return false
+  }
+
+  switch(type) {
+    case "Node":
+      return x instanceof Node
+      break;
+    case "Device":
+      return x instanceof Device
+      break
+    default:
+      return false
+      break;
+  }
+}
+
+
+/**
+ * Add a status code to an error object.
+ * @param  {Number} status  Status code for the error.
+ * @param  {string} message Error message describing the error.
+ * @return {Error}          The newly created error with status set.
+ */
+function statusError(status, message) {
+  var e = new Error(message);
+  e.status = status;
+  return e;
+}
+
+function checkValidAndForward(item, items, name, reject) {
+  if (!item.valid()) {
+    reject(statusError(400,
+      "Given new or replacement " + name + " is not valid."));
+  }
+  if (items[item.id]) { // Already stored
+  //  console.log('***', items[item.id].version, item.version);
+    if (compareVersions(items[item.id].version, item.version) === 1) {
+      reject(statusError(409,
+        "Cannot replace a " + name + " device with one with " +
+        "an earler version."));
+    }
+  }
+  return true;
+}
+
+function validUUID(id) {
+  return id.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)
+}
+
 var util = {
   extractVersions : extractVersions,
   compareVersions : compareVersions,
   getResourceName : getResourceName,
-  getFirstExternalNetworkInterface : getFirstExternalNetworkInterface
+  getFirstExternalNetworkInterface : getFirstExternalNetworkInterface,
+  isType: isType,
+  statusError: statusError,
+  checkValidAndForward: checkValidAndForward,
+  validUUID: validUUID
 };
 
 module.exports = util;

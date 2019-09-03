@@ -43,34 +43,36 @@
 
 // Describes the Node and the services which run on it
 
-var Versionned = require('./Versionned.js');
-var Capabilities = require('./Capabilities.js');
+// var Versionned = require('./Versionned.js');
+// var Capabilities = require('./Capabilities.js');
 var Resource = require('./Resource.js');
 var os = require('os')
+let _ = require('lodash')
 
 /**
- * Create a Node
+ * Instantiate a Node object. All params are optional, as any required items are generated automatically and optional items, such as services or api_endpoints, can be added after the node is created.
  * @extends Resource
+ * @param {object} params       Object containing all Node parameters
+ * @param {string} [params.id]         Inherited from {@link Resource}
+ * @param {string} [params.version]         Inherited from {@link Resource}
+ * @param {string} [params.label]         Inherited from {@link Resource}
+ * @param {string} [params.description]         Inherited from {@link Resource}
+ * @param {Object[]} [params.caps]         Inherited from {@link Resource}
+ * @param {string[]} [params.tags]         Inherited from {@link Resource}
+ * @param {string} [params.href]          HTTP access href for the Node's API (deprecated).
+ * @param {Object[]} [params.services]      Array of objects containing a URN format type and href.
+ * @param {Object[]} [params.clocks]        {@link Clocks} made available to Devices owned by this Node.
+ * @param {(string | string[])} [params.interfaces]  Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
  */
 class Node extends Resource {
-  /**
-      Instantiate a Node object. All params are optional, as any required items are generated automatically
-      and optional items, such as services or api_endpoints, can be added after the node is created.
-   * @param {string} href          HTTP access href for the Node's API (deprecated).
-   * @param {Object[]} services      Array of objects containing a URN format type and href.
-   * @param {Object[]} clocks        [Clocks]{@link clocks} Clocks made available to Devices owned by this Node.
-   * @param {(string | string[])} [interfaces]  Network Interfaces made available to devices owned by this Node.
-                                   Port Ids &amp; Chassis Ids are used to inform topology discoery via IS-06 and require
-                                   that interfaces implement ARP at a minimum, and ideally LLDP. Optional parameter to only
-                                   include a specific interfaces or an array of interfaces. null returns all interfaces.
-   */
   constructor(id, version, label, description, caps, tags, href, services, clocks, interfaces) {
-    super(id, version, label, description, caps, tags)
-    this.href = this.constructor.generateHref(href)
-    this.api = this.constructor.generateAPI()
-    this.services = this.constructor.generateServices(services)
-    this.clocks = this.constructor.generateClocks(clocks)
-    this.interfaces = this.constructor.generateInterfaces(interfaces)
+    super(params.id, params.version, params.label, params.description, params.caps, params.tags)
+    this.href = this.constructor.generateHref(params.href)
+    this.api = this.constructor.generateAPI(this.constructor.generateInterfaces(params.interfaces))
+    this.services = this.constructor.generateServices(params.services)
+    this.clocks = this.constructor.generateClocks(params.clocks)
+    this.interfaces = this.constructor.generateInterfaces(params.interfaces)
+    this.hostname = ''
   }
 
   /**
@@ -88,10 +90,19 @@ class Node extends Resource {
    * generate API object for Node. Auto updated when node server is spun up
    * @return {Object} Object with URL fragments required to connect to the Node API
    */
-  static generateAPI() {
+  static generateAPI(ifaces) {
+    let endpoints = []
+    _.each(ifaces, (iface) => {
+      _.each(iface, (i) => {
+        endpoints.push({
+          host: i.address,
+          protocol: "http"
+        })
+      })
+    })
     return {
       versions: ["v1.1,v1.2"],
-      endpoints: []
+      endpoints: endpoints
     }
   }
 
@@ -139,7 +150,7 @@ class Node extends Resource {
 
   //TODO: Add validation against JSON Schema from NMOS
   valid() {
-
+    return true;
   }
 }
 
@@ -154,13 +165,13 @@ module.exports = Node;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Node.html">Node</a></li><li><a href="Resource.html">Resource</a></li></ul><h3>Global</h3><ul><li><a href="global.html#capabilities">capabilities</a></li><li><a href="global.html#deviceTypes">deviceTypes</a></li><li><a href="global.html#formats">formats</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateLabel">generateLabel</a></li><li><a href="global.html#generateVersion">generateVersion</a></li><li><a href="global.html#transports">transports</a></li><li><a href="global.html#valid">valid</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Node.html">Node</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Aug 17 2019 15:41:41 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 02 2019 09:40:49 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

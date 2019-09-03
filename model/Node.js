@@ -15,8 +15,8 @@
 
 // Describes the Node and the services which run on it
 
-var Versionned = require('./Versionned.js');
-var Capabilities = require('./Capabilities.js');
+// var Versionned = require('./Versionned.js');
+// var Capabilities = require('./Capabilities.js');
 var Resource = require('./Resource.js');
 var os = require('os')
 let _ = require('lodash')
@@ -24,45 +24,45 @@ let _ = require('lodash')
 /**
  * Instantiate a Node object. All params are optional, as any required items are generated automatically and optional items, such as services or api_endpoints, can be added after the node is created.
  * @extends Resource
+ * @param {object} params       Object containing all Node parameters
+ * @param {string} [params.id]         Inherited from {@link Resource}
+ * @param {string} [params.version]         Inherited from {@link Resource}
+ * @param {string} [params.label]         Inherited from {@link Resource}
+ * @param {string} [params.description]         Inherited from {@link Resource}
+ * @param {Object[]} [params.caps]         Inherited from {@link Resource}
+ * @param {string[]} [params.tags]         Inherited from {@link Resource}
+ * @param {string} [params.href]          HTTP access href for the Node's API (deprecated).
+ * @param {Object[]} [params.services]      Array of objects containing a URN format type and href.
+ * @param {Object[]} [params.clocks]        {@link Clocks} made available to Devices owned by this Node.
+ * @param {(string | string[])} [params.interfaces]  Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
  */
 class Node extends Resource {
-  /**
-   * @param {string} [id]         Inherited from {@link Resource}
-   * @param {string} [version]         Inherited from {@link Resource}
-   * @param {string} [label]         Inherited from {@link Resource}
-   * @param {string} [description]         Inherited from {@link Resource}
-   * @param {Object[]} [caps]         Inherited from {@link Resource}
-   * @param {string[]} [tags]         Inherited from {@link Resource}
-   * @param {string} [href]          HTTP access href for the Node's API (deprecated).
-   * @param {Object[]} [services]      Array of objects containing a URN format type and href.
-   * @param {Object[]} [clocks]        {@link Clocks} made available to Devices owned by this Node.
-   * @param {(string | string[])} [interfaces]  Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
-   */
-  constructor(id, version, label, description, caps, tags, href, services, clocks, interfaces) {
-    super(id, version, label, description, caps, tags)
-    this.href = this.constructor.generateHref(href)
-    this.api = this.constructor.generateAPI(this.constructor.generateInterfaces(interfaces))
-    this.services = this.constructor.generateServices(services)
-    this.clocks = this.constructor.generateClocks(clocks)
-    this.interfaces = this.constructor.generateInterfaces(interfaces)
+  constructor(params) {
+    if (params == undefined) {
+      params = {}
+    }
+    super({
+      id: params.id,
+      version: params.version,
+      label: params.label,
+      description: params.description,
+      caps: params.caps,
+      tags: params.tags
+    })
+    this.href = this.constructor.generateHref(params.href)
+    this.api = this.constructor.generateAPI(this.constructor.generateInterfaces(params.interfaces))
+    this.services = this.constructor.generateServices(params.services)
+    this.clocks = this.constructor.generateClocks(params.clocks)
+    this.interfaces = this.constructor.generateInterfaces(params.interfaces)
     this.hostname = ''
   }
 
-  /**
-   * generate Href for Node (deprecated in lieu of api, but still required as of dev v1.3). Auto updated when node server is spun up
-   * @param  {string} href HTTP access href for the Node's API (deprecated).
-   * @return {string}      HTTP access href for the Node's API (deprecated).
-   */
   static generateHref(href) {
     if (arguments.length === 0 || href === null || href === undefined)
       return '';
     else return href;
   }
 
-  /**
-   * generate API object for Node. Auto updated when node server is spun up
-   * @return {Object} Object with URL fragments required to connect to the Node API
-   */
   static generateAPI(ifaces) {
     let endpoints = []
     _.each(ifaces, (iface) => {
@@ -79,33 +79,18 @@ class Node extends Resource {
     }
   }
 
-  /**
-   * generate services available on this Node
-   * @param  {Object[]} [services] Array of objects containing a URN format type and href.
-   * @return {Object[]}          Array of objects containing a URN format type and href.
-   */
   static generateServices(services) {
     if (arguments.length === 0 || services === null || services === undefined)
       return [];
     else return services;
   }
-  /**
-   * genereate Clocks for this node
-   * @param  {Object[]} [clocks] [Clocks]{@link clocks} Clocks made available to Devices owned by this Node.
-   * @return {Object[]}        [Clocks]{@link clocks} Clocks made available to Devices owned by this Node.
-   */
+
   static generateClocks(clocks) {
     if (arguments.length === 0 || clocks === null || clocks === undefined)
       return []
     else return clocks;
   }
-  /**
-   * [generateInterfaces description]
-   * @param  {(string | string[])} [interfaces] Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
-   * @return {object[]}            Network Interfaces made available to devices owned by this Node.
-                                   Port Ids & Chassis Ids are used to inform topology discoery via IS-06 and require
-                                   that interfaces implement ARP at a minimum, and ideally LLDP.
-   */
+
   static generateInterfaces(interfaces) {
     let networkInterfaces = {}
     if (typeof interfaces == 'string') {
@@ -123,7 +108,7 @@ class Node extends Resource {
 
   //TODO: Add validation against JSON Schema from NMOS
   valid() {
-
+    return true;
   }
 }
 

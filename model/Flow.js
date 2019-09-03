@@ -16,119 +16,276 @@
 // var Versionned = require('./Versionned.js');
 // var immutable = require('seamless-immutable');
 //
-// // Describes a Flow
-//
-// /**
-//  * Describes a Flow. Immutable value.
-//  * @constructor
-//  * @augments Versionned
-//  * @param {string} id          Globally unique UUID identifier for the Flow.
-//  * @param {string} version     String formatted PTP timestamp
-//  *                             (&lt;<em>seconds</em>&gt;:&lt;<em>nanoseconds</em>&gt;)
-//  *                             indicating precisely when an attribute of the resource
-//  *                             last changed.
-//  * @param {string} label       Freeform string label for the Flow.
-//  * @param {string} description Detailed description of the Flow.
-//  * @param {string} format      [Format]{@link formats} of the data coming from the
-//  *                             Flow as a URN.
-//  * @param {Object.<string, string[]>} tags Key value set of freeform string tags
-//  *                                         to aid in filtering Flows. Can be empty.
-//  * @param {string} source_id   Globally unique UUID for the [source]{@link Source}
-//  *                             which initially created the Flow.
-//  * @param {string[]} parents   Array of UUIDs representing the Flow IDs of Grains
-//  *                             which came together to generate this Flow. (May
-//  *                             change over the lifetime of this Flow).
-//  */
-// function Flow(id, version, label, description, format,
-//     tags, source_id, parents) {
-//   this.id = this.generateID(id);
-//   this.version = this.generateVersion(version);
-//   this.label = this.generateLabel(label);
-//   /**
-//    * Detailed description of the Flow.
-//    * @type {string}
-//    * @readonly
-//    */
-//   this.description = this.generateDescription(description);
-//   /**
-//    * [Format]{@link formats} of the data coming from the Flow as a URN.
-//    * @type {string}
-//    * @readonly
-//    */
-//   this.format = this.generateFormat(format);
-//   /**
-//    * Key value set of freeform string tags to aid in filtering Flows. Can be
-//    * empty.
-//    * @type {Array.<string, string[]>}
-//    * @readonly
-//    */
-//   this.tags = this.generateTags(tags); // Treating as a required property
-//   /**
-//    * Globally unique UUID identifier for the [source]{@link Source} which initially
-//    * created the Flow.
-//    * @type {string}
-//    * @readonly
-//    */
-//   this.source_id = this.generateSourceID(source_id);
-//   /**
-//    * Array of UUIDs representing the Flow IDs of Grains which came together to
-//    * generate this Flow. (May change over the lifetime of this Flow.)
-//    */
-//   this.parents = this.generateParents(parents);
-//   return immutable(this, { prototype: Flow.prototype });
-// }
-//
-// Flow.prototype.validID = Versionned.prototype.validID;
-// Flow.prototype.generateID = Versionned.prototype.generateID;
-// Flow.prototype.validVersion = Versionned.prototype.validVersion;
-// Flow.prototype.generateVersion = Versionned.prototype.generateVersion;
-// Flow.prototype.validLabel = Versionned.prototype.validLabel;
-// Flow.prototype.generateLabel = Versionned.prototype.generateLabel;
-//
-// Flow.prototype.validDescription = Versionned.prototype.validLabel;
-// Flow.prototype.generateDescription = Versionned.prototype.generateLabel;
-//
-// Flow.prototype.validFormat = Versionned.prototype.validFormat;
-// Flow.prototype.generateFormat = Versionned.prototype.generateFormat;
-//
-// Flow.prototype.validTags = Versionned.prototype.validTags;
-// Flow.prototype.generateTags = Versionned.prototype.generateTags;
-//
-// Flow.prototype.validSourceID = Versionned.prototype.validID;
-// Flow.prototype.generateSourceID = Versionned.prototype.generateID;
-//
-// Flow.prototype.validParents = function (parents) {
-//   if (arguments.length === 0) return this.validParents(this.parents);
-//   return Versionned.prototype.validUUIDArray(parents);
-// }
-// Flow.prototype.generateParents = Versionned.prototype.generateUUIDArray;
-//
-// Flow.prototype.valid = function() {
-//   return this.validID(this.id) &&
-//     this.validVersion(this.version) &&
-//     this.validLabel(this.label) &&
-//     this.validDescription(this.description) &&
-//     this.validFormat(this.format) &&
-//     this.validTags(this.tags) &&
-//     this.validSourceID(this.source_id) &&
-//     this.validParents(this.parents);
-// }
-//
-// Flow.prototype.stringify = function () { return JSON.stringify(this) };
-//
-// Flow.prototype.parse = function (json) {
-//   if (json === null || json === undefined || arguments.length === 0 ||
-//       (typeof json !== 'string' && typeof json !== 'object'))
-//     throw "Cannot parse JSON to a Flow value because it is not a valid input.";
-//   var parsed = (typeof json === 'string') ? JSON.parse(json) : json;
-//   return new Flow(parsed.id, parsed.version, parsed.label, parsed.description,
-//       parsed.format, parsed.tags, parsed.source_id, parsed.parents);
-// }
-//
-// Flow.isFlow = function (x) {
-//   return x !== null &&
-//     typeof x === 'object' &&
-//     x.constructor === Flow.prototype.constructor;
-// }
-//
-// module.exports = Flow;
+const Resource = require('./Resource.js')
+const _ = require('lodash')
+
+class Flow extends Resource {
+  constructor(params) {
+    if (params == undefined) { throw("Flow requires parameters to be created ")}
+    if (params.flow_type == undefined) { throw("Flow requires a flow_type to be defined ")}
+
+    super({
+      id: params.id,
+      version: params.version,
+      label: params.label,
+      description: params.description,
+      caps: params.caps,
+      tags: params.tags
+    })
+
+    this.grain_rate = this.constructor.generateGrainRate(params.grain_rate)
+    this.source_id = this.constructor.generateSourceID(params.source_id)
+    this.device_id = this.constructor.generateDeviceID(params.device_id)
+    this.parents = this.constructor.generateParents(params.parents)
+
+    if (params.flow_type == "audio" || params.flow_type == "audio_coded" || params.flow_type == "audio_raw") {
+      this.format = "urn:x-nmos:format:audio"
+      this.sample_rate = this.constructor.generateAudioSampleRate(params.audio.sample_rate)
+      this.media_type = this.constructor.generateAudioMediaType(params.audio.media_type)
+      this.bit_depth = this.constructor.generateAudioBitDepth(params.audio.bit_depth)
+    }
+
+    if (params.flow_type == "video" || params.flow_type == "video_coded" || params.flow_type == "video_raw") {
+      this.format = "urn:x-nmos:format:video"
+      this.frame_width = this.constructor.generateVideoFrameWidth(params.video.frame_width)
+      this.frame_height = this.constructor.generateVideoFrameHeight(params.video.frame_height)
+      this.interlace_mode = this.construtor.generateVideoInterlaceMode(params.video.interlace_mode)
+      this.colorspace = this.constructor.generateVideoColorspace(params.video.colorspace)
+      this.transfer_characteristics = this.constructor.generateVideoTransferCharacteristics(params.video.transfer_characteristics)
+      this.media_type = this.constructor.generateVideoMediaType(params.video.media_type)
+      this.components = this.constructor.generateVideoComponents(params.video.components)
+    }
+
+    if (params.flow_type == "data" || params.flow_type == "sdianc_data") {
+      this.format = "urn:x-nmos:format:data"
+      this.media_type = this.constructor.generateDataMediaType(params.data.media_type)
+      this.did_sdid = this.constructor.generateDataDID_SDID(params.data.did_sdid)
+    }
+
+    if (params.flow_type == "mux") {
+      this.format = "urn:x-nmos:format:mux"
+      this.media_type = this.constructor.generateMuxMediaType(params.media_type)
+    }
+
+  }
+
+  static generateGrainRate(grain_rate) {
+    if (arguments == 0 || grain_rate == null || grain_rate == undefined) {
+      return null
+    } else {
+      return grain_rate
+    }
+  }
+
+  static generateSourceID(source_id) {
+    if (arguments === 0 || source_id == null || source_id == undefined) {
+      throw('params.source_id required to create Flow')
+    }
+
+    if (source_id.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)) {
+      return source_id
+    } else {
+      throw("Invalid UUID provided for Source ID")
+    }
+  }
+
+  static generateDeviceID(device_id) {
+    if (arguments === 0 || device_id == null || device_id == undefined) {
+      throw('params.device_id required to create Source')
+    }
+
+    if (device_id.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)) {
+      return device_id
+    } else {
+      throw("Invalid UUID provided for Device ID")
+    }
+  }
+
+  static generateParents(parents) {
+    if (arguments === 0 || parents == null || parents == undefined) {
+      return []
+    } else {
+      var a = []
+      _.each(parents, (p, i) => {
+        if (p.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)) {
+          a.push(p)
+        } else {
+          console.warn("Invalid UUID provided for parent at index " + i)
+        }
+      })
+
+      return a
+    }
+  }
+
+  static audioSampleRate(sample_rate) {
+    var s = {}
+    if (arguments == 0 || sample_rate == null || sample_rate == undefined) {
+      throw("Audio sample rate (in samples per second) required to create audio flow")
+    } else {
+      if (typeof sample_rate == "object") {
+        s.numerator = sample_rate.numerator
+        if (sample_rate.denominator) { s.denominator = sample_rate.denominator }
+        else { s.denominator = 1 }
+        return s
+      } else {
+        throw('Provided sample_rate not valid')
+      }
+    }
+  }
+
+  static audioMediaType(media_type) {
+    if (arguments == 0 || media_type == null || media_type == undefined) {
+      return null
+    } else {
+      return media_type
+    }
+  }
+
+  static audioBitDepth(bit_depth) {
+    if (arguments == 0 || bit_depth == null || bit_depth == undefined) {
+      return null
+    } else {
+      return bit_depth
+    }
+  }
+
+  static generateVideoFrameWidth(frame_width) {
+    if (arguments == 0 || frame_width == null || frame_width == undefined) {
+      throw("Video Frame Width required to create video flow")
+    } else {
+      return frame_width
+    }
+  }
+
+  static generateVideoFrameHeight(frame_height) {
+    if (arguments == 0 || frame_height == null || frame_height == undefined) {
+      throw("Video Frame Height required to create video flow")
+    } else {
+      return frame_height
+    }
+  }
+
+  static generateVideoInterlaceMode(interlace_mode) {
+    if (arguments == 0 || interlace_mode == null || interlace_mode == undefined) {
+      return "progressive"
+    } else {
+      let mode_enum = ["progressive", "interlaced_tff", "interlaced_bff", "interlaced_psf"]
+
+      if (_.findIndex(mode_enum, interlace_mode) != -1) {
+        return interlace_mode
+      } else {
+        throw("Invalid Interlace Mode provided")
+      }
+    }
+  }
+
+  static generateVideoColorspace(colorspace) {
+    if (arguments == 0 || colorspace == null || colorspace == undefined) {
+      throw("Colorspace required to create video flow")
+    } else {
+      let color_enum = ["BT601", "BT709", "BT2020", "BT2100"]
+
+      if (_.findIndex(color_enum, colorspace) != -1) {
+        return colorspace
+      } else {
+        throw("Invalid Colorspace provided")
+      }
+    }
+  }
+
+  static generateVideoTransferCharacteristics(transfer_characteristics) {
+    if (arguments == 0 || transfer_characteristics == null || transfer_characteristics == undefined) {
+      return "SDR"
+    } else {
+      let trans_enum = ["SDR", "HLG", "PQ"]
+
+      if (_.findIndex(trans_enum, transfer_characteristics) != -1) {
+        return transfer_characteristics
+      } else {
+        throw("Invalid Transfer Characteristics provided")
+      }
+    }
+  }
+
+  static generateVideoMediaType(media_type) {
+    if (arguments == 0 || media_type == null || media_type == undefined) {
+      return null
+    } else {
+      let media_enum = [ "video/H264", "video/vc2", "video/raw" ]
+
+      if (_.findIndex(media_enum, media_type) != -1) {
+        return media_type
+      } else {
+        throw("Invalid Media Type provided")
+      }
+    }
+  }
+
+  static generateVideoComponents(components) {
+    if (arguments == 0 || components == null || components == undefined) {
+      return null
+    } else {
+      let comps = []
+      _.each(components, (c) => {
+        let component = {}
+        if (typeof c != 'object') {
+          throw("Invalid component provided")
+        } else {
+          let name_enum = ["Y", "Cb", "Cr", "I", "Ct", "Cp", "A", "R", "G", "B", "DepthMap"]
+
+          if (_.findIndex(name_enum, c.name) != -1) {
+            component.name = c.name
+          } else {
+            throw("Invalid Component Name provided")
+          }
+
+          component.width = c.width
+          component.height = c.height
+          component.bit_depth = c.bit_depth
+
+          comps.push(component)
+        }
+      })
+
+      return comps
+    }
+  }
+
+  static generateDataMediaType(media_type) {
+    if (arguments == 0 || media_type == null || media_type == undefined) {
+      return null
+    } else {
+      return media_type
+    }
+  }
+
+  static generateDataDID_SDID(did_sdid) {
+    if (arguments == 0 || did_sdid == null || did_sdid == undefined) {
+      return null
+    } else {
+      let ar = []
+      _.each(did_sdid, (d) => {
+        let s = {}
+
+        if (d.did.match(/^0x[0-9a-fA-F]{2}$/g)) {
+          s.did = d.did
+        }
+
+        if (d.sdid.match(/^0x[0-9a-fA-F]{2}$/g)) {
+          s.sdid = d.sdid
+        }
+
+        ar.push(s)
+      })
+    return ar
+    }
+  }
+
+  //TODO: Add validation against JSON Schema from NMOS
+  valid() {
+    return true
+  }
+}
+
+module.exports = Flow;
