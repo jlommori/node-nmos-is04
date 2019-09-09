@@ -13,8 +13,13 @@
   limitations under the License.
 */
 
-var Node = require('../model/Node.js');
-var Device = require('../model/Device.js')
+//TODO: Add index.js in /model to include all models
+let Node = require('../model/Node.js');
+let Device = require('../model/Device.js')
+let Source = require('../model/Source.js')
+let Flow = require('../model/Flow.js')
+let Sender = require('../model/Sender.js')
+let Receiver = require('../model/Receiver.js')
 
 function extractVersions(v) {
   var m = v.match(/^([0-9]+):([0-9]+)$/)
@@ -61,7 +66,19 @@ function isType(x, type) {
       break;
     case "Device":
       return x instanceof Device
-      break
+      break;
+    case "Source":
+      return x instanceof Source
+      break;
+    case "Flow":
+      return x instanceof Flow
+      break;
+    case "Sender":
+      return x instanceof Sender
+      break;
+    case "Receiver":
+      return x instanceof Receiver
+      break;
     default:
       return false
       break;

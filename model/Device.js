@@ -27,8 +27,6 @@ const _ = require('lodash')
  * @param {string[]} [params.tags]        Inherited from {@link Resource}
  * @param {string} [params.type]          Device Type URN
  * @param {string} params.node_id         Globally unique identifier for the Node which initially created the Device
- * @param {[string]} [params.senders]     UUIDs of Senders attached to the Device (deprecated)
- * @param {[string]} [params.receivers]   UUIDs of Receivers attached to the Device (deprecated)
  * @param {[string]} [params.controls]    Control endpoints exposed for the Device //TODO Research control endpoint options
  */
 class Device extends Resource {
@@ -56,7 +54,7 @@ class Device extends Resource {
     ]
     if (arguments.length === 0 || type === null || type === undefined) {
       return "urn:x-nmos:device:pipeline"
-    } else if (_.findIndex(type_enum, type) != -1) {
+    } else if (_.indexOf(type_enum, type) != -1) {
       return type
     } else {
       throw("Invalid device type provided")

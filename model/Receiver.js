@@ -7,21 +7,22 @@ class Receiver extends Resource {
     if (params == undefined) { throw("Receiver requires parameters to be created")}
     if (params.receiver_type == undefined) { throw("Receiver requires receiver_type to be created")}
 
-    this.device_id = this.constructor.generateDeviceID(params.device)
-    this.transport = this.constructor.generateTransport(params.transport)
-    this.interface_bindings = this.constructor.generateInterfaceBindings(params.interface_bindings)
-    this.subscription = { receiver_id: null, active: false }
-    this.format = this.generateFormat(params.receiver_type)
-    let caps = this.generateCaps(params.caps, params.receiver_type)
-
     super({
       id: params.id,
       version: params.version,
       label: params.label,
       description: params.description,
       tags: params.tags,
-      caps: caps
+      caps: []
     })
+    this.device_id = this.constructor.generateDeviceID(params.device_id)
+    this.transport = this.constructor.generateTransport(params.transport)
+    this.interface_bindings = this.constructor.generateInterfaceBindings(params.interface_bindings)
+    this.format = this.constructor.generateFormat(params.receiver_type)
+    this.caps = this.constructor.generateCaps(params.caps, params.receiver_type)
+    this.subscription = { sender_id: null, active: false }
+
+
   }
 
   static generateDeviceID(device_id) {
@@ -37,12 +38,12 @@ class Receiver extends Resource {
   }
 
   static generateTransport(transport) {
-    if (arguments == 0 || transport == null || transport || undefined) {
+    if (arguments == 0 || transport == null || transport == undefined) {
       throw("Transport type is required to create Receiver")
     } else {
       let trans_enum = ["urn:x-nmos:transport:rtp", "urn:x-nmos:transport:rtp.ucast", "urn:x-nmos:transport:rtp.mcast", "urn:x-nmos:transport:dash"]
 
-      if (_.findIndex(trans_enum, transport) != -1) {
+      if (_.indexOf(trans_enum, transport) != -1) {
         return transport
       } else {
         throw("Invalid Transport type provided")
@@ -75,25 +76,25 @@ class Receiver extends Resource {
     let capabilities = []
     _.each(caps, (cap) => {
       if (type == "video") {
-        if (_.findIndex(video_enum, cap) != -1) {
+        if (_.indexOf(video_enum, cap) != -1) {
           capabilities.push(cap)
         } else {
           console.warn("Invalid video capability provided")
         }
       } else if (type == "audio") {
-        if (_.findIndex(audio_enum, cap) != -1) {
+        if (_.indexOf(audio_enum, cap) != -1) {
           capabilities.push(cap)
         } else {
           console.warn("Invalid audio capability provided")
         }
       } else if (type == "data") {
-        if (_.findIndex(data_enum, cap) != -1) {
+        if (_.indexOf(data_enum, cap) != -1) {
           capabilities.push(cap)
         } else {
           console.warn("Invalid data capability provided")
         }
       } else if (type == "mux") {
-        if (_.findIndex(mux_enum, cap) != -1) {
+        if (_.indexOf(mux_enum, cap) != -1) {
           capabilities.push(cap)
         } else {
           console.warn("Invalid mux capability provided")

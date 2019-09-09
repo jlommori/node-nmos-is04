@@ -49,7 +49,7 @@ class Flow extends Resource {
       this.format = "urn:x-nmos:format:video"
       this.frame_width = this.constructor.generateVideoFrameWidth(params.video.frame_width)
       this.frame_height = this.constructor.generateVideoFrameHeight(params.video.frame_height)
-      this.interlace_mode = this.construtor.generateVideoInterlaceMode(params.video.interlace_mode)
+      this.interlace_mode = this.constructor.generateVideoInterlaceMode(params.video.interlace_mode)
       this.colorspace = this.constructor.generateVideoColorspace(params.video.colorspace)
       this.transfer_characteristics = this.constructor.generateVideoTransferCharacteristics(params.video.transfer_characteristics)
       this.media_type = this.constructor.generateVideoMediaType(params.video.media_type)
@@ -118,7 +118,7 @@ class Flow extends Resource {
     }
   }
 
-  static audioSampleRate(sample_rate) {
+  static generateAudioSampleRate(sample_rate) {
     var s = {}
     if (arguments == 0 || sample_rate == null || sample_rate == undefined) {
       throw("Audio sample rate (in samples per second) required to create audio flow")
@@ -128,13 +128,16 @@ class Flow extends Resource {
         if (sample_rate.denominator) { s.denominator = sample_rate.denominator }
         else { s.denominator = 1 }
         return s
+      } else if (typeof sample_rate == "number") {
+        s.numerator = sample_rate
+        s.denominator = 1
       } else {
         throw('Provided sample_rate not valid')
       }
     }
   }
 
-  static audioMediaType(media_type) {
+  static generateAudioMediaType(media_type) {
     if (arguments == 0 || media_type == null || media_type == undefined) {
       return null
     } else {
@@ -142,7 +145,7 @@ class Flow extends Resource {
     }
   }
 
-  static audioBitDepth(bit_depth) {
+  static generateAudioBitDepth(bit_depth) {
     if (arguments == 0 || bit_depth == null || bit_depth == undefined) {
       return null
     } else {
@@ -172,7 +175,7 @@ class Flow extends Resource {
     } else {
       let mode_enum = ["progressive", "interlaced_tff", "interlaced_bff", "interlaced_psf"]
 
-      if (_.findIndex(mode_enum, interlace_mode) != -1) {
+      if (_.indexOf(mode_enum, interlace_mode) != -1) {
         return interlace_mode
       } else {
         throw("Invalid Interlace Mode provided")
@@ -186,7 +189,7 @@ class Flow extends Resource {
     } else {
       let color_enum = ["BT601", "BT709", "BT2020", "BT2100"]
 
-      if (_.findIndex(color_enum, colorspace) != -1) {
+      if (_.indexOf(color_enum, colorspace) != -1) {
         return colorspace
       } else {
         throw("Invalid Colorspace provided")
@@ -200,7 +203,7 @@ class Flow extends Resource {
     } else {
       let trans_enum = ["SDR", "HLG", "PQ"]
 
-      if (_.findIndex(trans_enum, transfer_characteristics) != -1) {
+      if (_.indexOf(trans_enum, transfer_characteristics) != -1) {
         return transfer_characteristics
       } else {
         throw("Invalid Transfer Characteristics provided")
@@ -214,7 +217,7 @@ class Flow extends Resource {
     } else {
       let media_enum = [ "video/H264", "video/vc2", "video/raw" ]
 
-      if (_.findIndex(media_enum, media_type) != -1) {
+      if (_.indexOf(media_enum, media_type) != -1) {
         return media_type
       } else {
         throw("Invalid Media Type provided")
@@ -234,7 +237,7 @@ class Flow extends Resource {
         } else {
           let name_enum = ["Y", "Cb", "Cr", "I", "Ct", "Cp", "A", "R", "G", "B", "DepthMap"]
 
-          if (_.findIndex(name_enum, c.name) != -1) {
+          if (_.indexOf(name_enum, c.name) != -1) {
             component.name = c.name
           } else {
             throw("Invalid Component Name provided")

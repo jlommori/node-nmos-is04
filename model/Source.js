@@ -101,15 +101,15 @@ class Source extends Resource {
 
     if (arguments == 0 || format == null || format == undefined) {
       throw("Format required to generate Source")
-    } else if (_.findIndex(format_enum, format) != -1) {
+    } else if (_.indexOf(format_enum, format) != -1) {
       return format
     } else {
-      throw("Invalid format type provided")
+      throw(`Invalid format type provided: ${format}`)
     }
   }
 
   static generateAudioChannels(channels) {
-    symbol_enum = [ "L", "R", "C", "LFE", "Ls", "Rs", "Lss", "Rss", "Lrs", "Rrs", "Lc", "Rc", "Cs", "HI", "VIN", "M1", "M2", "Lt", "Rt", "Lst", "Rst", "S" ]
+    let symbol_enum = [ "L", "R", "C", "LFE", "Ls", "Rs", "Lss", "Rss", "Lrs", "Rrs", "Lc", "Rc", "Cs", "HI", "VIN", "M1", "M2", "Lt", "Rt", "Lst", "Rst", "S" ]
 
     if (arguments == 0 || channels == null || channels == undefined) {
       if (this.format == "urn:x-nmos:format:audio") {
@@ -136,7 +136,7 @@ class Source extends Resource {
           if (ch.symbol.match(/U(0[1-9]{1}|[1-5]{1}[0-9]{1}|6[0-4]{1})/g)) {
             channel.symbol = ch.symbol
           } else { throw("Channel symbol is not of approved type") }
-        } else if (_.findIndex(symbol_enum, ch.symbol) != -1) {
+        } else if (_.indexOf(symbol_enum, ch.symbol) != -1) {
           return channel.symbol = ch.symbol
         } else {
           throw("Channel symbol is not of approved type")

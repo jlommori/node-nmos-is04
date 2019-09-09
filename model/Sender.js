@@ -36,12 +36,12 @@ class Sender extends Resource {
   }
 
   static generateTransport(transport) {
-    if (arguments == 0 || transport == null || transport || undefined) {
+    if (arguments == 0 || transport == null || transport == undefined) {
       throw("Transport type is required to create Sender")
     } else {
       let trans_enum = ["urn:x-nmos:transport:rtp", "urn:x-nmos:transport:rtp.ucast", "urn:x-nmos:transport:rtp.mcast", "urn:x-nmos:transport:dash"]
 
-      if (_.findIndex(trans_enum, transport) != -1) {
+      if (_.indexOf(trans_enum, transport) != -1) {
         return transport
       } else {
         throw("Invalid Transport type provided")
