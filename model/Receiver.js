@@ -5,7 +5,7 @@ const _ = require('lodash')
 class Receiver extends Resource {
   constructor(params) {
     if (params == undefined) { throw("Receiver requires parameters to be created")}
-    if (params.receiver_type == undefined) { throw("Receiver requires receiver_type to be created")}
+    if (params.receiver_type == undefined && !params.format) { throw("Receiver requires receiver_type or format to be created")}
 
     super({
       id: params.id,
@@ -18,7 +18,7 @@ class Receiver extends Resource {
     this.device_id = this.constructor.generateDeviceID(params.device_id)
     this.transport = this.constructor.generateTransport(params.transport)
     this.interface_bindings = this.constructor.generateInterfaceBindings(params.interface_bindings)
-    this.format = this.constructor.generateFormat(params.receiver_type)
+    this.format = params.format ? params.format : this.constructor.generateFormat(params.receiver_type)
     this.caps = this.constructor.generateCaps(params.caps, params.receiver_type)
     this.subscription = { sender_id: null, active: false }
 

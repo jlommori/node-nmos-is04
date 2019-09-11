@@ -22,7 +22,7 @@ const _ = require('lodash')
 class Flow extends Resource {
   constructor(params) {
     if (params == undefined) { throw("Flow requires parameters to be created ")}
-    if (params.flow_type == undefined) { throw("Flow requires a flow_type to be defined ")}
+    if (params.flow_type == undefined && !params.format) { throw("Flow requires a flow_type or format to be defined ")}
 
     super({
       id: params.id,
@@ -38,31 +38,31 @@ class Flow extends Resource {
     this.device_id = this.constructor.generateDeviceID(params.device_id)
     this.parents = this.constructor.generateParents(params.parents)
 
-    if (params.flow_type == "audio" || params.flow_type == "audio_coded" || params.flow_type == "audio_raw") {
+    if (params.flow_type == "audio" || params.flow_type == "audio_coded" || params.flow_type == "audio_raw" || params.format == "urn:x-nmos:format:audio") {
       this.format = "urn:x-nmos:format:audio"
-      this.sample_rate = this.constructor.generateAudioSampleRate(params.audio.sample_rate)
-      this.media_type = this.constructor.generateAudioMediaType(params.audio.media_type)
-      this.bit_depth = this.constructor.generateAudioBitDepth(params.audio.bit_depth)
+      this.sample_rate = this.constructor.generateAudioSampleRate(params.sample_rate)
+      this.media_type = this.constructor.generateAudioMediaType(params.media_type)
+      this.bit_depth = this.constructor.generateAudioBitDepth(params.bit_depth)
     }
 
-    if (params.flow_type == "video" || params.flow_type == "video_coded" || params.flow_type == "video_raw") {
+    if (params.flow_type == "video" || params.flow_type == "video_coded" || params.flow_type == "video_raw" || params.format == "urn:x-nmos:format:video") {
       this.format = "urn:x-nmos:format:video"
-      this.frame_width = this.constructor.generateVideoFrameWidth(params.video.frame_width)
-      this.frame_height = this.constructor.generateVideoFrameHeight(params.video.frame_height)
-      this.interlace_mode = this.constructor.generateVideoInterlaceMode(params.video.interlace_mode)
-      this.colorspace = this.constructor.generateVideoColorspace(params.video.colorspace)
-      this.transfer_characteristics = this.constructor.generateVideoTransferCharacteristics(params.video.transfer_characteristics)
-      this.media_type = this.constructor.generateVideoMediaType(params.video.media_type)
-      this.components = this.constructor.generateVideoComponents(params.video.components)
+      this.frame_width = this.constructor.generateVideoFrameWidth(params.frame_width)
+      this.frame_height = this.constructor.generateVideoFrameHeight(params.frame_height)
+      this.interlace_mode = this.constructor.generateVideoInterlaceMode(params.interlace_mode)
+      this.colorspace = this.constructor.generateVideoColorspace(params.colorspace)
+      this.transfer_characteristics = this.constructor.generateVideoTransferCharacteristics(params.transfer_characteristics)
+      this.media_type = this.constructor.generateVideoMediaType(params.media_type)
+      this.components = this.constructor.generateVideoComponents(params.components)
     }
 
-    if (params.flow_type == "data" || params.flow_type == "sdianc_data") {
+    if (params.flow_type == "data" || params.flow_type == "sdianc_data" || params.format == "urn:x-nmos:format:data") {
       this.format = "urn:x-nmos:format:data"
-      this.media_type = this.constructor.generateDataMediaType(params.data.media_type)
-      this.did_sdid = this.constructor.generateDataDID_SDID(params.data.did_sdid)
+      this.media_type = this.constructor.generateDataMediaType(params.media_type)
+      this.did_sdid = this.constructor.generateDataDID_SDID(params.did_sdid)
     }
 
-    if (params.flow_type == "mux") {
+    if (params.flow_type == "mux" || params.format == "urn:x-nmos:format:mux") {
       this.format = "urn:x-nmos:format:mux"
       this.media_type = this.constructor.generateMuxMediaType(params.media_type)
     }
@@ -131,6 +131,7 @@ class Flow extends Resource {
       } else if (typeof sample_rate == "number") {
         s.numerator = sample_rate
         s.denominator = 1
+        return s
       } else {
         throw('Provided sample_rate not valid')
       }

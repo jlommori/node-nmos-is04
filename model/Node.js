@@ -97,8 +97,13 @@ class Node extends Resource {
       networkInterfaces[interfaces] = os.networkInterfaces()[interfaces]
       return networkInterfaces
     } else if (typeof interfaces == 'object') {
-      interfaces.forEach((int) => {
-        networkInterfaces[int] = os.networkInterfaces()[int]
+
+      _.each(interfaces, (int, name) => {
+        if (typeof int == 'string') {
+          networkInterfaces[int] = os.networkInterfaces()[int]
+        } else if (typeof int == 'object') {
+          networkInterfaces[name] = int
+        }
       })
       return networkInterfaces
     } else {

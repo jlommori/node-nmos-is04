@@ -1,0 +1,1290 @@
+<h1 id='noderamstore'>NodeRAMStore</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">is04</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'node-nmos-is04'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">NodeRAMStore</span><span class="p">();</span>
+
+</code></pre>
+<p>Create a RAM-based Store for a Node or Registration Server</p>
+<h2 id='getresources'>getResources()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getResources</span><span class="p">()</span>
+</code></pre>
+<p>Get all Resources currently available in the store.</p>
+<h3 id='return'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code>  <span class="p">{</span>
+    <span class="nl">self</span><span class="p">:</span> <span class="nx">Node</span> <span class="p">{</span>
+       <span class="nl">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+       <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+       <span class="nx">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+       <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+       <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+       <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'tesing'</span><span class="p">,</span> <span class="s1">'node'</span> <span class="p">],</span>
+       <span class="nx">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+       <span class="nx">api</span><span class="p">:</span> <span class="p">{</span> <span class="nl">versions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">endpoints</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+       <span class="nx">services</span><span class="p">:</span> <span class="p">[],</span>
+       <span class="nx">clocks</span><span class="p">:</span> <span class="p">[],</span>
+       <span class="nx">interfaces</span><span class="p">:</span> <span class="p">{</span> <span class="nl">en0</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">en6</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+       <span class="nx">hostname</span><span class="p">:</span> <span class="s1">''</span> <span class="p">},</span>
+    <span class="nx">nodes</span><span class="p">:</span>
+      <span class="p">{</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">:</span>
+         <span class="nx">Node</span> <span class="p">{</span>
+           <span class="nl">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+           <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+           <span class="nx">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+           <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+           <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+           <span class="nx">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">api</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+           <span class="nx">services</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">clocks</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">interfaces</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">],</span>
+           <span class="nx">hostname</span><span class="p">:</span> <span class="s1">''</span> <span class="p">}</span> <span class="p">},</span>
+     <span class="nx">devices</span><span class="p">:</span>
+      <span class="p">{</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">:</span>
+         <span class="nx">Device</span> <span class="p">{</span>
+           <span class="nl">id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+           <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:133492956'</span><span class="p">,</span>
+           <span class="nx">label</span><span class="p">:</span> <span class="s1">'Device 1'</span><span class="p">,</span>
+           <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+           <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">type</span><span class="p">:</span> <span class="s1">'urn:x-nmos:device:pipeline'</span><span class="p">,</span>
+           <span class="nx">node_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+           <span class="nx">senders</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">receivers</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">controls</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span> <span class="p">},</span>
+     <span class="nx">sources</span><span class="p">:</span>
+      <span class="p">{</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">:</span>
+         <span class="nx">Source</span> <span class="p">{</span>
+           <span class="nl">id</span><span class="p">:</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+           <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:134232449'</span><span class="p">,</span>
+           <span class="nx">label</span><span class="p">:</span> <span class="s1">'Source 1'</span><span class="p">,</span>
+           <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+           <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+           <span class="nx">parents</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">clock_name</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+           <span class="nx">grain_rate</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+           <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+           <span class="nx">channels</span><span class="p">:</span> <span class="kc">null</span> <span class="p">}</span>
+      <span class="p">},</span>
+     <span class="nx">flows</span><span class="p">:</span>
+      <span class="p">{</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">:</span>
+         <span class="nx">Flow</span> <span class="p">{</span>
+           <span class="nl">id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+           <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:135367354'</span><span class="p">,</span>
+           <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Flow'</span><span class="p">,</span>
+           <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+           <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">grain_rate</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+           <span class="nx">source_id</span><span class="p">:</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+           <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+           <span class="nx">parents</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+           <span class="nx">frame_width</span><span class="p">:</span> <span class="mi">1920</span><span class="p">,</span>
+           <span class="nx">frame_height</span><span class="p">:</span> <span class="mi">1080</span><span class="p">,</span>
+           <span class="nx">interlace_mode</span><span class="p">:</span> <span class="s1">'interlaced_tff'</span><span class="p">,</span>
+           <span class="nx">colorspace</span><span class="p">:</span> <span class="s1">'BT709'</span><span class="p">,</span>
+           <span class="nx">transfer_characteristics</span><span class="p">:</span> <span class="s1">'SDR'</span><span class="p">,</span>
+           <span class="nx">media_type</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+           <span class="nx">components</span><span class="p">:</span> <span class="kc">null</span> <span class="p">}</span>
+        <span class="p">},</span>
+     <span class="nx">senders</span><span class="p">:</span>
+      <span class="p">{</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">:</span>
+         <span class="nx">Sender</span> <span class="p">{</span>
+           <span class="nl">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+           <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+           <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+           <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+           <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+           <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+           <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+           <span class="nx">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+           <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+           <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span>
+        <span class="p">},</span>
+     <span class="nx">receivers</span><span class="p">:</span>
+      <span class="p">{</span> <span class="s1">'a8f61658-47ad-4212-ab5a-8a659e500ab9'</span><span class="p">:</span>
+         <span class="nx">Receiver</span> <span class="p">{</span>
+           <span class="nl">id</span><span class="p">:</span> <span class="s1">'a8f61658-47ad-4212-ab5a-8a659e500ab9'</span><span class="p">,</span>
+           <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136616679'</span><span class="p">,</span>
+           <span class="nx">label</span><span class="p">:</span> <span class="s1">'Receiver 1'</span><span class="p">,</span>
+           <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+           <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+           <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+           <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+           <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+           <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+           <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+           <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span>
+         <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>self</td>
+<td>object</td>
+<td>Node information when store is used for a Node, not Registration Server</td>
+</tr>
+<tr>
+<td>nodes</td>
+<td>object</td>
+<td>All Nodes in the store</td>
+</tr>
+<tr>
+<td>devices</td>
+<td>object</td>
+<td>All Devices in the store</td>
+</tr>
+<tr>
+<td>sources</td>
+<td>object</td>
+<td>All Sources in the store</td>
+</tr>
+<tr>
+<td>flows</td>
+<td>object</td>
+<td>All Flows in the store</td>
+</tr>
+<tr>
+<td>senders</td>
+<td>object</td>
+<td>All Senders in the store</td>
+</tr>
+<tr>
+<td>receivers</td>
+<td>object</td>
+<td>All Receivers in the store</td>
+</tr>
+</tbody></table>
+<h2 id='getresourceids'>getResourceIDs()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getResourceIDs</span><span class="p">()</span>
+</code></pre>
+<p>Get all IDs of all Resources currently available in the store.</p>
+<h3 id='return-2'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span> <span class="nl">self</span><span class="p">:</span> <span class="s1">'3377bbba-a2a8-4b8c-b428-6d45bb60aad7'</span><span class="p">,</span>
+<span class="nx">nodes</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'3377bbba-a2a8-4b8c-b428-6d45bb60aad7'</span> <span class="p">],</span>
+<span class="nx">devices</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'4a776a15-93ec-4953-9f86-288929ff33f2'</span> <span class="p">],</span>
+<span class="nx">sources</span><span class="p">:</span>
+ <span class="p">[</span> <span class="s1">'080fe271-ecce-4bf4-a5ca-e25f1b3b3bcf'</span><span class="p">,</span>
+   <span class="s1">'b3506a57-e9c6-4d33-9f3d-74ea951d68e0'</span> <span class="p">],</span>
+<span class="nx">flows</span><span class="p">:</span>
+ <span class="p">[</span> <span class="s1">'626b631a-b7fb-4f03-bf20-97fb196eadb0'</span><span class="p">,</span>
+   <span class="s1">'6e0cfe6c-855a-4f97-aa0d-fc9ef5c0473a'</span> <span class="p">],</span>
+<span class="nx">senders</span><span class="p">:</span>
+ <span class="p">[</span> <span class="s1">'646f3a74-50da-4f87-85d0-19b380bba2b7'</span><span class="p">,</span>
+   <span class="s1">'a0ab0c81-f917-49ff-bd85-ad48489231e9'</span> <span class="p">],</span>
+<span class="nx">receivers</span><span class="p">:</span>
+ <span class="p">[</span> <span class="s1">'0c442fd0-f31d-4a0e-a495-a6ed0beb1c96'</span><span class="p">,</span>
+   <span class="s1">'c7909c21-bd7d-4318-9913-bba6c3cb9f66'</span> <span class="p">]</span> <span class="p">}</span>
+</code></pre>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>self</td>
+<td>object</td>
+<td>Node information when store is used for a Node, not Registration Server</td>
+</tr>
+<tr>
+<td>nodes</td>
+<td>array</td>
+<td>All Node IDs in the store</td>
+</tr>
+<tr>
+<td>devices</td>
+<td>array</td>
+<td>All Device IDs in the store</td>
+</tr>
+<tr>
+<td>sources</td>
+<td>array</td>
+<td>All Sources IDs in the store</td>
+</tr>
+<tr>
+<td>flows</td>
+<td>array</td>
+<td>All Flow IDs in the store</td>
+</tr>
+<tr>
+<td>senders</td>
+<td>array</td>
+<td>All Sender IDs in the store</td>
+</tr>
+<tr>
+<td>receivers</td>
+<td>array</td>
+<td>All Receiver IDs in the store</td>
+</tr>
+</tbody></table>
+<h2 id='getresourcecounts'>getResourceCounts()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getResourceCounts</span><span class="p">()</span>
+</code></pre>
+<p>Get counts of objects currently in the store</p>
+<h3 id='return-3'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span> <span class="nl">self</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">nodes</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">devices</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nx">sources</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nx">flows</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nx">senders</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nx">receivers</span><span class="p">:</span> <span class="mi">2</span> <span class="p">}</span>
+</code></pre>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>self</td>
+<td>number</td>
+<td>1 if store used as Node, 0 if Registration Server</td>
+</tr>
+<tr>
+<td>nodes</td>
+<td>number</td>
+<td>Count of Nodes</td>
+</tr>
+<tr>
+<td>devices</td>
+<td>number</td>
+<td>Count of Devices</td>
+</tr>
+<tr>
+<td>sources</td>
+<td>number</td>
+<td>Count of Sources</td>
+</tr>
+<tr>
+<td>flows</td>
+<td>number</td>
+<td>Count of Flows</td>
+</tr>
+<tr>
+<td>senders</td>
+<td>number</td>
+<td>Count of Senders</td>
+</tr>
+<tr>
+<td>receivers</td>
+<td>number</td>
+<td>Count of Receivers</td>
+</tr>
+</tbody></table>
+<h2 id='getself'>getSelf()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getSelf</span><span class="p">()</span>
+</code></pre>
+<p>Get the currently stored Node as Self, when store is used as Node, not Registration Server</p>
+<h3 id='return-4'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Node</span> <span class="p">{</span>
+   <span class="nl">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+   <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+   <span class="nx">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+   <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+   <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'tesing'</span><span class="p">,</span> <span class="s1">'node'</span> <span class="p">],</span>
+   <span class="nx">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">api</span><span class="p">:</span> <span class="p">{</span> <span class="nl">versions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">endpoints</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">services</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">clocks</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">interfaces</span><span class="p">:</span> <span class="p">{</span> <span class="nl">en0</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">en6</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">hostname</span><span class="p">:</span> <span class="s1">''</span> <span class="p">}</span>
+</code></pre>
+<p>See <a href="#model-node">Node</a> Model</p>
+<h2 id='setself'>setSelf()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">setSelf</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Node</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s2">"Test Node"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"This is a test node"</span><span class="p">,</span>
+  <span class="na">tags</span><span class="p">:</span> <span class="p">[</span><span class="s2">"tesing"</span><span class="p">,</span> <span class="s2">"node"</span><span class="p">],</span>
+  <span class="na">interfaces</span><span class="p">:</span> <span class="p">[</span><span class="s2">"en0"</span><span class="p">]</span>
+<span class="p">}))</span>
+</code></pre>
+<p>Set the Node for <code>self</code>, when used for a Node server, not Registration Server</p>
+<h3 id='parameters'>Parameters</h3>
+<p>See <a href="#model-node">Node</a> model</p>
+<h3 id='return-5'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Node</span> <span class="p">{</span>
+   <span class="nl">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+   <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+   <span class="nx">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+   <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+   <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'tesing'</span><span class="p">,</span> <span class="s1">'node'</span> <span class="p">],</span>
+   <span class="nx">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">api</span><span class="p">:</span> <span class="p">{</span> <span class="nl">versions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">endpoints</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">services</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">clocks</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">interfaces</span><span class="p">:</span> <span class="p">{</span> <span class="nl">en0</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">en6</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">hostname</span><span class="p">:</span> <span class="s1">''</span> <span class="p">}</span>
+</code></pre>
+<p>Returns same <code>node</code> that was set. See <a href="#model-node">Node</a> Model.</p>
+<h2 id='putnode'>putNode()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">putNode</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Node</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s2">"Test Node"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"This is a test node"</span><span class="p">,</span>
+  <span class="na">tags</span><span class="p">:</span> <span class="p">[</span><span class="s2">"tesing"</span><span class="p">,</span> <span class="s2">"node"</span><span class="p">],</span>
+  <span class="na">interfaces</span><span class="p">:</span> <span class="p">[</span><span class="s2">"en0"</span><span class="p">]</span>
+<span class="p">}))</span>
+</code></pre>
+<p>Put a <code>node</code> in the <code>nodes</code> store</p>
+<h3 id='parameters-2'>Parameters</h3>
+<p>See <a href="#model-node">Node</a> model</p>
+<h3 id='return-6'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Node</span> <span class="p">{</span>
+   <span class="nl">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+   <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+   <span class="nx">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+   <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+   <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'tesing'</span><span class="p">,</span> <span class="s1">'node'</span> <span class="p">],</span>
+   <span class="nx">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">api</span><span class="p">:</span> <span class="p">{</span> <span class="nl">versions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">endpoints</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">services</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">clocks</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">interfaces</span><span class="p">:</span> <span class="p">{</span> <span class="nl">en0</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">en6</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">hostname</span><span class="p">:</span> <span class="s1">''</span> <span class="p">}</span>
+</code></pre>
+<p>Returns same <code>node</code> that was put. See <a href="#model-node">Node</a> Model.</p>
+<h2 id='getnodes'>getNodes()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getNodes</span><span class="p">()</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getNodes</span><span class="p">([</span>
+  <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span>
+<span class="p">])</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getNodes</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one or more Nodes from the store.</p>
+<h3 id='parameters-3'>Parameters</h3>
+<p><code>getNodes()</code> accepts either a string or array of strings to return specific Nodes. If no parameter provided, returns all nodes on the store.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Node to return</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>[string]</td>
+<td>Array of UUIDs to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-7'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">[</span>
+  <span class="p">{</span>
+     <span class="na">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+     <span class="na">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+     <span class="na">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+     <span class="na">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+     <span class="na">caps</span><span class="p">:</span> <span class="p">{},</span>
+     <span class="na">tags</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'tesing'</span><span class="p">,</span> <span class="s1">'node'</span> <span class="p">],</span>
+     <span class="na">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+     <span class="na">api</span><span class="p">:</span> <span class="p">{</span> <span class="na">versions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="na">endpoints</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+     <span class="na">services</span><span class="p">:</span> <span class="p">[],</span>
+     <span class="na">clocks</span><span class="p">:</span> <span class="p">[],</span>
+     <span class="na">interfaces</span><span class="p">:</span> <span class="p">{</span> <span class="na">en0</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="na">en6</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+     <span class="na">hostname</span><span class="p">:</span> <span class="s1">''</span>
+   <span class="p">},</span>
+   <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Returns an array of Nodes. See <a href="#model-node">Node</a> model</p>
+<h2 id='getnode'>getNode()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getNode</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one Node from the store.</p>
+<h3 id='parameters-4'>Parameters</h3>
+<p>Requires UUID to return</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Node to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-8'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+   <span class="nl">id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+   <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:124643978'</span><span class="p">,</span>
+   <span class="nx">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
+   <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+   <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span> <span class="s1">'tesing'</span><span class="p">,</span> <span class="s1">'node'</span> <span class="p">],</span>
+   <span class="nx">href</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+   <span class="nx">api</span><span class="p">:</span> <span class="p">{</span> <span class="nl">versions</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">endpoints</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">services</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">clocks</span><span class="p">:</span> <span class="p">[],</span>
+   <span class="nx">interfaces</span><span class="p">:</span> <span class="p">{</span> <span class="nl">en0</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span> <span class="nx">en6</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">]</span> <span class="p">},</span>
+   <span class="nx">hostname</span><span class="p">:</span> <span class="s1">''</span>
+ <span class="p">}</span>
+</code></pre>
+<p>Returns a single Node. See <a href="#model-node">Node</a> model</p>
+<h2 id='deletenode'>deleteNode()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">deleteNode</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Delete a Node from the store</p>
+<h3 id='parameters-5'>Parameters</h3>
+<p>Requires UUID to delete</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Node to delete</td>
+</tr>
+</tbody></table>
+<h3 id='return-9'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
+</code></pre>
+<p>Returns ID of the deleted Node as a String</p>
+<h2 id='putdevice'>putDevice()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">putDevice</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Device</span><span class="p">({</span>
+  <span class="na">node_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s2">"Device 1"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"A multifaceted device"</span>
+<span class="p">}))</span>
+</code></pre>
+<p>Put a <code>device</code> in the <code>devices</code> store</p>
+<h3 id='parameters-6'>Parameters</h3>
+<p>See <a href="#model-device">Device</a> model</p>
+<h3 id='return-10'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Device</span> <span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:133492956'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Device 1'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">type</span><span class="p">:</span> <span class="s1">'urn:x-nmos:device:pipeline'</span><span class="p">,</span>
+  <span class="nx">node_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="nx">senders</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">receivers</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">controls</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span>
+</code></pre>
+<p>Returns same <code>device</code> that was put. See <a href="#model-device">Device</a> Model.</p>
+<h2 id='getdevices'>getDevices()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getDevices</span><span class="p">()</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getDevices</span><span class="p">([</span>
+  <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span>
+<span class="p">])</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getDevices</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one or more Devices from the store.</p>
+<h3 id='parameters-7'>Parameters</h3>
+<p><code>getDevices()</code> accepts either a string or array of strings to return specific Devices. If no parameter provided, returns all devices on the store.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Device to return</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>[string]</td>
+<td>Array of UUIDs to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-11'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+    <span class="na">version</span><span class="p">:</span> <span class="s1">'1567947806:133492956'</span><span class="p">,</span>
+    <span class="na">label</span><span class="p">:</span> <span class="s1">'Device 1'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+    <span class="na">caps</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">type</span><span class="p">:</span> <span class="s1">'urn:x-nmos:device:pipeline'</span><span class="p">,</span>
+    <span class="na">node_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+    <span class="na">senders</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">receivers</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">controls</span><span class="p">:</span> <span class="p">[]</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Returns an array of Devices. See <a href="#model-device">Device</a> model</p>
+<h2 id='getdevice'>getDevice()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getDevice</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one Device from the store.</p>
+<h3 id='parameters-8'>Parameters</h3>
+<p>Requires UUID to return</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Device to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-12'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:133492956'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Device 1'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">type</span><span class="p">:</span> <span class="s1">'urn:x-nmos:device:pipeline'</span><span class="p">,</span>
+  <span class="nx">node_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="nx">senders</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">receivers</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">controls</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre>
+<p>Returns a single Device. See <a href="#model-device">Device</a> model</p>
+<h2 id='deletedevice'>deleteDevice()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">deleteDevice</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Delete a Device from the store</p>
+<h3 id='parameters-9'>Parameters</h3>
+<p>Requires UUID to delete</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Device to delete</td>
+</tr>
+</tbody></table>
+<h3 id='return-13'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
+</code></pre>
+<p>Returns ID of the deleted Device as a String</p>
+<h2 id='putsource'>putSource()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">putSource</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Source</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s2">"Source 1"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"This is the first source"</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="na">format</span><span class="p">:</span> <span class="s2">"urn:x-nmos:format:video"</span>
+<span class="p">}))</span>
+</code></pre>
+<p>Put a <code>source</code> in the <code>sources</code> store</p>
+<h3 id='parameters-10'>Parameters</h3>
+<p>See <a href="#model-source">Source</a> model</p>
+<h3 id='return-14'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Sender</span> <span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span>
+</code></pre>
+<p>Returns same <code>source</code> that was put. See <a href="#model-source">Source</a> Model.</p>
+<h2 id='getsources'>getSources()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getSources</span><span class="p">()</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getSources</span><span class="p">([</span>
+  <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span>
+<span class="p">])</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getSources</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one or more Sources from the store.</p>
+<h3 id='parameters-11'>Parameters</h3>
+<p><code>getSources()</code> accepts either a string or array of strings to return specific Sources. If no parameter provided, returns all sources on the store.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Source to return</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>[string]</td>
+<td>Array of UUIDs to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-15'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+    <span class="na">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+    <span class="na">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+    <span class="na">caps</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+    <span class="na">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+    <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+    <span class="na">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="na">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+    <span class="na">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Returns an array of Sources. See <a href="#model-source">Source</a> model</p>
+<h2 id='getsource'>getSource()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getSource</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one Source from the store.</p>
+<h3 id='parameters-12'>Parameters</h3>
+<p>Requires UUID to return</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Source to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-16'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+<p>Returns a single Source. See <a href="#model-source">Source</a> model</p>
+<h2 id='deletesource'>deleteSource()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">deleteSource</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Delete a Source from the store</p>
+<h3 id='parameters-13'>Parameters</h3>
+<p>Requires UUID to delete</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Source to delete</td>
+</tr>
+</tbody></table>
+<h3 id='return-17'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
+</code></pre>
+<p>Returns ID of the deleted Source as a String</p>
+<h2 id='putflow'>putFlow()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">putFlow</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Flow</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s1">'Video Flow'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"This is the first Video flow"</span><span class="p">,</span>
+  <span class="na">source_id</span><span class="p">:</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="na">flow_type</span><span class="p">:</span> <span class="s2">"video"</span><span class="p">,</span>
+  <span class="na">video</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">frame_width</span><span class="p">:</span> <span class="mi">1920</span><span class="p">,</span>
+    <span class="na">frame_height</span><span class="p">:</span> <span class="mi">1080</span><span class="p">,</span>
+    <span class="na">interlace_mode</span><span class="p">:</span> <span class="s2">"interlaced_tff"</span><span class="p">,</span>
+    <span class="na">colorspace</span><span class="p">:</span> <span class="s2">"BT709"</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+<p>Put a <code>flow</code> in the <code>flows</code> store</p>
+<h3 id='parameters-14'>Parameters</h3>
+<p>See <a href="#model-flow">Flow</a> model</p>
+<h3 id='return-18'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Flow</span> <span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:135367354'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Flow'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">grain_rate</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">source_id</span><span class="p">:</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">parents</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+  <span class="nx">frame_width</span><span class="p">:</span> <span class="mi">1920</span><span class="p">,</span>
+  <span class="nx">frame_height</span><span class="p">:</span> <span class="mi">1080</span><span class="p">,</span>
+  <span class="nx">interlace_mode</span><span class="p">:</span> <span class="s1">'interlaced_tff'</span><span class="p">,</span>
+  <span class="nx">colorspace</span><span class="p">:</span> <span class="s1">'BT709'</span><span class="p">,</span>
+  <span class="nx">transfer_characteristics</span><span class="p">:</span> <span class="s1">'SDR'</span><span class="p">,</span>
+  <span class="nx">media_type</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">components</span><span class="p">:</span> <span class="kc">null</span> <span class="p">}</span>
+</code></pre>
+<p>Returns same <code>flow</code> that was put. See <a href="#model-flow">Flow</a> Model.</p>
+<h2 id='getflows'>getFlows()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getFlows</span><span class="p">()</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getFlows</span><span class="p">([</span>
+  <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span>
+<span class="p">])</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getFlows</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one or more Flows from the store.</p>
+<h3 id='parameters-15'>Parameters</h3>
+<p><code>getFlows()</code> accepts either a string or array of strings to return specific Flows. If no parameter provided, returns all flows on the store.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Flow to return</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>[string]</td>
+<td>Array of UUIDs to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-19'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+    <span class="na">version</span><span class="p">:</span> <span class="s1">'1567947806:135367354'</span><span class="p">,</span>
+    <span class="na">label</span><span class="p">:</span> <span class="s1">'Video Flow'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+    <span class="na">caps</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">grain_rate</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="na">source_id</span><span class="p">:</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+    <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+    <span class="na">parents</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+    <span class="na">frame_width</span><span class="p">:</span> <span class="mi">1920</span><span class="p">,</span>
+    <span class="na">frame_height</span><span class="p">:</span> <span class="mi">1080</span><span class="p">,</span>
+    <span class="na">interlace_mode</span><span class="p">:</span> <span class="s1">'interlaced_tff'</span><span class="p">,</span>
+    <span class="na">colorspace</span><span class="p">:</span> <span class="s1">'BT709'</span><span class="p">,</span>
+    <span class="na">transfer_characteristics</span><span class="p">:</span> <span class="s1">'SDR'</span><span class="p">,</span>
+    <span class="na">media_type</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="na">components</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Returns an array of Flows. See <a href="#model-flow">Flow</a> model</p>
+<h2 id='getflow'>getFlow()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getFlow</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one Flow from the store.</p>
+<h3 id='parameters-16'>Parameters</h3>
+<p>Requires UUID to return</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Flow to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-20'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:135367354'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Flow'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">grain_rate</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">source_id</span><span class="p">:</span> <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">parents</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+  <span class="nx">frame_width</span><span class="p">:</span> <span class="mi">1920</span><span class="p">,</span>
+  <span class="nx">frame_height</span><span class="p">:</span> <span class="mi">1080</span><span class="p">,</span>
+  <span class="nx">interlace_mode</span><span class="p">:</span> <span class="s1">'interlaced_tff'</span><span class="p">,</span>
+  <span class="nx">colorspace</span><span class="p">:</span> <span class="s1">'BT709'</span><span class="p">,</span>
+  <span class="nx">transfer_characteristics</span><span class="p">:</span> <span class="s1">'SDR'</span><span class="p">,</span>
+  <span class="nx">media_type</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">components</span><span class="p">:</span> <span class="kc">null</span>
+<span class="p">}</span>
+</code></pre>
+<p>Returns a single Flow. See <a href="#model-flow">Flow</a> model</p>
+<h2 id='deleteflow'>deleteFlow()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">deleteFlow</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Delete a Flow from the store</p>
+<h3 id='parameters-17'>Parameters</h3>
+<p>Requires UUID to delete</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Flow to delete</td>
+</tr>
+</tbody></table>
+<h3 id='return-21'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
+</code></pre>
+<p>Returns ID of the deleted Flow as a String</p>
+<h2 id='putsender'>putSender()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">putFlow</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Sender</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s1">'Audio Sender'</span><span class="p">,</span>
+  <span class="na">flow_id</span><span class="p">:</span> <span class="s2">"44d55a36-b553-42cc-bff1-e451df0e40c1"</span><span class="p">,</span>
+  <span class="na">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s2">"9cc73ed0-d601-4efe-b974-949de6ae584d"</span><span class="p">,</span>
+  <span class="na">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="s2">"en0"</span><span class="p">]</span>
+<span class="p">}))</span>
+</code></pre>
+<p>Put a <code>sender</code> in the <code>senders</code> store</p>
+<h3 id='parameters-18'>Parameters</h3>
+<p>See <a href="#model-sender">Sender</a> model</p>
+<h3 id='return-22'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Sender</span> <span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span>
+</code></pre>
+<p>Returns same <code>sender</code> that was put. See <a href="#model-sender">Sender</a> Model.</p>
+<h2 id='getsenders'>getSenders()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getSenders</span><span class="p">()</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getSenders</span><span class="p">([</span>
+  <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span>
+<span class="p">])</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getSenders</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one or more Senders from the store.</p>
+<h3 id='parameters-19'>Parameters</h3>
+<p><code>getSenders()</code> accepts either a string or array of strings to return specific Senders. If no parameter provided, returns all senders on the store.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Sender to return</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>[string]</td>
+<td>Array of UUIDs to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-23'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+    <span class="na">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+    <span class="na">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+    <span class="na">caps</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+    <span class="na">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+    <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+    <span class="na">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="na">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+    <span class="na">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Returns an array of Senders. See <a href="#model-sender">Sender</a> model</p>
+<h2 id='getsender'>getSender()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getSender</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one Sender from the store.</p>
+<h3 id='parameters-20'>Parameters</h3>
+<p>Requires UUID to return</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Sender to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-24'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'3620614c-929f-4fec-b59d-74763c397ece'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136110405'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Video Sender'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">flow_id</span><span class="p">:</span> <span class="s1">'44d55a36-b553-42cc-bff1-e451df0e40c1'</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">manfiest_href</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span>
+</code></pre>
+<p>Returns a single Sender. See <a href="#model-sender">Sender</a> model</p>
+<h2 id='deletesender'>deleteSender()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">deleteSender</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Delete a Sender from the store</p>
+<h3 id='parameters-21'>Parameters</h3>
+<p>Requires UUID to delete</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Sender to delete</td>
+</tr>
+</tbody></table>
+<h3 id='return-25'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
+</code></pre>
+<p>Returns ID of the deleted Sender as a String</p>
+<h2 id='putreceiver'>putReceiver()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">putReceiver</span><span class="p">(</span><span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Receiver</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s1">'Receiver 1'</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="na">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="na">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="s2">"en0"</span><span class="p">],</span>
+  <span class="na">receiver_type</span><span class="p">:</span> <span class="s2">"video"</span><span class="p">,</span>
+  <span class="na">caps</span><span class="p">:</span> <span class="p">[</span><span class="s2">"video/raw"</span><span class="p">]</span>
+<span class="p">}))</span>
+</code></pre>
+<p>Put a <code>receiver</code> in the <code>receivers</code> store</p>
+<h3 id='parameters-22'>Parameters</h3>
+<p>See <a href="#model-receiver">Receiver</a> model</p>
+<h3 id='return-26'>Return</h3>
+<blockquote>
+<p>Example return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="nx">Receiver</span> <span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'a8f61658-47ad-4212-ab5a-8a659e500ab9'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136616679'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Receiver 1'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>Returns same <code>receiver</code> that was put. See <a href="#model-receiver">Receiver</a> Model.</p>
+<h2 id='getreceivers'>getReceivers()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getReceivers</span><span class="p">()</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getReceivers</span><span class="p">([</span>
+  <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="s1">'ed5ef4b3-6740-4db3-95f5-c907dd84916d'</span><span class="p">,</span>
+  <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span>
+<span class="p">])</span>
+
+<span class="nx">store</span><span class="p">.</span><span class="nx">getReceivers</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one or more Receivers from the store.</p>
+<h3 id='parameters-23'>Parameters</h3>
+<p><code>getReceivers()</code> accepts either a string or array of strings to return specific Receivers. If no parameter provided, returns all receivers on the store.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Receiver to return</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>[string]</td>
+<td>Array of UUIDs to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-27'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">id</span><span class="p">:</span> <span class="s1">'a8f61658-47ad-4212-ab5a-8a659e500ab9'</span><span class="p">,</span>
+    <span class="na">version</span><span class="p">:</span> <span class="s1">'1567947806:136616679'</span><span class="p">,</span>
+    <span class="na">label</span><span class="p">:</span> <span class="s1">'Receiver 1'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+    <span class="na">caps</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+    <span class="na">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+    <span class="na">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+    <span class="na">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+    <span class="na">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre>
+<p>Returns an array of Receivers. See <a href="#model-receiver">Receiver</a> model</p>
+<h2 id='getreceiver'>getReceiver()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getReceiver</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Get one Receiver from the store.</p>
+<h3 id='parameters-24'>Parameters</h3>
+<p>Requires UUID to return</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Receiver to return</td>
+</tr>
+</tbody></table>
+<h3 id='return-28'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="s1">'a8f61658-47ad-4212-ab5a-8a659e500ab9'</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="s1">'1567947806:136616679'</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="s1">'Receiver 1'</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nb">Array</span><span class="p">],</span>
+  <span class="nx">format</span><span class="p">:</span> <span class="s1">'urn:x-nmos:format:video'</span><span class="p">,</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="p">[</span><span class="nb">Object</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+<p>Returns a single Receiver. See <a href="#model-receiver">Receiver</a> model</p>
+<h2 id='deletereceiver'>deleteReceiver()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">deleteReceiver</span><span class="p">(</span><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">)</span>
+</code></pre>
+<p>Delete a Receiver from the store</p>
+<h3 id='parameters-25'>Parameters</h3>
+<p>Requires UUID to delete</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>uuid</td>
+<td>string</td>
+<td>UUID of a single Receiver to delete</td>
+</tr>
+</tbody></table>
+<h3 id='return-29'>Return</h3>
+<blockquote>
+<p>Example Return</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
+</code></pre>
+<p>Returns ID of the deleted Receiver as a String</p>

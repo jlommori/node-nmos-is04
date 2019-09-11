@@ -1,166 +1,34 @@
-/* Copyright 2016 Streampunk Media Ltd.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+const express = require('express')
+const bodyparser = require('body-parser')
+const mdns = require('mdns')
+const http = require('http')
+const EventEmitter = require('events')
+const _ = require ('lodash')
+const model = require('../model/')
+let util = require('./Util.js')
 
-    http://www.apache.org/licenses/LICENSE-2.0
+class RegistrationAPI extends EventEmitter {
+  constructor(params) {
+    super()
+    this.app = express()
+    this.server = null
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+    this.address = params.address ? params.address.match(/(^.+)(?=:)/g) : '0.0.0.0'
+    this.port = params.address ? params.address.match(/:(.+)/g)[0].slice(1) : '3000'
 
-var express = require('express');
-var immutable = require('seamless-immutable');
-var bodyparser = require('body-parser');
-var Node = require('../model/Node.js');
-var Device = require('../model/Device.js');
-var Source = require('../model/Source.js');
-var Sender = require('../model/Sender.js');
-var Receiver = require('../model/Receiver.js');
-var Flow = require('../model/Flow.js');
-var uuid = require('uuid');
-var mdns = require('mdns-js');
-var NodeStore = require('./NodeStore.js');
-var Promise = require('promise');
-const EventEmitter = require('events');
-var util = require('util');
+    if (!params.store) throw("Store is required to create this Registration API")
+    this.store = params.store
+    this.nodeHealth = {}
+    this.healthCheckInterval = null
 
-var knownResourceTypes = ['node', 'device', 'flow', 'source', 'receiver', 'sender'];
+    this.mdns = {
+      server: null,
+      hostname: params.hostname ? params.hostname : 'nmos_reg',
+      priority: params.priority ? params.priority : 100
+    }
 
-function RegistrationAPI (port, store, serviceName, pri, iface) {
-  EventEmitter.call(this);
-  var app = express();
-  var server = null;
-  var api = this;
-  if (!pri || Number(pri) !== pri || pri % 1 !== 0) pri = 100;
-  if (!serviceName || typeof serviceName !== 'string') serviceName = 'ledger_reg';
-  if (!iface) iface = '0.0.0.0';
-
-  var storePromise = Promise.resolve(store);
-
-  var nodeHealth = {};
-  var mdnsService = null;
-
-  /**
-   * Returns the port that this Registration API is configured to use.
-   * @return {Number} Port for this node API.
-   */
-  this.getPort = function () {
-    return port;
-  }
-
-
-
-  /**
-   * Replace the [store]{@link NodeStore} set for this API.
-   * @param {NodeStore} replacementStore Store to use to replace the current one.
-   * @return {(Error|null)}  Error if a problem, otherwise null for success.
-   * @deprecated Use putResource and deleteResource instead.
-   */
-  this.setStore = function (replacementStore) {
-    if (!validStore(replacementStore))
-      return new Error('The given replacement store is not valid.');
-    store = replacementStore;
-    return null;
-  }
-
-  function nameToCamel (n) {
-    if (n.toLowerCase().endsWith('s')) n = n.slice(0, -1);
-    return n.length > 0 ? n.substring(0, 1).toUpperCase() +
-      n.substring(1).toLowerCase() : '';
-  }
-
-  /**
-   * Create or update a resource (node, device, source, flow, sender, receiver)
-   * in the underlying [store]{@link NodeStore} of this node API. Calls to this
-   * methods are serialized into a chain of promises.
-   *
-   * Note that the underlying store may preform referential integrity checks on
-   * the resources and so the order in which they are created is important.
-   * @param  {[type]}   resource Resource to be created or updated
-   * @param  {Function=} cb      Optional callback - node style - with error as the
-   *                             first argument and the put resource as the second.
-   * @return {Promise}           When no callback is provided, a promise that
-   *                             resolves to the put resource.
-   */
-  this.putResource = function (resource, cb) {
-    var nextState = storePromise.then(function (store) {
-      var putFn = Promise.denodeify(store['put' + resource.constructor.name]);
-      return putFn.call(store, resource);
-    });
-    storePromise = nextState.then(function (ro) {
-      store = ro.store;
-      if (ro.previous) {
-        api.emit('modify', {
-          topic : ro.topic,
-          data : [ { path : ro.path, pre : ro.previous, post : ro.resource }]
-        });
-      } else {
-        api.emit('modify', {
-          topic : ro.topic,
-          data : [ { path : ro.path, post : ro.resource }]
-        });
-      }
-      return store;
-    }, function (e) { console.error(e); });
-    return nextState.then(function (ro) { return ro.resource; }).nodeify(cb);
-  }
-
-  /**
-   * Delete a resource (node, device, source, flow, sender, receiver) in the underlying
-   * [store]{@link NodeStore} of this node API. Calls to this method resolve at
-   * the end of the current chain of serialized store-changing promises.
-   * @param  {string}    id   UUID identifier of the resource to be deleted.
-   * @param  {string}    type Type of the resource to delete. Unlike with
-   *                          getResource, the type must be provided.
-   * @param  {Function=} cb   Optional callback - node style - with any error
-   *                          as the first argument and the identifier of the
-   *                          deleted resource as the second.
-   * @return {Promise}        When no callback is provided, a promise that resolves
-   *                          to the identifier of the resource being deleted.
-   */
-  this.deleteResource = function (id, type, cb) {
-    var nextState = storePromise.then(function (store) {
-      return new Promise(function (resolve, reject) {
-        if (type && typeof type === 'string' &&
-             knownResourceTypes.some(function (x) {
-               return type.toLowerCase() === x; }) ) {
-          var deleteFn = Promise.denodeify(store['delete' + nameToCamel(type)]);
-          resolve(deleteFn.call(store, id));
-        } else { reject(new Error('Type is not a string or a known type.')) };
-      });
-    });
-    storePromise = nextState.then(function (ro) {
-      store = ro.store;
-      api.emit('modify', {
-        topic : ro.topic,
-        data : [ { path : ro.path, pre : ro.previous } ]
-      });
-      return store;
-    });
-    return nextState.then(function (ro) { return ro.id; }).nodeify(cb);
-  }
-
-  /**
-   * Returns the [store]{@link NodeStore} used to produce results.
-   * @return {NodeStore} Store backing this Registration API.
-   */
-  this.getStore = function () {
-    return store;
-  }
-
-  /**
-   * Initialise the Registration APIs routing table.
-   * @return {NodeAPI} Returns this object with the routing table initialised and
-   *                   ready to {@link NodeAPI#start}.
-   */
-  this.init = function() {
-
-    app.use(function(req, res, next) {
+    this.app.use((req, res, next) => {
       // TODO enhance this to better supports CORS
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Methods", "GET, PUT, POST, HEAD, OPTIONS, DELETE");
@@ -168,125 +36,136 @@ function RegistrationAPI (port, store, serviceName, pri, iface) {
       res.header("Access-Control-Max-Age", "3600");
 
       if (req.method == 'OPTIONS') {
-        res.sendStatus(200);
+        res.send(200);
       } else {
         next();
       }
     });
 
-    app.use(bodyparser.json());
+    this.app.use(bodyparser.json());
 
-    app.get('/', function (req, res) {
-      res.json(['x-nmos/']);
+    this.app.get('/', function (req, res) {
+      res.status(200).json(['x-nmos/']);
     });
 
-    app.get('/x-nmos/', function (req, res) {
-      res.json(['registration/']);
+    this.app.get('/x-nmos/', function (req, res) {
+      res.status(200).json(['registration/']);
     });
 
-    app.get('/x-nmos/registration/', function (req, res) {
-      res.json([ "v1.0/" ]);
+    this.app.get('/x-nmos/registration/', function (req, res) {
+      res.status(200).json([ "v1.0/", "v1.2" ]);
     });
 
-    var rapi = express();
-    // Mount all other methods at this base path
-    app.use('/x-nmos/registration/v1.0/', rapi);
+    let base = '/x-nmos/registration/:version'
 
-    rapi.get('/', function (req, res) {
-      res.json([
+    this.app.get(`${base}/`, (req, res) => {
+      res.status(200).json([
         "resource/",
         "health/"
-      ]);
-    });
+      ])
+    })
 
-    rapi.post('/resource', function (req, res, next) {
-      var input = req.body;
-      var value = null;
+    this.app.post(`${base}/resource`, async (req, res) => {
+      let type = req.body.type
+      let resource = new model[_.startCase(type)](req.body.data)
+
+      let exists = Object.keys(this.store[type+'s']).indexOf(resource.id) >= 0
+      await this.putResource(type, resource)
+
+      if (type == "node") this.nodeHealth[resource.id] = Date.now() / 1000
+
+      res.status(exists ? 200 : 201)
+      res.set('Location', `/x-nmos/registration/${req.params.version}/resource/${type}s/${resource.id}`)
+      res.json(resource)
+    })
+
+    this.app.delete(`${base}/resource/:type/:id`, async (req, res) => {
+      let exists = Object.keys(this.store[req.params.type]).indexOf(req.params.id) >= 0
+
+      if (exists) {
+        await this.deleteResource(req.params.type.slice(0,-1), req.params.id)
+        delete this.nodeHealth[resource.id]
+
+        res.send(204)
+      } else {
+        res.status(404).json({
+          code: 404,
+          error: "Requested resource does not exist on the store",
+          debug: this.store[req.params.type]
+        })
+      }
+    })
+
+    //Used for debug only
+    this.app.get(`${base}/resource/:type/:id`, async (req, res) => {
       try {
-        switch (input.type) {
-          case 'node':
-            value = Node.prototype.parse(input.data);
-            break;
-          case 'source':
-            value = Source.prototype.parse(input.data);
-            break;
-          case 'sender':
-            value = Sender.prototype.parse(input.data);
-            break;
-          case 'receiver':
-            value = Receiver.prototype.parse(input.data);
-            break;
-          case 'device':
-            value = Device.prototype.parse(input.data);
-            break;
-          case 'flow':
-            value = Flow.prototype.parse(input.data);
-            break;
-          default:
-            break;
-        }
-      } catch (e) {
-        e.status = 400;
-        return next(e);
+        let resource = await this.store['get' + _.startCase(req.params.type.slice(0,-1))](id)
+        res.status(200)
+        res.json(resource)
+      } catch (err) {
+        res.status(404)
+        res.json(err)
       }
+    })
 
-      if (value) {
-        var exists = Object.keys(store[input.type + 's']).indexOf(value.id) >= 0;
-        this.putResource(value, function (err, r) {
-          if (err) return next(err);
-          res.status(exists ? 200 : 201);
-          res.set('Location', `/x-nmos/registration/v1.0/resource/${input.type}s/${r.id}`);
-          res.json(r);
-        }.bind(this));
+
+    //HEARTBEATS
+    this.app.post(`${base}/health/nodes/:id`, async (req, res) => {
+      if (!util.validUUID(req.params.id)) {
+        res.status(404)
+        res.json({
+          code: 404,
+          error: "Give Node ID is not a valid UUID",
+          debug: {
+            uuid: id
+          }
+        })
+      } else if (!this.nodeHealth[req.params.id]) {
+        res.status(404)
+        res.json({
+          code: 404,
+          error: "Node Health check received but node doesn't exist in the store",
+          debug: this.nodeHealth
+        })
       } else {
-        next(NodeStore.prototype.statusError(400,
-          `Unable to process resource with given type '${input.type}'.`));
+        let prevTime = this.nodeHealth[req.params.id]
+        let diff = (Date.now() / 1000) - prevTime
+        this.nodeHealth[req.params.id] = Date.now() / 1000
+        this.emit("heartbeat", {
+          status: "received",
+          message: "Hearbeat received from Node",
+          data: {
+            id: req.params.id,
+            timeSeconds: Date.now() / 1000,
+            timeSinceLast: diff,
+            time: Date.now()
+          }
+        })
+        res.json({ health: Date.now() / 1000 })
       }
-    }.bind(this));
+    })
 
-    rapi.delete('/resource/:resourceType/:resourceID', function (req, res, next) {
-      this.deleteResource(req.params.resourceID, req.params.resourceType.slice(0, -1),
-          function (e, r) {
-        if (e) return next(e);
-        res.status(204).end();
-      }.bind(this));
-    }.bind(this));
-
-    // Show a registered resource (for debug use only)
-    rapi.get('/resource/:resourceType/:resourceID', function (req, res, next) {
-      var type = 'get' + req.params.resourceType.slice(0, 1).toUpperCase() +
-        req.params.resourceType.slice(1, -1);
-      this.getStore().constructor.prototype[type].call(this.getStore(),
-          req.params.resourceID, function (e, item) {
-        if (e) return next(e);
-        res.json(item);
-      }.bind(this));
-    }.bind(this));
-
-    rapi.post('/health/nodes/:nodeID', function (req, res, next) {
-      if (req.params.nodeID.match(
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/) == null) {
-        return next(NodeStore.prototype.statusError(400,
-          'Given node identifier path parameter on health check is not a valid UUID.'));
-      }
-      if (!nodeHealth[req.params.nodeID])
-        return next(NodeStore.prototype.statusError(404,
-          `Node health check received but no node with ID ${req.params.nodeID} is registered.`));
-      var healthNow = Date.now() / 1000|0;
-      nodeHealth[req.params.nodeID] = healthNow;
-      res.json({ health : `${healthNow}` });
-    });
-
-    // Show a Node's health (for debug use only)
-    rapi.get('/health/nodes/:nodeID', function (req, res, next) {
-      if (nodeHealth.hasOwnProperty(req.param.nodeID)) {
-        res.json({ health : nodeHealth[req.param.nodeID] });
+    this.app.get(`${base}/health/nodes/:id`, async (req, res) => {
+      if (!util.validUUID(req.params.id)) {
+        res.status(404)
+        res.json({
+          code: 404,
+          error: "Given Node ID is not a valid UUID",
+          debug: { uuid: id }
+        })
+      } else if (!this.nodeHealth[req.params.id]) {
+        res.status(404)
+        res.json({
+          code: 404,
+          error: "Node Health check recieved but node doesn't exist in the store",
+          debug: this.nodeHealth
+        })
       } else {
-        next();
+        res.json({ health: this.nodeHealth[req.params.id]})
       }
-    });
+    })
 
-    app.use(function (err, req, res, next) {
+    this.app.use(function (err, req, res, next) {
       if (err.status) {
         res.status(err.status).json({
           code: err.status,
@@ -302,7 +181,7 @@ function RegistrationAPI (port, store, serviceName, pri, iface) {
       }
     });
 
-    app.use(function (req, res, next) {
+    this.app.use(function (req, res, next) {
       res.status(404).json({
           code : 404,
           error : `Could not find the requested resource '${req.path}'.`,
@@ -310,45 +189,77 @@ function RegistrationAPI (port, store, serviceName, pri, iface) {
         });
     });
 
-    return this;
   }
 
-  /**
-   * Start the Registration API server. If the port is already in use, the server
-   * will be closed.
-   * @param  {RegistrationAPI~trackStatus=} cb Optional callback to track API starting
-   *                                           or errors.
-   * @return {RegistrationAPI}                 This object with an asynchronous request
-   *                                           to start the server.
-   */
-  this.start = function (cb) {
-    server = app.listen(port, iface, function (e) {
-      var host = server.address().address;
-      var port = server.address().port;
+  getPort() {
+    return this.port
+  }
+
+  getStore() {
+    return this.store
+  }
+
+  async putResource(type, data) {
+    await this.store['put' + _.startCase(type)](data)
+    this.emit('modify', {
+      type: type,
+      message: `${type} ID ${data.id} has been modified`,
+      data: data
+    })
+  }
+
+  async deleteResource(type, id) {
+    await this.store['delete' + _.startCase(type)](id)
+    this.emit('modify', {
+      type: type,
+      message: `${type} ID ${id} has been deleted from the store`
+    })
+  }
+
+  start() {
+    this.server = this.app.listen(this.port, this.address, (e) => {
+      let host = this.server.address().address
+      let port = this.server.address().port
+
       if (e) {
         if (e.code == 'EADDRINUSE') {
           console.log('Address http://%s:%s already in use.', host, port);
           server.close();
         };
-        if (cb) cb(e);
       } else {
         console.log('Streampunk media ledger registration service running at http://%s:%s',
           host, port);
-        if (cb) cb();
       };
-    });
+    })
 
-    this.startMDNS();
+    this.startMDNS()
+    this.startHealthCheck()
 
-    return this;
+    this.emit('started', {
+      message: 'NMOS IS-04 Registration Server Started'
+    })
   }
 
-  this.startHealthCheck = function() {
+  stop() {
+    if (this.server) {
+      this.server.close(() => {
+        this.stopMDNS()
+        this.server = null
+        clearInterval(this.healthCheckInterval)
+      })
+
+      this.emit('stopped', {
+        message: "NMOS IS-04 Registration Server has been stopped"
+      })
+    }
+  }
+
+  startHealthCheck() {
     this.healthCheckInterval = setInterval(() => {
-      const curTime = Date.now() / 1000|0;
-      Object.keys(nodeHealth).map(nodeID => {
-        if (nodeHealth[nodeID] < curTime - 12) {
-          console.log(`Node has failed health check - removing: ${nodeID} - node: ${nodeHealth[nodeID]}, now: ${curTime}`);
+      const curTime = Date.now() / 1000;
+      Object.keys(this.nodeHealth).map(nodeID => {
+        if (this.nodeHealth[nodeID] < curTime - 12) {
+          console.log(`Node has failed health check - removing: ${nodeID} - node: ${this.nodeHealth[nodeID]}, now: ${curTime}`);
           this.getStore().getDevices({ node_id: nodeID }, (err, ds) => {
             if (err) console.log(err);
             ds.forEach(d => {
@@ -374,131 +285,58 @@ function RegistrationAPI (port, store, serviceName, pri, iface) {
             });
           });
           this.deleteResource(nodeID, 'node', err => { if (err) console.log(err); });
-          delete nodeHealth[nodeID];
+          delete this.nodeHealth[nodeID];
         }
       });
     }, 12000);
   }
 
-  this.startMDNS = function startMDNS() {
-    // mdns.excludeInterface('0.0.0.0');
-    if (serviceName === 'none') return; // For acceptance testing of REST API
-    mdnsService = mdns.createAdvertisement(mdns.tcp('nmos-registration'), port, {
-      name : serviceName,
-      txt : {
-        pri : pri
+  startMDNS() {
+    this.mdns.server = mdns.createAdvertisement(mdns.tcp('nmos-register'), parseInt(this.port), {
+      name: this.mdns.hostname,
+      txtRecord: {
+        pri: this.mdns.priority
       }
-    });
+    })
 
-    mdnsService.start();
-    this.startHealthCheck();
+    this.mdns.server.start()
 
-    process.on('SIGINT', function () {
-      if (mdnsService) {
-        mdnsService.stop();
-        console.log('Stopped ledger registration service MDNS.');
+    this.emit('mdns', {
+      status: 'advert_start',
+      message: 'mDNS Advertisement has been started',
+      data: {
+        hostname: this.mdns.hostname,
+        txtRecord: {
+          pri: this.mdns.priority
+        }
       }
+    })
 
-      clearInterval(this.healthCheckInterval);
+    process.on("SIGINT", () => {
+
+      this.stopMDNS()
+
+      clearInterval(this.healthCheckInterval)
       setTimeout(function onTimeout() {
         process.exit();
-      }, 1000);
-    });
+      }, 1000)
+    })
   }
 
-  /**
-   * Stop the server running the Registration API.
-   * @param  {RegistrationAPI~trackStatus=} cb Optional callback that tracks when the
-   *                                           server is stopped.
-   * @return {RegistrationAPI}                 This object with an asynchronous request
-   *                                           to stop the server.
-   */
-  this.stop = function(cb) {
-    var error = '';
-    if (server) {
-      server.close(function () {
-        this.stopMDNS(cb);
-        server = null;
-      }.bind(this));
+  stopMDNS() {
+    if (this.mdns.server) {
+      this.mdns.server.stop()
+      this.mdns.server = null
+
+      this.emit('mdns', {
+        status: 'advert_stop',
+        message: 'mDNS Advertisement has been stopped',
+      })
     } else {
-      this.stopMDNS(function (e) {
-        if (e) cb(new Error(e.message +
-          'Server is not set for this Registration API and so cannot be stopped.'));
-        else
-          cb(new Error('Server is not set for this Registration API and so cannot be stopped.'));
-        server = null;
-      }.bind(this));
+      throw("mDNS Advertisment not set for this Registration API, so it cannot be stopped")
     }
-
-    return this;
   }
 
-  this.stopMDNS = function (cb) {
-    if (serviceName === 'none') return cb(); // For REST service acceptance testing
-    if (mdnsService) {
-      mdnsService.stop();
-      mdnsService.networking.stop();
-      mdnsService = null;
-      clearInterval(this.healthCheckInterval);
-      if (cb) cb();
-    } else {
-      if (cb) cb(new Error('MDNS advertisement is not set for this Registration API and so cannot be stopped.'));
-    }
-
-    return this;
-  }
-
-  // Check the validity of a port
-  function validPort(port) {
-    return port &&
-      Number(port) === port &&
-      port % 1 === 0 &&
-      port > 0;
-  }
-
-  // Check that a store has a sufficient contract for this API
-  function validStore(store) {
-    return store &&
-      typeof store.getNodes === 'function' &&
-      typeof store.getNode === 'function' &&
-      typeof store.getDevices === 'function' &&
-      typeof store.getDevice === 'function' &&
-      typeof store.getSources === 'function' &&
-      typeof store.getSource === 'function' &&
-      typeof store.getSenders === 'function' &&
-      typeof store.getSender === 'function' &&
-      typeof store.getReceivers === 'function' &&
-      typeof store.getReceiver === 'function' &&
-      typeof store.getFlows === 'function' &&
-      typeof store.getFlow === 'function';
-      // TODO add more of the required methods ... or drop this check?
-  }
-
-  this.on('modify', function (ev) {
-    if (ev.topic === '/nodes/') {
-      if (ev.data[0].pre && ev.data[0].post) return; // modification
-      if (ev.data[0].post) {
-        nodeHealth[ev.data[0].path] = Date.now() / 1000|0;
-        // console.log('*** Adding node to track health', Object.keys(nodeHealth));
-      } else if (ev.data[0].pre) {
-        delete nodeHealth[ev.data[0].path];
-        // console.log('*** Removing node to track health', Object.keys(nodeHealth));
-      } else return;
-    }
-  });
-
-  if (!validPort(port))
-    return new Error('Port is not a valid value. Must be an integer greater than zero.');
-  if (!validStore(store))
-    return new Error('Store does not have a sufficient contract.');
 }
-
-/**
- * Function called when server has been started or stopped.
- * @callback {RegistrationAPI~trackStatus}
- * @param {Error=} Set if an error occurred when starting or stopping the server.
- */
-
-util.inherits(RegistrationAPI, EventEmitter);
 
 module.exports = RegistrationAPI;

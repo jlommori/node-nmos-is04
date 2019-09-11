@@ -18,7 +18,6 @@
  * recent changes goes backwards for the node involved. If yes, through a
  * conflict.
  */
-var immutable = require('seamless-immutable');
 var NodeStore = require('./NodeStore.js');
 var util = require('./Util.js');
 var Node = require('../model/Node.js');

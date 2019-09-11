@@ -23,8 +23,6 @@ const os = require('os')
 let util = require('./Util.js')
 const axios = require('axios')
 
-const knownResourceTypes = ['device', 'flow', 'source', 'receiver', 'sender'];
-
 /**
  * @typedef {Object} generic_ret
  * @property {string} message Event Message
