@@ -27,6 +27,7 @@ var Receiver = require('../model/Receiver.js');
 var Sender = require('../model/Sender.js');
 var Flow = require('../model/Flow.js');
 const _ = require('lodash')
+const EventEmitter = require('events');
 /**
  * In RAM store representing the state of a [node]{@link Node} or regstry.
  * Immutable value.
@@ -35,8 +36,9 @@ const _ = require('lodash')
  * @param {Node} self Node this store is to represent.
  * @return {(NodeRAMStore|Error)} New node RAM store or an error.
  */
-class NodeRAMStore {
+class NodeRAMStore extends EventEmitter {
   constructor() {
+    super()
     // console.log('NodeRAMStore init', self)
     /**
      * Details of this [node]{@link Node}. For use by the node API, not when in
@@ -167,6 +169,11 @@ class NodeRAMStore {
 
     this.self = node
     this.putNode(node)
+    this.emit('modify', {
+      topic: '/self',
+      event: 'put',
+      data: node
+    })
     return node
   }
 
@@ -176,17 +183,13 @@ class NodeRAMStore {
     if (!util.checkValidAndForward(node, this.nodes, 'node')) { throw util.statusError(400, "Object is not valid") }
 
     this.nodes[node.id] = node
+    this.emit('modify', {
+      topic: '/nodes',
+      event: 'put',
+      data: node
+    })
     return node
   }
-
-  //Query
-  //  [
-  //    {
-  //      attr: "id",
-  //      val: "xxxxxx-xxxxxx-xxxxxxxx-xxxxx-xxx"
-  //     }
-  //  ]
-  //
 
   getNodes() {
     return this.nodes
@@ -206,6 +209,11 @@ class NodeRAMStore {
     }
 
     delete this.nodes[id]
+    this.emit('modify', {
+      topic: '/nodes',
+      event: 'delete',
+      data: id
+    })
     return id
   }
 
@@ -226,6 +234,11 @@ class NodeRAMStore {
     }
 
     this.devices[device.id] = device
+    this.emit('modify', {
+      topic: '/devices',
+      event: 'put',
+      data: device
+    })
     return device
   }
 
@@ -261,11 +274,12 @@ class NodeRAMStore {
     }
 
     delete this.devices[id]
-    return {
-      topic: "/deleteDevice",
-      path: '',
-      new: this.devices
-    }
+    this.emit('modify', {
+      topic: '/devices',
+      event: 'delete',
+      data: id
+    })
+    return id
   }
 
   //Sources
@@ -276,6 +290,11 @@ class NodeRAMStore {
     if (!_.has(this.devices, source.device_id)) { throw util.statusError(400, "Source device_id must be a Device on this Node") }
 
     this.sources[source.id] = source
+    this.emit('modify', {
+      topic: '/sources',
+      event: 'put',
+      data: source
+    })
     return source
   }
 
@@ -303,11 +322,12 @@ class NodeRAMStore {
     if (!_.has(this.sources, (o) => { o.id == id })) { throw util.statusError(400, "Source not present on this node") }
 
     delete this.sources[id]
-    return {
-      topic: "/deleteSource",
-      path: '',
-      new: this.sources
-    }
+    this.emit('modify', {
+      topic: '/sources',
+      event: 'delete',
+      data: id
+    })
+    return id
   }
 
   //Flows
@@ -319,6 +339,11 @@ class NodeRAMStore {
     if (!_.has(this.sources, flow.source_id)) { throw util.statusError(400, "Flow source_id must be a Source on this Node") }
 
     this.flows[flow.id] = flow
+    this.emit('modify', {
+      topic: '/flows',
+      event: 'put',
+      data: flow
+    })
     return flow
   }
 
@@ -346,11 +371,12 @@ class NodeRAMStore {
     if (!_.has(this.flows, (o) => { o.id == id })) { throw util.statusError(400, "Flow not present on this node") }
 
     delete this.flows[id]
-    return {
-      topic: "/deleteFlow",
-      path: '',
-      new: this.flows
-    }
+    this.emit('modify', {
+      topic: '/flows',
+      event: 'delete',
+      data: id
+    })
+    return id
   }
 
   //Senders
@@ -364,6 +390,11 @@ class NodeRAMStore {
     }
 
     this.senders[sender.id] = sender
+    this.emit('modify', {
+      topic: '/senders',
+      event: 'put',
+      data: sender
+    })
     return sender
   }
 
@@ -390,11 +421,12 @@ class NodeRAMStore {
     if (!_.has(this.senders, (o) => { o.id == id })) { throw util.statusError(400, "Sender not present on this node") }
 
     delete this.senders[id]
-    return {
-      topic: "/deleteSender",
-      path: '',
-      new: this.senders
-    }
+    this.emit('modify', {
+      topic: '/senders',
+      event: 'delete',
+      data: id
+    })
+    return id
   }
 
   //Receivers
@@ -405,6 +437,11 @@ class NodeRAMStore {
     if (!_.has(this.devices, receiver.device_id)) { throw util.statusError(400, "Receiver device_id must be a Device on this Node")}
 
     this.receivers[receiver.id] = receiver
+    this.emit('modify', {
+      topic: '/receivers',
+      event: 'put',
+      data: receiver
+    })
     return receiver
   }
 
@@ -431,11 +468,12 @@ class NodeRAMStore {
     if (!_.has(this.receivers, (o) => { o.id == id })) { throw util.statusError(400, "Sender not present on this node") }
 
     delete this.receivers[id]
-    return {
-      topic: "/deleteReceiver",
-      path: '',
-      new: this.receivers
-    }
+    this.emit('modify', {
+      topic: '/receivers',
+      event: 'delete',
+      data: id
+    })
+    return id
   }
 }
 
