@@ -53,7 +53,7 @@ class Device extends Resource {
       "urn:x-nmos:device:generic"
     ]
     if (arguments.length === 0 || type === null || type === undefined) {
-      return "urn:x-nmos:device:pipeline"
+      return "urn:x-nmos:device:generic"
     } else if (_.indexOf(type_enum, type) != -1) {
       return type
     } else {

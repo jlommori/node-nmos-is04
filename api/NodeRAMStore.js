@@ -179,24 +179,21 @@ class NodeRAMStore {
     return node
   }
 
-  getNodes(query) {
-    console.log('getNodes', query)
-    if (typeof query == "object") {
-      _.each(query, (q) => {
-        if (!util.validUUID(q)) {
-          throw util.statusError(400, "Query array much contain only UUIDs")
-        }
-      })
-      return _.filter(this.nodes, (o) => { return _.includes(query, o.id)})
-    } else if (typeof query == "string") {
-      return this.getNode(query)
-    } else {
-      return this.nodes
-    }
+  //Query
+  //  [
+  //    {
+  //      attr: "id",
+  //      val: "xxxxxx-xxxxxx-xxxxxxxx-xxxxx-xxx"
+  //     }
+  //  ]
+  //
+
+  getNodes() {
+    return this.nodes
   }
 
   getNode(id) {
-    console.log('getNode', id)
+    // console.log('getNode', id)
     if (!id || !util.validUUID(id) || typeof id != "string") { throw util.statusError(400, "Query must be a valid UUID") }
 
     return _.find(this.nodes, (o) => { return o.id == id })
@@ -234,18 +231,20 @@ class NodeRAMStore {
 
   getDevices(query) {
     // console.log('getDevices', query)
-    if (typeof query == "object") {
-      _.each(query, (q) => {
-        if (!util.validUUID(q)) {
-          throw util.statusError(400, "Query array must contain only UUIDs")
-        }
-      })
-      return _.filter(this.devices, (o) => { return _.includes(query, o.id)})
-    } else if (typeof query == "string") {
-      return this.getDevice(query)
-    } else {
-      return this.devices
-    }
+    // if (typeof query == "object") {
+    //   _.each(query, (q) => {
+    //     if (!util.validUUID(q)) {
+    //       throw util.statusError(400, "Query array must contain only UUIDs")
+    //     }
+    //   })
+    //   return _.filter(this.devices, (o) => { return _.includes(query, o.id)})
+    // } else if (typeof query == "string") {
+    //   return this.getDevice(query)
+    // } else {
+    //   return this.devices
+    // }
+    //
+    return this.devices
   }
 
   getDevice(id) {
@@ -281,15 +280,16 @@ class NodeRAMStore {
   }
 
   getSources(query) {
-    if (typeof query == "object") {
-      _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-
-      return _.filter(this.sources, (o) => { return _.includes(query, o.id) })
-    } else if (typeof query == "string") {
-      return this.getSource(query)
-    } else {
-      return this.sources
-    }
+    // if (typeof query == "object") {
+    //   _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
+    //
+    //   return _.filter(this.sources, (o) => { return _.includes(query, o.id) })
+    // } else if (typeof query == "string") {
+    //   return this.getSource(query)
+    // } else {
+    //   return this.sources
+    // }
+    return this.sources
   }
 
   getSource(id) {
@@ -322,15 +322,17 @@ class NodeRAMStore {
     return flow
   }
 
-  getFlows(query) {
-    if (typeof query == "object") {
-      _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-      return _.filter(this.flows, (o) => { return _.includes(query, o.id) })
-    } else if (typeof query == "string") {
-      return this.getFlow(query)
-    } else {
-      return this.flows
-    }
+  getFlows(q) {
+    // if (q) {
+    //   let arr = _.values(this.flows)
+    //   console.log('parse', parse(q))
+    //   return rql.executeQuery(q, {}, arr)
+    //   // _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
+    //   // return _.filter(this.flows, (o) => { return _.includes(query, o.id) })
+    // } else {
+    //   return this.flows
+    // }
+    return this.flows
   }
 
   getFlow(id) {
@@ -366,14 +368,15 @@ class NodeRAMStore {
   }
 
   getSenders(query) {
-    if (typeof query == "object") {
-      _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-      return _.filter(this.senders, (o) => { return _.includes(query, o.id) })
-    } else if (typeof query == "string") {
-      return this.getSender(query)
-    } else {
-      return this.senders
-    }
+    // if (typeof query == "object") {
+    //   _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
+    //   return _.filter(this.senders, (o) => { return _.includes(query, o.id) })
+    // } else if (typeof query == "string") {
+    //   return this.getSender(query)
+    // } else {
+    //   return this.senders
+    // }
+    return this.senders
   }
 
   getSender(id) {
@@ -406,14 +409,15 @@ class NodeRAMStore {
   }
 
   getReceivers(query) {
-    if (typeof query == "object") {
-      _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-      return _.filter(this.receivers, (o) => { return _.includes(query, o.id) })
-    } else if (typeof query == "string") {
-      return this.getReceiver(query)
-    } else {
-      return this.receivers
-    }
+    // if (typeof query == "object") {
+    //   _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
+    //   return _.filter(this.receivers, (o) => { return _.includes(query, o.id) })
+    // } else if (typeof query == "string") {
+    //   return this.getReceiver(query)
+    // } else {
+    //   return this.receivers
+    // }
+    return this.receivers
   }
 
   getReceiver(id) {

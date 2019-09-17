@@ -92,8 +92,8 @@ function isType(x, type) {
  * @param  {string} message Error message describing the error.
  * @return {Error}          The newly created error with status set.
  */
-function statusError(status, message) {
-  var e = new Error(message);
+function statusError(status, message, err) {
+  var e = new Error(message, err);
   e.status = status;
   return e;
 }

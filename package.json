@@ -9,6 +9,7 @@
     "express": "^4.16.2",
     "lodash": "^4.17.15",
     "mdns": "^2.5.1",
+    "rql": "^0.3.3",
     "uuid": "^2.0.1"
   },
   "devDependencies": {

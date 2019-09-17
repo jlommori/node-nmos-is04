@@ -53,7 +53,8 @@ class Resource {
       var currentNanos = nanoSeconds(process.hrtime());
       var difference = currentNanos - loadHRTime;
       var microDate = loadDate + Math.floor(difference / 1e6);
-      return Math.floor(microDate / 1e3) + ":" + (difference % 1e9);
+      let ver = Math.floor(microDate / 1e3) + ":" + (difference % 1e9)
+      return ver;
     }
     else return version;
   }
@@ -78,7 +79,7 @@ class Resource {
 
   static generateTags(tags) {
     if (arguments.length === 0 || tags === null || tags === undefined)
-      return [];
+      return {};
     else return tags;
   }
 
