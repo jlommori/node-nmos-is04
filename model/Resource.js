@@ -1,7 +1,7 @@
 
 // Describes the resource_base on which all other resources are built
 
-var uuid = require('uuid');
+var uuid = require('uuid/v4');
 // var immutable = require('seamless-immutable');
 var Capabilities = require('./Capabilities.js')
 // var Transports = require('./Transports.js');
@@ -44,7 +44,7 @@ class Resource {
 
   static generateID(id) {
     if (arguments.length === 0 || id === null || id === undefined)
-      return uuid.v4();
+      return uuid();
     else return id;
   }
 

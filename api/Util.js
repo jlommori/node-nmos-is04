@@ -118,6 +118,21 @@ function validUUID(id) {
   return id.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)
 }
 
+function generateVersion() {
+  function nanoSeconds(hrtime) {
+    return hrtime[0] * 1e9 + hrtime[1];
+  }
+
+  let loadHRTime = nanoSeconds(process.hrtime());
+  let loadDate = Date.now();
+
+  let currentNanos = nanoSeconds(process.hrtime());
+  let difference = currentNanos - loadHRTime;
+  let microDate = loadDate + Math.floor(difference / 1e6);
+  let ver = Math.floor(microDate / 1e3) + ":" + (difference % 1e9)
+  return ver;
+}
+
 var util = {
   extractVersions : extractVersions,
   compareVersions : compareVersions,
@@ -126,7 +141,8 @@ var util = {
   isType: isType,
   statusError: statusError,
   checkValidAndForward: checkValidAndForward,
-  validUUID: validUUID
+  validUUID: validUUID,
+  generateVersion: generateVersion
 };
 
 module.exports = util;

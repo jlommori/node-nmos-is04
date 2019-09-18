@@ -182,12 +182,20 @@ class NodeRAMStore extends EventEmitter {
     if (!util.isType(node, 'Node')) { throw util.statusError(400, "Object is not of the Node type") }
     if (!util.checkValidAndForward(node, this.nodes, 'node')) { throw util.statusError(400, "Object is not valid") }
 
-    this.nodes[node.id] = node
-    this.emit('modify', {
-      topic: '/nodes',
-      event: 'put',
-      data: node
-    })
+    if (!this.nodes[node.id]) {
+      this.nodes[node.id] = node
+      this.emit('create', {
+        topic: '/nodes',
+        data: node
+      })
+    } else {
+      this.emit('modify', {
+        topic: '/nodes',
+        data: node
+      })
+      this.nodes[node.id] = node
+    }
+
     return node
   }
 
@@ -208,12 +216,11 @@ class NodeRAMStore extends EventEmitter {
       throw util.statusError(400, "Query must be a valid UUID")
     }
 
-    delete this.nodes[id]
-    this.emit('modify', {
+    this.emit('delete', {
       topic: '/nodes',
-      event: 'delete',
-      data: id
+      data: this.nodes[id]
     })
+    delete this.nodes[id]
     return id
   }
 
@@ -233,12 +240,19 @@ class NodeRAMStore extends EventEmitter {
       }
     }
 
-    this.devices[device.id] = device
-    this.emit('modify', {
-      topic: '/devices',
-      event: 'put',
-      data: device
-    })
+    if (!this.devices[device.id]) {
+      this.devices[device.id] = device
+      this.emit('create', {
+        topic: '/devices',
+        data: device
+      })
+    } else {
+      this.emit('modify', {
+        topic: '/devices',
+        data: device
+      })
+      this.devices[device.id] = device
+    }
     return device
   }
 
@@ -273,12 +287,11 @@ class NodeRAMStore extends EventEmitter {
       throw util.statusError(400, "Query must be a valid UUID")
     }
 
-    delete this.devices[id]
-    this.emit('modify', {
+    this.emit('delete', {
       topic: '/devices',
-      event: 'delete',
-      data: id
+      data: this.devices[id]
     })
+    delete this.devices[id]
     return id
   }
 
@@ -289,12 +302,19 @@ class NodeRAMStore extends EventEmitter {
     if (!util.checkValidAndForward(source, this.sources, 'Source')) { throw util.statusError(400, "Object is not valid") }
     if (!_.has(this.devices, source.device_id)) { throw util.statusError(400, "Source device_id must be a Device on this Node") }
 
-    this.sources[source.id] = source
-    this.emit('modify', {
-      topic: '/sources',
-      event: 'put',
-      data: source
-    })
+    if (!this.sources[source.id]) {
+      this.sources[source.id] = source
+      this.emit('create', {
+        topic: '/sources',
+        data: source
+      })
+    } else {
+      this.emit('modify', {
+        topic: '/sources',
+        data: source
+      })
+      this.sources[source.id] = source
+    }
     return source
   }
 
@@ -321,12 +341,12 @@ class NodeRAMStore extends EventEmitter {
     if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
     if (!_.has(this.sources, (o) => { o.id == id })) { throw util.statusError(400, "Source not present on this node") }
 
-    delete this.sources[id]
+
     this.emit('modify', {
-      topic: '/sources',
-      event: 'delete',
-      data: id
+      topic: '/delete',
+      data: this.sources[id]
     })
+    delete this.sources[id]
     return id
   }
 
@@ -338,12 +358,19 @@ class NodeRAMStore extends EventEmitter {
     if (!_.has(this.devices, flow.device_id)) { throw util.statusError(400, "Flow device_id must be a Device on this Node") }
     if (!_.has(this.sources, flow.source_id)) { throw util.statusError(400, "Flow source_id must be a Source on this Node") }
 
-    this.flows[flow.id] = flow
-    this.emit('modify', {
-      topic: '/flows',
-      event: 'put',
-      data: flow
-    })
+    if (!this.flows[flow.id]) {
+      this.flows[flow.id] = flow
+      this.emit('create', {
+        topic: '/flows',
+        data: flow
+      })
+    } else {
+      this.emit('modify', {
+        topic: '/flows',
+        data: flow
+      })
+      this.flows[flow.id] = flow
+    }
     return flow
   }
 
@@ -370,12 +397,12 @@ class NodeRAMStore extends EventEmitter {
     if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
     if (!_.has(this.flows, (o) => { o.id == id })) { throw util.statusError(400, "Flow not present on this node") }
 
-    delete this.flows[id]
-    this.emit('modify', {
+
+    this.emit('delete', {
       topic: '/flows',
-      event: 'delete',
-      data: id
+      data: this.flows[id]
     })
+    delete this.flows[id]
     return id
   }
 
@@ -389,12 +416,20 @@ class NodeRAMStore extends EventEmitter {
       if (!_.has(this.flows, sender.flow_id)) { throw util.statusError(400, "Sender flow_id must be a Flow on this Node")}
     }
 
-    this.senders[sender.id] = sender
-    this.emit('modify', {
-      topic: '/senders',
-      event: 'put',
-      data: sender
-    })
+
+    if (!this.senders[sender.id]) {
+      this.senders[sender.id] = sender
+      this.emit('create', {
+        topic: '/senders',
+        data: sender
+      })
+    } else {
+      this.emit('modify', {
+        topic: '/senders',
+        data: sender
+      })
+      this.senders[sender.id] = sender
+    }
     return sender
   }
 
@@ -420,12 +455,11 @@ class NodeRAMStore extends EventEmitter {
     if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
     if (!_.has(this.senders, (o) => { o.id == id })) { throw util.statusError(400, "Sender not present on this node") }
 
-    delete this.senders[id]
-    this.emit('modify', {
+    this.emit('delete', {
       topic: '/senders',
-      event: 'delete',
-      data: id
+      data: this.senders[id]
     })
+    delete this.senders[id]
     return id
   }
 
@@ -436,12 +470,19 @@ class NodeRAMStore extends EventEmitter {
     if (!util.checkValidAndForward(receiver, this.receivers, 'Receiver')) { throw util.statusError(400, 'Object is not valid')}
     if (!_.has(this.devices, receiver.device_id)) { throw util.statusError(400, "Receiver device_id must be a Device on this Node")}
 
-    this.receivers[receiver.id] = receiver
-    this.emit('modify', {
-      topic: '/receivers',
-      event: 'put',
-      data: receiver
-    })
+    if (!this.receivers[receiver.id]) {
+      this.receivers[receiver.id] = receiver
+      this.emit('create', {
+        topic: '/receivers',
+        data: receiver
+      })
+    } else {
+      this.receivers[receiver.id] = receiver
+      this.emit('modify', {
+        topic: '/receivers',
+        data: receiver
+      })
+    }
     return receiver
   }
 
@@ -467,12 +508,11 @@ class NodeRAMStore extends EventEmitter {
     if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
     if (!_.has(this.receivers, (o) => { o.id == id })) { throw util.statusError(400, "Sender not present on this node") }
 
-    delete this.receivers[id]
-    this.emit('modify', {
+    this.emit('delete', {
       topic: '/receivers',
-      event: 'delete',
-      data: id
+      data: this.receivers[id]
     })
+    delete this.receivers[id]
     return id
   }
 }
