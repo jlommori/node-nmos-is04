@@ -1,81 +1,45 @@
-/* Copyright 2016 Streampunk Media Ltd.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+const express = require('express')
+const bodyparser = require('body-parser')
+const mdns = require('mdns')
+const http = require('http')
+const uuid = require('uuid/v4')
+const WebSocket = require('ws')
+const EventEmitter = require('events')
+const _ = require('lodash')
+const models = require('../model/')
+let util = require('./Util.js')
 
-    http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+class QueryAPI extends EventEmitter {
+  constructor(params) {
+    super()
+    this.app = express()
+    this.server = null
+    this.id = uuid()
 
-// QueryAPI implementation
+    this.ws = {
+      server: null,
+      webSockets: {},
+      filter: {},
+      queue: {
+        lastSent: null,
+        items: []
+      }
+    }
 
-var express = require('express');
-var immutable = require('seamless-immutable');
-var NodeStore = require('./NodeStore.js');
-var mdns = require('mdns-js');
-var bodyparser = require('body-parser');
-var uuid = require('uuid');
-var WebSocketServer = require('ws').Server;
-var os = require('os');
-var url = require('url');
-const EventEmitter = require('events');
-var util = require('util');
+    this.address = params.address ? params.address.match(/(^.+)(?=:)/g) : '0.0.0.0'
+    this.port = params.address ? params.address.match(/:(.+)/g)[0].slice(1) : '3002'
 
-var pathEnum = ["/nodes", "/devices", "/sources", "/flows", "/senders", "/receivers"];
-var firstExtNetIf = require('./Util.js').getFirstExternalNetworkInterface().address;
+    if (!params.store) throw("Store is required to create this Registration API")
+    this.store = params.store
 
-function QueryAPI (port, storeFn, serviceName, pri, modifyEvents, iface) {
-  EventEmitter.call(this);
-  var app = express();
-  var server = null;
-  var wss = null;
-  var mdnsService = null;
-  var webSockets = {};
-  var wsFilter = {};
-  var instanceUUID = uuid.v4();
-  if (!pri || Number(pri) !== pri || pri % 1 !== 0) pri = 100;
-  if (!serviceName || typeof serviceName !== 'string') serviceName = 'ledger_query';
-  var api = this;
+    this.mdns = {
+      server: null,
+      hostname: params.hostname ? params.hostname : 'nmos_query'
+    }
 
-  if (modifyEvents && typeof modifyEvents === 'object' &&
-       modifyEvents.on && typeof modifyEvents.on === 'function') { // Pass it on
-    modifyEvents.on('modify', function (ev) {
-      api.emit('modify', ev);
-    });
-  };
-  if (!iface) iface = '0.0.0.0';
-  if (iface !== '0.0.0.0') firstExtNetIf = iface;
-
-  function setPagingHeaders(res, total, pageOf, pages, size) {
-    if (pageOf) res.set('X-Streampunk-Ledger-PageOf', pageOf.toString());
-    if (size) res.set('X-Streampunk-Ledger-Size', size.toString());
-    if (pages) res.set('X-Streampunk-Ledger-Pages', pages.toString());
-    if (total) res.set('X-Streampunk-Ledger-Total', total.toString());
-    return res;
-  }
-
-  /**
-   * Returns the port that this Query API is configured to use.
-   * @return {Number} Port for this node API.
-   */
-  this.getPort = function () {
-    return port;
-  }
-
-  /**
-   * Initialise the Query APIs routing table.
-   * @return {NodeAPI} Returns this object with the routing table initialised and
-   *                   ready to {@link NodeAPI#start}.
-   */
-  this.init = function() {
-
-    app.use(function(req, res, next) {
+    this.app.use((req, res, next) => {
       // TODO enhance this to better supports CORS
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Methods", "GET, PUT, POST, HEAD, OPTIONS, DELETE");
@@ -87,28 +51,26 @@ function QueryAPI (port, storeFn, serviceName, pri, modifyEvents, iface) {
       } else {
         next();
       }
+    })
+
+    this.app.use(bodyparser.json());
+
+    this.app.get('/', function (req, res) {
+      res.status(200).json(['x-nmos/']);
     });
 
-    app.use(bodyparser.json());
-
-    app.get('/', function (req, res) {
-      res.json(['x-nmos/']);
+    this.app.get('/x-nmos/', function (req, res) {
+      res.status(200).json(['query/']);
     });
 
-    app.get('/x-nmos/', function (req, res) {
-      res.json(['query/']);
+    this.app.get('/x-nmos/query/', function (req, res) {
+      res.status(200).json([ "v1.0/", "v1.2" ]);
     });
 
-    app.get('/x-nmos/query/', function (req, res) {
-      res.json([ "v1.0/" ]);
-    });
+    let base = '/x-nmos/query/:version'
 
-    var qapi = express();
-    // Mount all other methods at this base path
-    app.use('/x-nmos/query/v1.0/', qapi);
-
-    qapi.get('/', function (req, res) {
-      res.json([
+    this.app.get(`${base}/`, (req, res) => {
+      res.status(200).json([
         "subscriptions/",
         "flows/",
         "sources/",
@@ -116,437 +78,712 @@ function QueryAPI (port, storeFn, serviceName, pri, modifyEvents, iface) {
         "devices/",
         "senders/",
         "receivers/"
-      ]);
-    });
+      ])
+    })
 
-    // List nodes
-    qapi.get('/nodes', function (req, res, next) {
-      storeFn().getNodes(req.query,
-        function (err, nodes, total, pageOf, pages, size) {
-          if (err) next(err);
-          else setPagingHeaders(res, total, pageOf, pages, size).json(nodes);
-      });
-    });
-
-    // Get single node
-    qapi.get('/nodes/:id', function (req, res, next) {
-      storeFn().getNode(req.params.id, function (err, node) {
-        if (err) next(err);
-        else res.json(node);
-      });
-    });
-
-    // List devices
-    qapi.get('/devices/', function (req, res, next) {
-      storeFn().getDevices(req.query,
-          function (err, devices, total, pageOf, pages, size) {
-        if (err) next(err);
-        else setPagingHeaders(res, total, pageOf, pages, size).json(devices);
-      });
-    });
-
-    // Get a single device
-    qapi.get('/devices/:id', function (req, res, next) {
-      storeFn().getDevice(req.params.id, function (err, device) {
-        if (err) next(err);
-        else res.json(device);
-      });
-    });
-
-    // List sources
-    qapi.get('/sources/', function (req, res, next) {
-      storeFn().getSources(req.query,
-          function(err, sources, total, pageOf, pages, size) {
-        if (err) next(err);
-        else setPagingHeaders(res, total, pageOf, pages, size).json(sources);
-      });
-    });
-
-    // Get a single source
-    qapi.get('/sources/:id', function (req, res, next) {
-      storeFn().getSource(req.params.id, function (err, source) {
-        if (err) next(err);
-        else res.json(source);
-      });
-    });
-
-    // List flows
-    qapi.get('/flows/', function (req, res, next) {
-      storeFn().getFlows(req.query,
-          function (err, flows, total, pageOf, pages, size) {
-        if (err) next(err);
-        else setPagingHeaders(res, total, pageOf, pages, size).json(flows);
-      });
-    });
-
-    // Get a single flow
-    qapi.get('/flows/:id', function (req, res, next) {
-      storeFn().getFlow(req.params.id, function (err, flow) {
-        if (err) next(err);
-        else res.json(flow);
-      });
-    });
-
-    // List senders
-    qapi.get('/senders/', function (req, res, next) {
-      storeFn().getSenders(req.query,
-         function(err, senders, pageOf, size, page, total) {
-        if (err) next(err);
-        else setPagingHeaders(res, total, pageOf, page, size).json(senders);
-      });
-    });
-
-    // Get a single sender
-    qapi.get('/senders/:id', function (req, res, next) {
-      storeFn().getSender(req.params.id, function (err, sender) {
-        if (err) next(err);
-        else res.json(sender);
-      });
-    });
-
-    // List receivers
-    qapi.get('/receivers/', function (req, res, next) {
-      storeFn().getReceivers(req.query,
-          function(err, receivers, total, pageOf, pages, size) {
-        if (err) next(err);
-        else setPagingHeaders(res, total, pageOf, pages, size).json(receivers);
-      });
-    });
-
-    // Get a single receiver
-    qapi.get('/receivers/:id', function (req, res, next) {
-      storeFn().getReceiver(req.params.id, function(err, receiver) {
-        if (err) next(err);
-        else res.json(receiver);
-      });
-    });
-
-    qapi.post('/subscriptions', function (req, res, next) {
-      var sub = req.body;
-      if (!sub.max_update_rate_ms)
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription must have a 'max_update_rate_ms' property."));
-      if (typeof sub.persist === 'undefined')
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription must have a 'persist' property."));
-      if (!sub.resource_path)
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription must have a 'resource_path' property."));
-      if (!sub.params)
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription must have a 'params' property, although this may be an " +
-          "empty object."));
-      if (typeof sub.max_update_rate_ms !== 'number' ||
-           sub.max_update_rate_ms < 0)
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription parameter 'max_update_rate_ms' should be a number and " +
-          "greater than or equal to 0."));
-      sub.max_update_rate_ms = sub.max_update_rate_ms | 0;
-      if (typeof sub.persist !== 'boolean')
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription parameter 'persist' must be a boolean."));
-      if (typeof sub.resource_path !== 'string' ||
-           pathEnum.indexOf(sub.resource_path) === -1)
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription parameter 'resource_path' must be one of " +
-          pathEnum.toString() + "."));
-      if (typeof sub.params !== 'object')
-        return next(NodeStore.prototype.statusError(400,
-          "Subscription parameter 'params' must be an object."));
-      sub.id = uuid.v4();
-      sub.ws_href = `ws://${firstExtNetIf}:${server.address().port}/` +
-        `ws/?uid=${sub.id}`;
-      if (webSockets[sub.id]) {
-        webSockets[sub.id] = sub;
-        res.status(200).json(sub);
-      } else {
-        console.log("Creating subscription.", sub.ws_href);
-        webSockets[sub.id] = sub;
-        res.status(201).json(sub);
-      };
-    });
-
-    qapi.get('/subscriptions', function (req, res, next) {
-      res.json(Object.keys(webSockets).map(function (k) {
-        return webSockets[k];
-      }));
-    });
-
-    qapi.get('/subscriptions/:id', function (req, res, next) {
-      if (!webSockets[req.params.id])
-        return next(NodeStore.prototype.statusError(404,
-          `A web socket subscription with id '${req.params.id}' is now known ` +
-          `to this query API.`));
-      res.json(webSockets[req.params.id]);
-    });
-
-    qapi.delete('/subscriptions/:id', function (req, res, next) {
-      if (!webSockets[req.params.id])
-        return next(NodeStore.prototype.statusError(404,
-          `On delete, a web socket subscription with id '${req.params.id}' is now known ` +
-          `to this query API.`));
-      if (webSockets[req.params.id].persist === false) {
-        return next(NodeStore.prototype.statusError(403,
-          `A delete request is made against a non-persistent subscription with ` +
-          `id '${req.params.id}' that is ` +
-          `managed by the Query API and cannot be deleted.`));
-      }
-      delete webSockets[req.params.id];
-      res.status(204).end();
-    });
-
-    app.use(function (err, req, res, next) {
-      if (err.status) {
-        res.status(err.status).json({
-          code: err.status,
-          error: (err.message) ? err.message : 'Internal server error. No message available.',
-          debug: (err.stack) ? err.stack : 'No stack available.'
-        });
-      } else {
-        res.status(500).json({
-          code: 500,
-          error: (err.message) ? err.message : 'Internal server error. No message available.',
-          debug: (err.stack) ? err.stack : 'No stack available.'
+    this.app.post(`${base}/subscriptions`, (req, res) => {
+      if (!req.body.resource_path || !req.body.params) {
+        res.status(400).json({
+          code: 400,
+          error: "resource_path and params are required to establish a websocket subscription"
         })
       }
-    });
 
-    app.use(function (req, res, next) {
-      res.status(404).json({
-          code : 404,
-          error : `Could not find the requested resource '${req.path}'.`,
-          debug : req.path
-        });
-    });
+      if (!_.includes(types, req.body.resource_path.substring(1))) {
+        res.status(400).json({
+          code: 400,
+          error: "Requested resource_path not valid"
+        })
+      }
 
-    return this;
+      if (typeof req.body.params != 'object') {
+        res.status(400).json({
+          code: 400,
+          error: "params must be an object"
+        })
+      }
+
+      if (!req.body.max_update_rate_ms) {
+        req.body.max_update_rate_ms = 100
+      }
+
+      if (!req.body.persist) {
+        req.body.persist = false
+      }
+
+      let ws, code
+
+      if (_.size(this.ws.webSockets) > 0) {
+        _.each(this.ws.webSockets, (webSocket) => {
+          if (webSocket.resource_path == req.body.resource_path && _.isEqual(webSocket.params, req.body.params)) {
+            console.log('websocket request already exists')
+
+            webSocket.max_update_rate_ms = req.body.max_update_rate_ms
+            webSocket.persist = req.body.persist
+
+            if (req.body.secure) webSocket.secure = req.body.secure
+            if (req.body.authorization) webSocket.authorization = req.body.authorization
+
+            ws = {
+              id: webSocket.id,
+              ws_href: `ws://${this.address}:${this.port}/ws/?uid=${webSocket.id}`,
+              max_update_rate_ms: webSocket.max_update_rate_ms,
+              persist: webSocket.persist,
+              secure: webSocket.secure,
+              resource_path: webSocket.resource_path,
+              params: webSocket.params,
+              authorization: webSocket.authorization,
+              items: {}
+            }
+
+            this.ws.webSockets[ws.id] = ws
+            code = 200
+
+          } else {
+            let id = uuid()
+
+            let max_update_rate_ms = req.body.max_update_rate_ms
+            let persist = req.body.persist
+
+            let secure, authorization
+
+            if (req.body.secure) secure = req.body.secure
+            if (req.body.authorization) authorization = req.body.authorization
+
+            ws = {
+              id: id,
+              ws_href: `ws://${this.address}:${this.port}/ws/?uid=${id}`,
+              max_update_rate_ms: max_update_rate_ms,
+              persist: persist,
+              secure: secure,
+              resource_path: req.body.resource_path,
+              params: req.body.params,
+              authorization: authorization,
+              items: {}
+            }
+
+            this.ws.webSockets[ws.id] = ws
+            this.ws.webSockets[ws.id].clients = []
+
+            code = 201
+          }
+        })
+      } else {
+        let id = uuid()
+
+        let max_update_rate_ms = req.body.max_update_rate_ms
+        let persist = req.body.persist
+
+        let secure, authorization
+
+        if (req.body.secure) secure = req.body.secure
+        if (req.body.authorization) authorization = req.body.authorization
+
+        ws = {
+          id: id,
+          ws_href: `ws://${this.address}:${this.port}/ws/?uid=${id}`,
+          max_update_rate_ms: max_update_rate_ms,
+          persist: persist,
+          secure: secure,
+          resource_path: req.body.resource_path,
+          params: req.body.params,
+          authorization: authorization,
+          items: {}
+        }
+
+        this.ws.webSockets[ws.id] = ws
+        this.ws.webSockets[ws.id].clients = []
+
+        code = 201
+      }
+
+      req.query = ws.params
+
+      this.basicQuery(req, this.store[`get${_.upperFirst(req.body.resource_path.substring(1))}`]()).then((r) => {
+        _.each(r.data, (data) => {
+          this.ws.webSockets[ws.id].items[data.id] = data
+        })
+
+        let ret = {
+          id: this.ws.webSockets[ws.id].id,
+          ws_href: this.ws.webSockets[ws.id].ws_href,
+          max_update_rate_ms: this.ws.webSockets[ws.id].max_update_rate_ms,
+          persist: this.ws.webSockets[ws.id].persist,
+          resource_path: this.ws.webSockets[ws.id].resource_path,
+          params: this.ws.webSockets[ws.id].params
+        }
+
+        res.header("Location", `/x-nmos/query/${req.params.version}/subscriptions/${ws.id}`)
+        res.status(code).json(ret)
+      })
+    })
+
+    //Used for debug only
+    this.app.get(`${base}/subscriptions`, (req, res, next) => {
+      res.status(200).json(this.ws.webSockets)
+    })
+
+    this.app.get(`${base}/subscriptions/:id`, (req, res, next) => {
+      if (!util.validUUID(req.params.id)) {
+        res.status(400).json({
+          code: 400,
+          error: "Provided UUID is not a valid"
+        })
+      }
+
+      if (!this.ws.webSockets[req.params.id]) {
+        res.status(404).json({
+          code: 404,
+          error: "Provided UUID is not a current subscription"
+        })
+      }
+
+      let r = _.cloneDeep(this.ws.webSockets[req.params.id])
+      delete r.clients
+
+      res.status(200).json(r)
+    })
+
+    this.app.delete(`${base}/subscriptions/:id`, (req, res, next) => {
+      if (!util.validUUID(req.params.id)) {
+        res.status(400).json({
+          code: 400,
+          error: "Provided UUID is not a valid"
+        })
+      }
+
+      if (!this.ws.webSockets[req.params.id]) {
+        res.status(404).json({
+          code: 404,
+          error: "Provided UUID is not a current subscription"
+        })
+      }
+
+      if (!this.ws.webSockets[req.params.id].persist) {
+        res.status(403).json({
+          code: 403,
+          error: "Provided Subscription is not persistent therefore lifecycle is managed by the QueryAPI"
+        })
+      }
+
+      delete this.ws.webSockets[req.params.id]
+      res.sendStatus(204)
+    })
+
+    let types = ["nodes", "devices", "flows", "sources", "senders", "receivers"]
+
+    this.app.get(`${base}/:type`, (req, res, next) => {
+      if (_.includes(types, req.params.type)) {
+        this.basicQuery(req, this.store[`get${_.upperFirst(req.params.type)}`]()).then((r) => {
+          res.header("Link", r.headers.link)
+          res.header("X-Paging-Limit", r.headers.limit)
+          res.header("X-Paging-Since", r.headers.since)
+          res.header("X-Paging-Until", r.headers.until)
+          res.status(r.code).json(r.data)
+        }).catch((e) => {
+          console.log(e)
+          res.sendStatus(500)
+          // res.status(e.code).json({
+          //   code: e.code,
+          //   message: e.message
+          // })
+        })
+      } else {
+        res.status(501).json({
+          code: 501,
+          message: `Provided object type (${req.params.type}) not valid`
+        })
+      }
+
+    })
+
+    this.app.get(`${base}/:type/:id`, (req, res, next) => {
+      console.log('get :type/:id')
+      if (_.includes(types, req.params.type)) {
+        let type = req.params.type.slice(0, -1);
+        this.singleQuery(req, this.store[`get${_.upperFirst(type)}`](req.params.id)).then((r) => {
+          res.status(r.code).json(r.data)
+        }).catch((e) => {
+          res.status(e.code).json({
+            code: e.code,
+            message: e.message
+          })
+        })
+      } else {
+        res.status(501).json({
+          code: 501,
+          message: `Provided object type (${req.params.type}) not valid`
+        })
+      }
+    })
+
+    this.store.on("create", (e) => {
+      console.log('ws store create event', e)
+      if (_.size(this.ws.webSockets) > 0) {
+        _.each(this.ws.webSockets, (ws) => {
+          if (ws.resource_path == e.topic) {
+            let req = {
+              params: {},
+              query: ws.params
+            }
+
+            this.basicQuery(req, this.store[`get${_.upperFirst(ws.resource_path.substring(1))}`]()).then((results) => {
+              _.each(results.data, (r) => {
+                if (!_.hasIn(ws.items, r.id)) {
+                  this.ws.webSockets[ws.id].items[r.id] = r.id
+                  this.emit("ws_update", {
+                    id: ws.id,
+                    item: {
+                      post: r
+                    },
+                    ts: util.generateVersion()
+                  })
+                }
+              })
+            })
+          }
+        })
+      }
+    })
+
+    this.store.on("modify", (e) => {
+      console.log('ws store modify event')
+      if (_.size(this.ws.webSockets > 0)) {
+        _.each(this.ws.webSockets, (ws) => {
+          if (ws.resource_path == e.topic) {
+            let req = {
+              params: {},
+              query: ws.params
+            }
+
+            this.basicQuery(req, this.store[`get${_.upperFirst(ws.resource_path.substring(1))}`]()).then((results) => {
+              let returnIds = []
+              _.each(results.data, (r) => { return returnIds.push(r.id) })
+
+              _.each(ws.items, (item) => {
+                if (!_.includes(returnIds, item.id)) { //item was in ws.items but now is not in return, issue remove
+                  this.emit('ws_update', {
+                    id: item.id,
+                    item: {
+                      pre: item
+                    }
+                  })
+
+                  delete this.ws.webSockets[ws.id].items[item.id]
+                }
+              })
+
+              _.each(results.data, (r) => {
+                if (!_.hasIn(ws.items, r.id)) { //item does not exist in current ws items, it is new
+                  this.ws.webSockets[ws.id].items[r.id] = r
+                  this.emit('ws_update', {
+                    id: ws.id,
+                    item: {
+                      post: r
+                    }
+                  })
+                } else { //item is in the current ws.items
+                  if (e.data.id == r.id) { //check if triggering event is this id
+                    this.emit('ws_update', {
+                      id: ws.id,
+                      item: {
+                        pre: ws.items[r.id],
+                        post: r
+                      }
+                    })
+
+                    this.ws.webSockets[ws.id].items[r.id] = r
+                  }
+                }
+              })
+            })
+          }
+        })
+      }
+    })
+
+    this.store.on('delete', (e) => {
+      console.log('ws store delete event')
+      if (_.size(this.ws.webSockets > 0)) {
+        _.each(this.ws.webSockets, (ws) => {
+          if (ws.resource_path == e.topic) {
+            if (_.hasIn(ws.items, e.data.pre.id)) {
+              delete this.ws.webSockets[ws.id].items[e.data.pre.id]
+              this.emit('ws_update', {
+                id: ws.id,
+                item: {
+                  pre: e.data
+                },
+                ts: util.generateVersion()
+              })
+            }
+          }
+        })
+      }
+    })
+
   }
 
-  /**
-   * Start the Query API server. If the port is already in use, the server
-   * will be closed.
-   * @param  {QueryAPI~trackStatus=} cb Optional callback to track API starting
-   *                                    or errors.
-   * @return {QueryAPI}                 This object with an asynchronous request
-   *                                    to start the server.
-   */
-  this.start = function (cb) {
-    server = app.listen(port, iface, function (e) {
-      var host = server.address().address;
-      var port = server.address().port;
+  static downgradeCheck(ver, downgrade) {
+    let majorVer = ver.match(/(\d)/g)[0]
+    let majorDowngrade = downgrade.match(/(\d)/g)[0]
+    if (majorDowngrade != majorVer) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  static getVersions(obj, store) {
+    if (obj instanceof models.Node) {
+      return obj.api.versions[0].match(/(v\d.\d)/g)
+    } else if (obj instanceof models.Device) {
+      let node = store.getNode(obj.node_id)
+      return node.api.versions[0].match(/(v\d.\d)/g)
+    } else {
+      let device = store.getDevice(obj.device_id)
+      let node = store.getNode(device.node_id)
+      return node.api.versions[0].match(/(v\d.\d)/g)
+    }
+  }
+
+  static timeCheck(a, b) {
+    let aSec = a.match(/(\d+)/g)[0]
+    let aNano = a.match(/(\d+)/g)[1]
+    let bMin = b.match(/(\d+)/g)[0]
+    let bNano = b.match(/(\d+)/g)[1]
+
+    if (aSec > bSec) {
+      return true
+    } else if (aSec < bSec) {
+      return false
+    } else if (aSec == bSec) {
+      if (a.Nano > b.Nano || a.Nano == b.Nano) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
+  basicQuery(req, data) {
+    return new Promise((res, rej) => {
+      if (req.query['query.rql']) {
+        rej({
+          code: 501,
+          message: "RQL Queries not currently supported"
+        })
+      }
+
+      let downgrade
+      let paging = {
+        used: false
+      }
+      let headers = {}
+      if (req.query.downgrade) {
+        downgrade = req.query.downgrade
+        if (!this.constructor.downgradeCheck(req.params.version, downgrade)) {
+          rej({
+            code: 400,
+            message: "Downgrade may not be used between major versions"
+          })
+        }
+        delete req.query.downgrade
+      }
+
+      if (req.query['paging.since']) {
+        paging.since = req.query['paging.since']
+        delete req.query['paging.since']
+      }
+
+      if (req.query['paging.until']) {
+        paging.until = req.query['paging.until']
+        delete req.query['paging.until']
+      }
+
+      if (req.query['paging.limit']) {
+        if (parseInt(req.query['paging.limit']) < 101) {
+          paging.limit = parseInt(req.query['paging.limit'])
+        } else {
+          paging.limit = 100
+        }
+        delete req.query['paging.limit']
+      } else {
+        paging.limit = 100
+        delete req.query['paging.limit']
+      }
+
+      if (req.query['paging.order']) {
+        paging.order = req.query['paging.order']
+        delete req.query['paging.order']
+      }
+
+      let returnArray = []
+
+      if (_.size(req.query) == 0) {
+        _.each(data, (o) => {
+          returnArray.push(o)
+        })
+      } else {
+        _.each(req.query, (val, key) => {
+          var filtered = _.filter(data, function(o) {
+            return _.includes(_.get(o, key), val)
+          });
+
+          _.each(filtered, (obj) => {
+            returnArray.push(obj)
+          })
+        })
+      }
+
+      if (paging.since) {
+        _.each(returnArray, (obj, index) => {
+          if (!this.constructor.timeCheck(obj.version, paging.since)) {
+            returnArray.splice(index, 1)
+          }
+        })
+      }
+
+      if (paging.until) {
+        _.each(returnArray, (obj, index) => {
+          if (!this.constructor.timeCheck(paging.until, obj.version)) {
+            returnArray.splice(index, 1)
+          }
+        })
+      }
+
+      if (paging.limit) {
+        if (parseInt(paging.limit) < parseInt(_.size(returnArray))) {
+          _.each(returnArray, (obj, index) => {
+            if (index = paging.limit, index > paging.limit) {
+              returnArray.splice(index, 1)
+            }
+          })
+        }
+      }
+
+      _.each(returnArray, (obj, index) => {
+        if (req.params.version && !downgrade) {
+          if (!_.includes(this.constructor.getVersions(obj, this.store), req.params.version)) {
+            returnArray.splice(index,1)
+          }
+        }
+        //TODO: Add appropriate behavior for downgrade
+      })
+
+      headers.limit = paging.limit
+      headers.since = returnArray[0].version
+      headers.until = returnArray[(returnArray.length - 1)].version
+
+      if (paging.used) {
+
+      } else {
+        headers.link = `<${req.protocol}://${this.address}:${this.port}${req.path}?paging.since=${headers.since}&paging.limit=${headers.limit}>; rel="first", <${req.protocol}://${this.address}:${this.port}${req.path}?paging.until=${headers.until}&paging.limit=${headers.limit}>; rel="last"`
+      }
+
+      res({
+        code: 200,
+        data: returnArray,
+        headers: headers
+      })
+    })
+  }
+
+  singleQuery(req, data) {
+    return new Promise((res, rej) => {
+      let obj = data
+
+      if (obj) {
+
+        if (req.query.downgrade) {
+          if (!this.constructor.downgradeCheck(req.params.version, req.query.downgrade)) {
+            rej({
+              code: 400,
+              message: "Downgrade may not be used between major versions"
+            })
+          }
+        }
+
+        if (!_.includes(this.constructor.getVersions(obj, this.store), req.params.version)) {
+          rej({
+            code: 409,
+            message: "Node does not support requested version"
+          })
+        }
+
+        res({
+          code: 200,
+          data: obj
+        })
+
+      } else {
+        rej({
+          code: 404,
+          message: "Resource does not exist"
+        })
+      }
+    })
+  }
+
+  start() {
+    this.server = this.app.listen(this.port, this.address, (e) => {
+      var host = this.server.address().address;
+      var port = this.server.address().port;
       if (e) {
         if (e.code == 'EADDRINUSE') {
-          console.log('Address http://%s:%s already in use.', host, port);
+          console.log(`Address http://${host}:${port} already in use.`);
           server.close();
-        };
-        if (cb) cb(e);
+        } else {
+          util.statusError(400, 'start() error', err)
+        }
+
       } else {
-        console.log('Streampunk media ledger query service running at http://%s:%s',
-          host, port);
-        if (cb) cb();
+        console.log(`NMOS IS-04 Query Service running at http://${host}:${port}`);
+        this.emit('started', {
+          message: 'NMOS IS-04 Query Service started'
+        })
       };
-    });
 
-    wss = new WebSocketServer({ server : server });
-    wss.on('connection', connectWS.bind(this));
-    wss.on('error', console.error.bind(null, 'Websocket Error:'));
-
-    this.startMDNS();
-
-    return this;
+      this.startWebSockets();
+    })
   }
 
-  this.startMDNS = function startMDNS() {
-    // mdns.excludeInterface('0.0.0.0');
-    if (serviceName === 'none') return; // For REST service acceptance testing
-    mdnsService = mdns.createAdvertisement(mdns.tcp('nmos-query'), port, {
-      name : serviceName,
-      txt : {
-        pri : pri
+  startWebSockets() {
+    this.emit('ws', {
+      event: 'start',
+      message: 'webSocket server started'
+    })
+    this.ws.server = new WebSocket.Server({ port: this.port })
+
+    this.ws.server.on('connection', (ws, req) => {
+      let clientId = uuid()
+      let verified = false
+      console.log('new ws connection', clientId)
+
+      let params = (req.url.match( new RegExp("([^?=&]+)(=([^&]*))?", 'g' )) || [])
+        .reduce( function (result, each, n, every) {
+          let [key, value] = each.split('=');
+          result [key] = value;
+          return (result);
+        }, {})
+
+      if (!params.uid) {
+        console.log('ws close: no uid parameter provided')
+        ws.close(1008, "uid parameter required for websocket connection")
+      } else if (!_.hasIn(this.ws.webSockets, params.uid)) {
+        console.log('ws close: uid not found in ws.webSockets')
+        ws.close(1008, "requested websocket uid is not available on this Query instance")
+      } else {
+        verified = true
+        this.ws.webSockets[params.uid].clients.push(clientId)
+
+        let grainItems = []
+
+        _.each(this.ws.webSockets[params.uid].items, (item) => {
+          grainItems.push({
+            path: item.id,
+            post: item
+          })
+        })
+
+        let grain = {
+          grain_type: "event",
+          source_id: this.id,
+          flow_id: params.uid,
+          origin_timestamp: util.generateVersion(),
+          sync_timestamp: util.generateVersion(),
+          creation_timestamp: util.generateVersion(),
+          rate: {
+            numerator: 0,
+            denominator: 1,
+          },
+          duration: {
+            numerator: 0,
+            denominator: 1
+          },
+          grain: {
+            type: "urn:x-nmos:format:data.event",
+            topic: this.ws.webSockets[params.uid].resource_path,
+            data: grainItems
+          }
+        }
+
+        ws.send(JSON.stringify(grain))
+        console.log('webSockets', this.ws.webSockets)
       }
-    });
 
-    mdnsService.start();
+      ws.on('message', (msg) => {
+        console.log('WSS SERVER: received message', msg)
+      })
 
-    process.on('SIGINT', function () {
-      if (mdnsService) {
-        mdnsService.stop();
-        console.log('Stopping ledger query service MDNS.');
-      }
+      ws.on('close', (e) => {
+        if (verified) {
+          this.ws.webSockets[params.uid].clients.splice(this.ws.webSockets[params.uid].clients.indexOf(clientId), 1)
+          if (!this.ws.webSockets[params.uid].persist && this.ws.webSockets[params.uid].clients.length == 0) {
+            console.log('all clients disconnected and non-persistent, tearring down ws')
+            delete this.ws.webSockets[params.uid]
+          }
+        }
+        console.log('WS Close', clientId)
+        console.log('webSockets', this.ws.webSockets)
+      })
 
-      setTimeout(function onTimeout() {
-        process.exit();
-      }, 1000);
-    });
+      this.on('ws_update', (update) => {
+        console.log('ws_update', update)
+
+        let grain = {
+          grain_type: "event",
+          source_id: this.id,
+          flow_id: params.uid,
+          origin_timestamp: util.generateVersion(),
+          sync_timestamp: update.ts,
+          creation_timestamp: update.ts,
+          rate: {
+            numerator: 0,
+            denominator: 1,
+          },
+          duration: {
+            numerator: 0,
+            denominator: 1
+          },
+          grain: {
+            type: "urn:x-nmos:format:data.event",
+            topic: this.ws.webSockets[params.uid].resource_path,
+            data: null
+          }
+        }
+
+        if (!update.item.pre && update.item.post) { //item created
+          grain.grain.data = [
+            {
+              path: update.item.post.id,
+              post: update.item.post
+            }
+          ]
+        } else if (update.item.pre && update.item.post) { //item modified
+          grain.grain.data = [
+            {
+              path: update.item.pre.id,
+              pre: update.item.pre.id,
+              post: update.item.post,
+            }
+          ]
+        } else if (update.item.pre && !update.item.post) { //item deleted
+          grain.grain.data = [
+            {
+              path: update.item.pre.id,
+              pre: update.item.pre.id
+            }
+          ]
+        }
+
+        ws.send(JSON.stringify(grain))
+
+      })
+
+
+    })
   }
-
-  /**
-   * Stop the server running the Query API.
-   * @param  {QueryAPI~trackStatus=} cb Optional callback that tracks when the
-   *                                   server is stopped.
-   * @return {QueryAPI}                 This object with an asynchronous request
-   *                                   to stop the server.
-   */
-   this.stop = function(cb) {
-     var error = '';
-     if (server) {
-       server.close(function () {
-         this.stopMDNS(cb);
-         server = null;
-       }.bind(this));
-     } else {
-       this.stopMDNS(function (e) {
-         if (e) cb(new Error(e.message +
-           ' Server is not set for this Query API and so cannot be stopped.'));
-         else
-           cb(new Error('Server is not set for this Query API and so cannot be stopped.'));
-         server = null;
-       }.bind(this));
-     }
-     wss.close();
-
-     return this;
-   }
-
-   this.stopMDNS = function (cb) {
-     if (serviceName === 'none') return cb(); // For REST service acceptance testing
-     if (mdnsService) {
-       mdnsService.stop();
-       mdnsService.networking.stop();
-       mdnsService = null;
-       if (cb) cb();
-     } else {
-       if (cb) cb(new Error('MDNS advertisement is not set for this Query API and so cannot be stopped.'));
-     }
-
-     return this;
-   }
-
-   // Check the validity of a port
-   function validPort(port) {
-     return port &&
-       Number(port) === port &&
-       port % 1 === 0 &&
-       port > 0;
-   }
-
-   function connectWS (ws) {
-     var reqUrl = url.parse(ws.upgradeReq.url, true);
-     if (!reqUrl.query.uid || !webSockets[reqUrl.query.uid]) {
-       return ws.close(1008, JSON.stringify({
-         code : 404,
-         error : `Subscription with identifier '${reqUrl.query.uid}' could not be found.`
-       }));
-     }
-     var sub = webSockets[reqUrl.query.uid];
-     ws.ledgerID = uuid.v4();
-     if (wsFilter[sub.resource_path]) {
-       wsFilter[sub.resource_path].push({ sub : sub, socket : ws });
-     } else {
-       wsFilter[sub.resource_path] = [ { sub : sub, socket : ws } ];
-     }
-     ws.on('close', function () {
-       wsFilter[sub.resource_path] = wsFilter[sub.resource_path].filter(function (x) {
-         return x.socket.ledgerID !== ws.ledgerID;
-       });
-       if (!sub.persist && !wsFilter[sub.resource_path].find(function (x) {
-         return x.sub.id === sub.id;
-       })) {
-         delete webSockets[sub.id];
-       };
-     });
-     var method = `get${sub.resource_path[1].toUpperCase()}${sub.resource_path.slice(2)}`;
-     storeFn()[method]("",
-       function (err, resources, total, pageOf, pages, size) {
-         if (err) return console.error('Failed to read resources on websocket connection.');
-         var tsBase = Date.now();
-         var ts = `${tsBase / 1000|0}:${tsBase % 1000 * 1000000}`;
-         var g = {
-           grain_type : "event",
-           source_id : instanceUUID,
-           flow_id : sub.id,
-           origin_timestamp : ts,
-           sync_timestamp : ts,
-           creation_timestamp : ts,
-           rate : { numerator: 0, denominator: 1 },
-           duration : { numerator: 0, denominator: 1 },
-           grain : {
-             type : "urn:x-nmos:format:data.event",
-             topic : `${sub.resourcePath}/`,
-             data : resources.map(function (ro) {
-               return { path : ro.id, pre : ro, post : ro };
-             })
-           }
-         };
-         ws.send(JSON.stringify(g), { mask : false});
-         ws.lastTime = tsBase;
-     });
-   };
-
-   this.on('modify', function (ev) {
-     var subs = wsFilter[ev.topic.slice(0, -1)];
-     if (subs) {
-       subs.forEach(function (subWs) {
-         if (!Object.keys(subWs.sub.params).every(function (k) {
-           var preMatch = (ev.data[0].pre && ev.data[0].pre[k]) === subWs.sub.params[k];
-           var postMatch = (ev.data[0].post && ev.data[0].post[k]) === subWs.sub.params[k];
-           return preMatch || postMatch;
-         })) return;
-         var tsBase = Date.now();
-         var ts = `${tsBase / 1000|0}:${tsBase % 1000 * 1000000}`;
-         var g = {
-           grain_type : "event",
-           source_id : instanceUUID,
-           flow_id : subWs.sub.id,
-           origin_timestamp : ts,
-           sync_timestamp : ts,
-           creation_timestamp : ts,
-           rate : { numerator: 0, denominator: 1 },
-           duration : { numerator: 0, denominator: 1 },
-           grain : {
-             type : "urn:x-nmos:format:data.event",
-             topic : ev.topic,
-             data : ev.data
-           }
-         };
-         if (subWs.builder) {
-           subWs.builder.grain.data.push(g.grain.data[0]);
-           g.grain.data = subWs.builder.grain.data;
-           subWs.builder = g;
-         } else {
-           subWs.builder = g;
-         }
-         if (subWs.lastTime &&
-             tsBase - subWs.lastTime < subWs.sub.max_update_rate_ms) {
-           if (!subWs.timeout) {
-             subWs.timeout = setTimeout(function () {
-               subWs.socket.send(JSON.stringify(subWs.builder), { mask : false });
-               delete subWs.builder;
-               delete subWs.timeout;
-               subWs.lastTime = tsBase;
-             }, subWs.sub.max_update_rate_ms - (tsBase - subWs.lastTime));
-           }
-         } else {
-           subWs.socket.send(JSON.stringify(subWs.builder), { mask : false });
-           delete subWs.builder;
-           delete subWs.timeout;
-           subWs.lastTime = tsBase;
-         };
-       });
-     };
-   });
-
-   if (!validPort(port))
-     return new Error('Port is not a valid value. Must be an integer greater than zero.');
-   // return immutable(this, { prototype : QueryAPI.prototype });
 }
 
-/**
- * Function called when server has been started or stopped.
- * @callback {QueryAPI~trackStatus}
- * @param {Error=} Set if an error occurred when starting or stopping the server.
- */
-
-util.inherits(QueryAPI, EventEmitter);
-
-module.exports = QueryAPI;
+module.exports = QueryAPI

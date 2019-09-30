@@ -13,7 +13,7 @@
   limitations under the License.
 */
 
-var ledger = {
+var nmos_is04 = {
   NodeAPI : require('./api/NodeAPI.js'),
   RegistrationAPI : require('./api/RegistrationAPI.js'),
   QueryAPI : require('./api/QueryAPI.js'),
@@ -29,4 +29,4 @@ var ledger = {
   transports : require('./model/Transports.js')
 };
 
-module.exports = ledger;
+module.exports = nmos_is04;

@@ -15,136 +15,106 @@
 
 // Describes the Node and the services which run on it
 
-var Versionned = require('./Versionned.js');
-var immutable = require('seamless-immutable');
-var Capabilities = require('./Capabilities.js');
+// var Versionned = require('./Versionned.js');
+// var Capabilities = require('./Capabilities.js');
+var Resource = require('./Resource.js');
+var os = require('os')
+let _ = require('lodash')
 
 /**
- * Describes a Node. Immutable value.
- * @constructor
- * @augments Versionned
- * @param {string} id       Globally unique UUID identifier for the Node.
- * @param {string} version  String formatted PTP timestamp
- *                          (&lt;<em>seconds</em>&gt;:&lt;<em>nanoseconds</em>&gt;)
- *                          indicating precisely when an attribute of the resource
- *                          last changed.
- * @param {string} label    Freeform string label for the Node.
- * @param {string} href     HTTP access href for the Node's API.
- * @param {string} hostname Node hostname - set to null when not present.
- * @param {Object} caps     [Capabilities]{@link capabilities} (not yet defined).
- * @param {Object[]} services Array of objects containing a URN format type and href.
+ * Instantiate a Node object. All params are optional, as any required items are generated automatically and optional items, such as services or api_endpoints, can be added after the node is created.
+ * @extends Resource
+ * @param {object} params       Object containing all Node parameters
+ * @param {string} [params.id]         Inherited from {@link Resource}
+ * @param {string} [params.version]         Inherited from {@link Resource}
+ * @param {string} [params.label]         Inherited from {@link Resource}
+ * @param {string} [params.description]         Inherited from {@link Resource}
+ * @param {Object[]} [params.caps]         Inherited from {@link Resource}
+ * @param {string[]} [params.tags]         Inherited from {@link Resource}
+ * @param {string} [params.href]          HTTP access href for the Node's API (deprecated).
+ * @param {Object[]} [params.services]      Array of objects containing a URN format type and href.
+ * @param {Object[]} [params.clocks]        {@link Clocks} made available to Devices owned by this Node.
+ * @param {(string | string[])} [params.interfaces]  Optional parameter to only include a specific interfaces or an array of interfaces. null returns all interfaces.
  */
-function Node(id, version, label, href, hostname, caps, services) {
-  this.id = this.generateID(id);
-  this.version = this.generateVersion(version);
-  this.label = this.generateLabel(label);
-  /**
-   * HTTP access href for the Node's API.
-   * @type {string}
-   * @readonly
-  */
-  this.href = this.generateHref(href);
-  /**
-   * Node hostname - set to null when not present.
-   * @type {string}
-   * @readonly
-   */
-  this.hostname = this.generateHostname(hostname);
-  /**
-   * [Capabilities]{@link capabilities} (not yet defined).
-   * @type {Object}
-   * @readonly
-   */
-  this.caps = this.generateCaps(caps);
-  /**
-   * Array of objects containing a URN format type and href.
-   * @type {Object[]}
-   * @readonly
-   */
-  this.services = this.generateServices(services);
-  return immutable(this, { prototype : Node.prototype });
-}
+class Node extends Resource {
+  constructor(params) {
+    if (params == undefined) {
+      params = {}
+    }
+    super({
+      id: params.id,
+      version: params.version,
+      label: params.label,
+      description: params.description,
+      caps: params.caps,
+      tags: params.tags
+    })
+    this.href = this.constructor.generateHref(params.href)
+    this.api = this.constructor.generateAPI(this.constructor.generateInterfaces(params.interfaces))
+    this.services = this.constructor.generateServices(params.services)
+    this.clocks = this.constructor.generateClocks(params.clocks)
+    this.interfaces = this.constructor.generateInterfaces(params.interfaces)
+    this.hostname = ''
+  }
 
-Node.prototype.validID = Versionned.prototype.validID;
-Node.prototype.generateID = Versionned.prototype.generateID;
-Node.prototype.validVersion = Versionned.prototype.validVersion;
-Node.prototype.generateVersion = Versionned.prototype.generateVersion;
-Node.prototype.validLabel = Versionned.prototype.validLabel;
-Node.prototype.generateLabel = Versionned.prototype.generateLabel;
+  static generateHref(href) {
+    if (arguments.length === 0 || href === null || href === undefined)
+      return '';
+    else return href;
+  }
 
-Node.prototype.validHref = function (href) {
-  if (arguments.length === 0) return this.validHref(this.href);
-  return typeof href === 'string' &&
-    href.startsWith('http://');
-}
+  static generateAPI(ifaces) {
+    let endpoints = []
+    _.each(ifaces, (iface) => {
+      _.each(iface, (i) => {
+        endpoints.push({
+          host: i.address,
+          protocol: "http"
+        })
+      })
+    })
+    return {
+      versions: ["v1.1,v1.2"],
+      endpoints: endpoints
+    }
+  }
 
-Node.prototype.generateHref = function (href) {
-  if (arguments.length === 0 || href === null || href === undefined)
-    return 'http://localhost/';
-  else return href;
-}
+  static generateServices(services) {
+    if (arguments.length === 0 || services === null || services === undefined)
+      return [];
+    else return services;
+  }
 
-// Consider a test to check that hostnames doesn't contain spaces
-Node.prototype.validHostname = function (hostname) {
-  if (arguments.length === 0) return this.validHostname(this.hostname);
-  if (hostname === undefined) return true;
-  return typeof hostname === 'string' &&
-    hostname.match(/^[^\s]+$/) !== null;
-}
+  static generateClocks(clocks) {
+    if (arguments.length === 0 || clocks === null || clocks === undefined)
+      return []
+    else return clocks;
+  }
 
-Node.prototype.generateHostname = function (hostname) {
-  if (arguments.length === 0 || hostname === null || hostname === undefined)
-    return undefined;
-  else return hostname;
-}
+  static generateInterfaces(interfaces) {
+    let networkInterfaces = {}
+    if (typeof interfaces == 'string') {
+      networkInterfaces[interfaces] = os.networkInterfaces()[interfaces]
+      return networkInterfaces
+    } else if (typeof interfaces == 'object') {
 
-Node.prototype.validCaps = Versionned.prototype.validCaps;
-Node.prototype.generateCaps = Versionned.prototype.generateCaps;
+      _.each(interfaces, (int, name) => {
+        if (typeof int == 'string') {
+          networkInterfaces[int] = os.networkInterfaces()[int]
+        } else if (typeof int == 'object') {
+          networkInterfaces[name] = int
+        }
+      })
+      return networkInterfaces
+    } else {
+      return os.networkInterfaces()
+    }
+  }
 
-Node.prototype.validServices = function (services) {
-  if (arguments.length === 0) return this.validServices(this.services);
-  return Array.isArray(services) &&
-    services.every(function (s) {
-      return typeof s === 'object' &&
-        !Array.isArray(s) &&
-        s.hasOwnProperty('href') &&
-        s.hasOwnProperty('type') &&
-        typeof s.href === 'string' &&
-        typeof s.type === 'string' &&
-        s.href.startsWith('http://');
-    });
-}
-Node.prototype.generateServices = function (services) {
-  if (arguments.length === 0 || services === null || services === undefined)
-    return [];
-  else return services;
-}
-
-Node.prototype.valid = function () {
-  return this.validID(this.id) &&
-    this.validVersion(this.version) &&
-    this.validLabel(this.label) &&
-    this.validHref(this.href) &&
-    this.validHostname(this.hostName) &&
-    this.validCaps(this.caps) &&
-    this.validServices(this.services);
-}
-
-Node.prototype.stringify = function() { return JSON.stringify(this); }
-
-Node.prototype.parse = function (json) {
-  if (json === null || json === undefined || arguments.length === 0 ||
-      (typeof json !== 'string' && typeof json !== 'object'))
-    throw "Cannot parse JSON to a Node value because it is not a valid input.";
-  var parsed = typeof json === 'string' ? JSON.parse(json) : json;
-  return new Node(parsed.id, parsed.version, parsed.label, parsed.href,
-    parsed.hostname, parsed.caps, parsed.services);
-}
-
-Node.isNode = function (x) {
-  return x !== null &&
-    typeof x === 'object' &&
-    x.constructor === Node.prototype.constructor;
+  //TODO: Add validation against JSON Schema from NMOS
+  valid() {
+    return true;
+  }
 }
 
 module.exports = Node;

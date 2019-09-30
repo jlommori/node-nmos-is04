@@ -1,0 +1,244 @@
+<h1 id='model-source'>Model: Source</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kd">let</span> <span class="nx">source</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Source</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s2">"Source 1"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"This is the first source"</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="na">format</span><span class="p">:</span> <span class="s2">"urn:x-nmos:format:video"</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p>Returns the following object</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nx">object</span><span class="p">],</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">parents</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">clock_name</span><span class="p">:</span> <span class="nx">object</span><span class="p">,</span>
+  <span class="nx">grain_rate</span><span class="p">:</span> <span class="nx">object</span><span class="p">,</span>
+  <span class="nx">format</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">channels</span><span class="p">:</span> <span class="p">[</span><span class="nx">object</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+<p>Create new a new Source object.</p>
+<h3 id='parameters'>Parameters</h3>
+<p><code>device_id</code> and <code>format</code> are required, all other parameters are optional. All properties will be generated automatically if not provided.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Source</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Source.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td></td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td></td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>string</td>
+<td>required</td>
+<td>UUID for the Device which initially created the Source. This attribute is used to ensure referential integrity by registry implementations.</td>
+</tr>
+<tr>
+<td>format</td>
+<td>string</td>
+<td>required</td>
+<td>Source Format</td>
+</tr>
+<tr>
+<td>parents</td>
+<td>[string]</td>
+<td></td>
+<td>Array of UUIDs representing the Source IDs of Grains which came together at the input to this Source (may change over the lifetime of this Source)</td>
+</tr>
+<tr>
+<td>clock_name</td>
+<td>string</td>
+<td></td>
+<td>Reference to clock in the originating Node</td>
+</tr>
+<tr>
+<td>grain_rate</td>
+<td>object</td>
+<td></td>
+<td>Maximum number of Grains per second for Flows derived from this Source.Corresponding Flow Grain rates may override this attribute. Grain rate matches the frame rate for video (see NMOS Content Model). Specified for periodic Sources only</td>
+</tr>
+<tr>
+<td>grain_rate.numerator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Numerator</td>
+</tr>
+<tr>
+<td>grain_rate.denominator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Denominator</td>
+</tr>
+<tr>
+<td>channels</td>
+<td>[object]</td>
+<td></td>
+<td>Array of audio channels objects</td>
+</tr>
+<tr>
+<td>channels.label</td>
+<td>string</td>
+<td></td>
+<td>Label for an audio channel (free text)</td>
+</tr>
+<tr>
+<td>channels.symbol</td>
+<td>string</td>
+<td></td>
+<td>Symbol for this channel (per VSF TR-03 Appendix A)</td>
+</tr>
+</tbody></table>
+<h3 id='return'>Return</h3>
+<p>The resulting <code>Source</code> instance will have the following properties:</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Source</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Source.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td>[]</td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td>[]</td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>string</td>
+<td></td>
+<td>UUID for the Device which initially created the Source. This attribute is used to ensure referential integrity by registry implementations.</td>
+</tr>
+<tr>
+<td>format</td>
+<td>string</td>
+<td></td>
+<td>Source Format</td>
+</tr>
+<tr>
+<td>parents</td>
+<td>[string]</td>
+<td>[]</td>
+<td>Array of UUIDs representing the Source IDs of Grains which came together at the input to this Source (may change over the lifetime of this Source)</td>
+</tr>
+<tr>
+<td>clock_name</td>
+<td>string</td>
+<td>null</td>
+<td>Reference to clock in the originating Node</td>
+</tr>
+<tr>
+<td>grain_rate</td>
+<td>object</td>
+<td>null</td>
+<td>Maximum number of Grains per second for Flows derived from this Source.Corresponding Flow Grain rates may override this attribute. Grain rate matches the frame rate for video (see NMOS Content Model). Specified for periodic Sources only</td>
+</tr>
+<tr>
+<td>grain_rate.numerator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Numerator</td>
+</tr>
+<tr>
+<td>grain_rate.denominator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Denominator</td>
+</tr>
+<tr>
+<td>channels</td>
+<td>[object]</td>
+<td>null</td>
+<td>Array of audio channels objects</td>
+</tr>
+<tr>
+<td>channels.label</td>
+<td>string</td>
+<td></td>
+<td>Label for an audio channel (free text)</td>
+</tr>
+<tr>
+<td>channels.symbol</td>
+<td>string</td>
+<td></td>
+<td>Symbol for this channel (per VSF TR-03 Appendix A)</td>
+</tr>
+</tbody></table>
+<h2 id='valid'>valid()</h2>
+<p>Returns <code>true</code> if current Source is validated against the JSON Schema provided by NMOS IS-04. Not yet implemented.</p>

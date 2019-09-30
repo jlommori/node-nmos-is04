@@ -13,6 +13,14 @@
   limitations under the License.
 */
 
+//TODO: Add index.js in /model to include all models
+let Node = require('../model/Node.js');
+let Device = require('../model/Device.js')
+let Source = require('../model/Source.js')
+let Flow = require('../model/Flow.js')
+let Sender = require('../model/Sender.js')
+let Receiver = require('../model/Receiver.js')
+
 function extractVersions(v) {
   var m = v.match(/^([0-9]+):([0-9]+)$/)
   return [+m[1], +m[2]];
@@ -47,11 +55,94 @@ function getFirstExternalNetworkInterface() {
   return nias.find(function (x) { return x.internal === false && x.family === 'IPv4'; });
 }
 
+function isType(x, type) {
+  if (x == null || typeof x !== 'object') {
+    return false
+  }
+
+  switch(type) {
+    case "Node":
+      return x instanceof Node
+      break;
+    case "Device":
+      return x instanceof Device
+      break;
+    case "Source":
+      return x instanceof Source
+      break;
+    case "Flow":
+      return x instanceof Flow
+      break;
+    case "Sender":
+      return x instanceof Sender
+      break;
+    case "Receiver":
+      return x instanceof Receiver
+      break;
+    default:
+      return false
+      break;
+  }
+}
+
+
+/**
+ * Add a status code to an error object.
+ * @param  {Number} status  Status code for the error.
+ * @param  {string} message Error message describing the error.
+ * @return {Error}          The newly created error with status set.
+ */
+function statusError(status, message, err) {
+  var e = new Error(message, err);
+  e.status = status;
+  return e;
+}
+
+function checkValidAndForward(item, items, name, reject) {
+  if (!item.valid()) {
+    reject(statusError(400,
+      "Given new or replacement " + name + " is not valid."));
+  }
+  if (items[item.id]) { // Already stored
+  //  console.log('***', items[item.id].version, item.version);
+    if (compareVersions(items[item.id].version, item.version) === 1) {
+      reject(statusError(409,
+        "Cannot replace a " + name + " device with one with " +
+        "an earler version."));
+    }
+  }
+  return true;
+}
+
+function validUUID(id) {
+  return id.match(/[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/g)
+}
+
+function generateVersion() {
+  function nanoSeconds(hrtime) {
+    return hrtime[0] * 1e9 + hrtime[1];
+  }
+
+  let loadHRTime = nanoSeconds(process.hrtime());
+  let loadDate = Date.now();
+
+  let currentNanos = nanoSeconds(process.hrtime());
+  let difference = currentNanos - loadHRTime;
+  let microDate = loadDate + Math.floor(difference / 1e6);
+  let ver = Math.floor(microDate / 1e3) + ":" + (difference % 1e9)
+  return ver;
+}
+
 var util = {
   extractVersions : extractVersions,
   compareVersions : compareVersions,
   getResourceName : getResourceName,
-  getFirstExternalNetworkInterface : getFirstExternalNetworkInterface
+  getFirstExternalNetworkInterface : getFirstExternalNetworkInterface,
+  isType: isType,
+  statusError: statusError,
+  checkValidAndForward: checkValidAndForward,
+  validUUID: validUUID,
+  generateVersion: generateVersion
 };
 
 module.exports = util;

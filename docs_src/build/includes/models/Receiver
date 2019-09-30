@@ -1,0 +1,190 @@
+<h1 id='model-receiver'>Model: Receiver</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kd">let</span> <span class="nx">device</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Receiver</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s1">'Receiver 1'</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="na">transport</span><span class="p">:</span> <span class="s1">'urn:x-nmos:transport:rtp.mcast'</span><span class="p">,</span>
+  <span class="na">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="s2">"en0"</span><span class="p">],</span>
+  <span class="na">receiver_type</span><span class="p">:</span> <span class="s2">"video"</span><span class="p">,</span>
+  <span class="na">caps</span><span class="p">:</span> <span class="p">[</span><span class="s2">"video/raw"</span><span class="p">]</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p>Returns the following object</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nx">object</span><span class="p">],</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">transport</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">interface_bindings</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">subscription</span><span class="p">:</span> <span class="nx">object</span>
+<span class="p">}</span>
+</code></pre>
+<p>Create new a new Receiver object.</p>
+<h3 id='parameters'>Parameters</h3>
+<p><code>device_id</code>, <code>transport</code>, <code>interface_bindings</code>, <code>receiver_type</code> and <code>caps</code> are required, all other parameters are optional. Optional properties will be generated automatically if not provided.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Receiver</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Receiver.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td>required</td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td></td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>string</td>
+<td>required</td>
+<td>UUID of Device which this Receiver forms part of. This attribute is used to ensure referential integrity by registry implementations</td>
+</tr>
+<tr>
+<td>receiver_type</td>
+<td>string</td>
+<td>required</td>
+<td>Type of receiver</td>
+</tr>
+<tr>
+<td>transport</td>
+<td>string</td>
+<td>required</td>
+<td>Transport type used by the Receiver in URN Format</td>
+</tr>
+<tr>
+<td>interface_bindings</td>
+<td>[string]</td>
+<td>required</td>
+<td>Binding of Receiver ingress ports to interfaces on the parent Node. Should contain a single network interface unless a redundancy mechanism such as ST.2022-7 is in use, in which case each &#39;leg&#39; should have its matching interface listed. Where the redundancy mechanism sends more than one copy of the stream via the same interface, that interface should be listed a corresponding number of times.</td>
+</tr>
+<tr>
+<td>subscription</td>
+<td>object</td>
+<td></td>
+<td>Object containing the &#39;sender_id&#39; currently subscribed to. Sender_id should be null on initialisation, or when connected to a non-NMOS Sender.</td>
+</tr>
+</tbody></table>
+<h3 id='return'>Return</h3>
+<p>The resulting <code>Receiver</code> instance will have the following properties:</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Receiver</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Receiver.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td></td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td></td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>flow_id</td>
+<td>string</td>
+<td></td>
+<td>UUID of the Flow currently passing via this Sender</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>string</td>
+<td></td>
+<td>UUID of Device which this Sender forms part of. This attribute is used to ensure referential integrity by registry implementations</td>
+</tr>
+<tr>
+<td>transport</td>
+<td>string</td>
+<td></td>
+<td>Transport type used by the Sender in URN Format</td>
+</tr>
+<tr>
+<td>manifest_href</td>
+<td>string</td>
+<td></td>
+<td>HTTP URL to a file describing how to connect to the Sender (SDP for RTP). The Sender&#39;s &#39;version&#39; attribute should be updated if the contents of this file are modified. This URL may return an HTTP 404 where the &#39;active&#39; parameter in the &#39;subscription&#39; object is present and set to false (v1.2+ only).</td>
+</tr>
+<tr>
+<td>interface_bindings</td>
+<td>[string]</td>
+<td></td>
+<td>Binding of Sender egress ports to interfaces on the parent Node. Should contain a single network interface unless a redundancy mechanism such as ST.2022-7 is in use, in which case each &#39;leg&#39; should have its matching interface listed. Where the redundancy mechanism sends more than one copy of the stream via the same interface, that interface should be listed a corresponding number of times.</td>
+</tr>
+<tr>
+<td>subscription</td>
+<td>object</td>
+<td><code>{ sender_id: null, active: false }</code></td>
+<td>Object containing the &#39;sender_id&#39; currently subscribed to. Sender_id should be null on initialisation, or when connected to a non-NMOS Sender.</td>
+</tr>
+</tbody></table>
+<h2 id='valid'>valid()</h2>
+<p>Returns <code>true</code> if current Receiver is validated against the JSON Schema provided by NMOS IS-04. Not yet implemented.</p>

@@ -19,6 +19,7 @@ var Capabilities = require('./Capabilities.js')
 var Transports = require('./Transports.js');
 var Formats = require('./Formats.js');
 var DeviceTypes = require('./DeviceTypes.js');
+var os = require('os')
 
 function nanoSeconds(hrtime) {
   return hrtime[0] * 1e9 + hrtime[1];
@@ -27,39 +28,39 @@ function nanoSeconds(hrtime) {
 var loadHRTime = nanoSeconds(process.hrtime());
 var loadDate = Date.now();
 
-/**
- * Supertype of every class that has UUID identity, version numbers and labels.
- * Methods are designed to be mixed in piecemeal as required.
- * @constructor
- * @param {string} id      Globally unique UUID identifier for the resource.
- * @param {string} version String formatted PTP timestamp
- *                         (&lt;<em>seconds</em>&gt;:&lt;<em>nanoseconds<em>&gt;)
- *                         indicating precisely when an attribute of the resource
- *                         last changed.
- * @param {string} label   Freeform string label for the resource.
- */
-function Versionned(id, version, label) {
-  /**
-   * Globally unique UUID identifier for the resource.
-   * @type {string}
-   * @readonly
-   */
-  this.id = this.generateID(id);
-  /**
-   * String formatted PTP timestamp (&lt;<em>seconds</em>&gt;:&lt;<em>nanoseconds</em>&gt;)
-   * indicating precisely when an attribute of the resource last changed.
-   * @type {string}
-   * @readonly
-   */
-  this.version = this.generateVersion(version);
-  /**
-   * Freeform string label for the resource.
-   * @type {string}
-   * @readonly
-   */
-  this.label = this.generateLabel(label);
-  return immutable(this, {prototype: Versionned.prototype});
-}
+// /
+//  * Supertype of every class that has UUID identity, version numbers and labels.
+//  * Methods are designed to be mixed in piecemeal as required.
+//  * @constructor
+//  * @param {string} id      Globally unique UUID identifier for the resource.
+//  * @param {string} version String formatted PTP timestamp
+//  *                         (&lt;<em>seconds</em>&gt;:&lt;<em>nanoseconds<em>&gt;)
+//  *                         indicating precisely when an attribute of the resource
+//  *                         last changed.
+//  * @param {string} label   Freeform string label for the resource.
+//  */
+// function Versionned(id, version, label) {
+//   /**
+//    * Globally unique UUID identifier for the resource.
+//    * @type {string}
+//    * @readonly
+//    */
+//   this.id = this.generateID(id);
+//   /**
+//    * String formatted PTP timestamp (&lt;<em>seconds</em>&gt;:&lt;<em>nanoseconds</em>&gt;)
+//    * indicating precisely when an attribute of the resource last changed.
+//    * @type {string}
+//    * @readonly
+//    */
+//   this.version = this.generateVersion(version);
+//   /**
+//    * Freeform string label for the resource.
+//    * @type {string}
+//    * @readonly
+//    */
+//   this.label = this.generateLabel(label);
+//   return immutable(this, {prototype: Versionned.prototype});
+// }
 
 /**
  * Generate an [identifier]{@link Versionned#id} when one is not provided,
@@ -68,7 +69,7 @@ function Versionned(id, version, label) {
  * @return {string}     Value passed to the method or a generated pseudo-random
  *                      UUID for no arguments, null or undefined.
  */
-Versionned.prototype.generateID = function (id) {
+let generateID = function (id) {
   if (arguments.length === 0 || id === null || id === undefined)
     return uuid.v4();
   else return id;
@@ -82,7 +83,7 @@ Versionned.prototype.generateID = function (id) {
  *                           number from the current clock with no arguments,
  *                           null or undefined.
  */
-Versionned.prototype.generateVersion = function (version) {
+let generateVersion = function (version) {
   if (arguments.length === 0 || version === null || version === undefined) {
     var currentNanos = nanoSeconds(process.hrtime());
     var difference = currentNanos - loadHRTime;
@@ -99,46 +100,46 @@ Versionned.prototype.generateVersion = function (version) {
  * @return {string}        Value passed to the method or an empty string for
  *                         no arguments, null or undefined.
  */
-Versionned.prototype.generateLabel = function (label) {
+let generateLabel = function (label) {
   if (arguments.length === 0 || label === null || label === undefined)
     return '';
   else return label;
 }
 
-Versionned.prototype.validID = function (id) {
-  if (arguments.length === 0) return this.validID(this.id);
+let validID = function (id) {
+  if (arguments.length === 0) return validID(this.id);
   return id !== null && id !== undefined &&
     (id.constructor === String.prototype.constructor) &&
     (id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/) !== null);
 }
 
-Versionned.prototype.validVersion = function (version) {
-  if (arguments.length === 0) return this.validVersion(this.version);
+let validVersion = function (version) {
+  if (arguments.length === 0) return validVersion(this.version);
   return version !== null && version !== undefined &&
     (version.constructor === String.prototype.constructor) &&
     (version.match(/^[0-9]+:[0-9]+$/) !== null);
 }
 
-Versionned.prototype.validLabel = function (label) {
-  if (arguments.length === 0) return this.validLabel(this.label);
+let validLabel = function (label) {
+  if (arguments.length === 0) return validLabel(this.label);
   return label !== null && label !== undefined &&
     (label.constructor === String.prototype.constructor);
 }
 
-Versionned.prototype.validCaps = function (caps) {
-  if (arguments.length === 0) return this.validCaps(this.caps);
+let validCaps = function (caps) {
+  if (arguments.length === 0) return validCaps(this.caps);
   return typeof caps === 'object' && caps !== null &&
     Array.isArray(caps) === false && Object.keys(caps).length === 0;
 }
 
-Versionned.prototype.generateCaps = function (caps) {
+let generateCaps = function (caps) {
   if (arguments.length === 0 || caps === null || caps === undefined)
     return Capabilities;
   else return caps;
 }
 
-Versionned.prototype.validTags = function (tags) {
-  if (arguments.length === 0) return this.validTags(this.tags);
+let validTags = function (tags) {
+  if (arguments.length === 0) return validTags(this.tags);
   if (!(tags instanceof Object)) return false;
   if (Array.isArray(tags)) return false;
   return Object.keys(tags).every(function (k) {
@@ -149,51 +150,72 @@ Versionned.prototype.validTags = function (tags) {
   });
 }
 
-Versionned.prototype.validTransport = function (t) {
-  if (arguments.length === 0) return this.validTransport(this.transport);
+let validTransport = function (t) {
+  if (arguments.length === 0) return validTransport(this.transport);
   else return Transports.validTransport(t);
 }
-Versionned.prototype.generateTransport = function (t) {
+let generateTransport = function (t) {
   if (arguments.length === 0 || t === null || t === undefined)
     return Transports.rtp;
   else return t;
 }
 
-Versionned.prototype.validFormat = function (f) {
-  if (arguments.length === 0) return this.validFormat(this.format);
+let validFormat = function (f) {
+  if (arguments.length === 0) return validFormat(this.format);
   else return Formats.validFormat(f);
 }
-Versionned.prototype.generateFormat = function (format) {
+let generateFormat = function (format) {
   if (arguments.length === 0 || format === null || format === undefined)
     return Formats.video;
   else return format;
 }
 
-Versionned.prototype.validDeviceType = function (d) {
-  if (arguments.length === 0) return this.validDeviceType(this.deviceType);
+let validDeviceType = function (d) {
+  if (arguments.length === 0) return validDeviceType(this.deviceType);
   else return DeviceTypes.validDeviceType(d);
 }
-Versionned.prototype.generateDeviceType = function (d) {
+let generateDeviceType = function (d) {
   if (arguments.length === 0 || d === null || d === undefined)
     return DeviceTypes.generic;
   else return d;
 }
 
-Versionned.prototype.generateTags = function (tags) {
+let generateTags = function (tags) {
   if (arguments.length === 0 || tags === null || tags === undefined)
     return {};
   else return tags;
 }
 
-Versionned.prototype.validUUIDArray = function (a) {
+let validUUIDArray = function (a) {
   if (!Array.isArray(a)) return false;
-  return a.every(Versionned.prototype.validID);
+  return a.every(validID);
 }
 
-Versionned.prototype.generateUUIDArray = function (a) {
+let generateUUIDArray = function (a) {
   if (arguments.length === 0 || a === null || a === undefined)
     return [];
   else return a;
+}
+
+let generateInterfaces = function (interfaces) {
+  let networkInterfaces = {}
+  if (typeof interfaces == 'string') {
+    networkInterfaces[interfaces] = os.networkInterfaces()[interfaces]
+    return networkInterfaces
+  } else if (typeof interfaces == 'object') {
+    interfaces.forEach((int) => {
+      networkInterfaces[int] = os.networkInterfaces()[int]
+    })
+    return networkInterfaces
+  } else {
+    return os.networkInterfaces()
+  }
+}
+
+let generateClocks = function(clocks) {
+  if (arguments.length === 0 || clocks === null || clocks === undefined)
+    return []
+  else return clocks;
 }
 
 /**
@@ -208,14 +230,14 @@ Versionned.prototype.generateUUIDArray = function (a) {
  * </ul>
  * @return {boolean} Is the resource valid?
  */
-Versionned.prototype.valid = function() {
-  return this.validID(this.id) && this.validVersion(this.version) &&
-    this.validLabel(this.label);
+let valid = function() {
+  return validID(this.id) && validVersion(this.version) &&
+    validLabel(this.label);
 }
 
-Versionned.prototype.stringify = function() { return JSON.stringify(this); }
+let stringify = function() { return JSON.stringify(this); }
 
-Versionned.prototype.parse = function (json) {
+let parse = function (json) {
   if (json === null || json === undefined || arguments.length === 0 ||
       (typeof json !== 'string' && typeof json !== 'object'))
     throw "Cannot parse JSON to a Versionned value because it is not a valid input.";
@@ -223,4 +245,26 @@ Versionned.prototype.parse = function (json) {
   return new Versionned(parsedJSON.id, parsedJSON.version, parsedJSON.label);
 }
 
-module.exports = Versionned;
+module.exports = {
+  generateID: generateID,
+  generateVersion: generateVersion,
+  generateLabel: generateLabel,
+  generateTags: generateTags,
+  generateCaps: generateCaps,
+  generateTransport: generateTransport,
+  generateFormat: generateFormat,
+  generateDeviceType: generateDeviceType,
+  generateUUIDArray: generateUUIDArray,
+  generateInterfaces: generateInterfaces,
+  generateClocks: generateClocks,
+  validId: validID,
+  validVersion: validVersion,
+  validLabel: validLabel,
+  validCaps: validCaps,
+  validTags: validTags,
+  validTransport: validTransport,
+  validFormat: validFormat,
+  validDeviceType: validDeviceType,
+  validUUIDArray: validUUIDArray,
+  valid: valid
+};
