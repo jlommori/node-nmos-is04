@@ -1,0 +1,170 @@
+<h1 id='model-device'>Model: Device</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kd">let</span> <span class="nx">device</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Device</span><span class="p">({</span>
+  <span class="na">node_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s2">"Device 1"</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"A multifaceted device"</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p>Returns the following object</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">node_id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nx">object</span><span class="p">],</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">type</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">senders</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">receivers</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">controls</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+<p>Create new a new Device object.</p>
+<h3 id='parameters'>Parameters</h3>
+<p>Only a <code>node_id</code> is required, all other parameters are optional. All properties will be generated automatically if not provided.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Device</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Device.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td></td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td></td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>node_id</td>
+<td>string</td>
+<td>required</td>
+<td>UUID for the Node that created this Device</td>
+</tr>
+<tr>
+<td>type</td>
+<td>string</td>
+<td></td>
+<td>Device Type URN</td>
+</tr>
+<tr>
+<td>controls</td>
+<td>[string]</td>
+<td></td>
+<td>Control endpoints exposed for the Device</td>
+</tr>
+</tbody></table>
+<h3 id='return'>Return</h3>
+<p>The resulting <code>Device</code> instance will have the following properties:</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Device</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Device.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td>[]</td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td>[]</td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>node_id</td>
+<td>string</td>
+<td></td>
+<td>UUID for the Node that created this Device</td>
+</tr>
+<tr>
+<td>type</td>
+<td>string</td>
+<td>&quot;urn:x-nmos:device:pipeline&quot;</td>
+<td>Device Type URN</td>
+</tr>
+<tr>
+<td>senders</td>
+<td>[string]</td>
+<td>[]</td>
+<td>UUIDs of Senders attached to the Device (deprecated)</td>
+</tr>
+<tr>
+<td>receivers</td>
+<td>[string]</td>
+<td>[]</td>
+<td>UUIDs of Receivers attached to the Device (deprecated)</td>
+</tr>
+<tr>
+<td>controls</td>
+<td>[string]</td>
+<td>[]</td>
+<td>Control endpoints exposed for the Device</td>
+</tr>
+</tbody></table>
+<h2 id='valid'>valid()</h2>
+<p>Returns <code>true</code> if current Device is validated against the JSON Schema provided by NMOS IS-04. Not yet implemented.</p>

@@ -1,0 +1,441 @@
+<h1 id='model-flow'>Model: Flow</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kd">let</span> <span class="nx">flow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Flow</span><span class="p">({</span>
+  <span class="na">label</span><span class="p">:</span> <span class="s1">'Video Flow'</span><span class="p">,</span>
+  <span class="na">description</span><span class="p">:</span> <span class="s2">"This is the first Video flow"</span><span class="p">,</span>
+  <span class="na">source_id</span><span class="p">:</span> <span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span><span class="p">,</span>
+  <span class="na">device_id</span><span class="p">:</span> <span class="s1">'d00f73c6-7a27-4dc2-a4ad-1c375648bc77'</span><span class="p">,</span>
+  <span class="na">flow_type</span><span class="p">:</span> <span class="s2">"video"</span><span class="p">,</span>
+  <span class="na">video</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">frame_width</span><span class="p">:</span> <span class="mi">1920</span><span class="p">,</span>
+    <span class="na">frame_height</span><span class="p">:</span> <span class="mi">1080</span><span class="p">,</span>
+    <span class="na">interlace_mode</span><span class="p">:</span> <span class="s2">"interlaced_tff"</span><span class="p">,</span>
+    <span class="na">colorspace</span><span class="p">:</span> <span class="s2">"BT709"</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p>Returns the following object (some properties dependent on format)</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">version</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">label</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">description</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">caps</span><span class="p">:</span> <span class="p">[</span><span class="nx">object</span><span class="p">],</span>
+  <span class="nx">tags</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">device_id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">source_id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">parents</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">],</span>
+  <span class="nx">grain_rate</span><span class="p">:</span> <span class="nx">object</span><span class="p">,</span>
+  <span class="nx">format</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">sample_rate</span><span class="p">:</span> <span class="nx">object</span><span class="p">,</span>
+  <span class="nx">media_type</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">bit_depth</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span>
+  <span class="nx">frame_width</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span>
+  <span class="nx">frame_height</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span>
+  <span class="nx">interlace_mode</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">colorspace</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">transfer_characteristics</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">media_type</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="nx">components</span><span class="p">:</span> <span class="p">[</span><span class="nx">object</span><span class="p">],</span>
+  <span class="nx">did_sdid</span><span class="p">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre>
+<p>Create new a new Flow object.</p>
+<h3 id='parameters'>Parameters</h3>
+<p><code>device_id</code>, <code>source_id</code> and <code>flow_type</code> are required, all other parameters are optional. All properties will be generated automatically if not provided.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Flow</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Flow.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td></td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td></td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>flow_type</td>
+<td>string</td>
+<td>required</td>
+<td>Type of flow to create</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>string</td>
+<td>required</td>
+<td>UUID for the Device which initially created the Source. This attribute is used to ensure referential integrity by registry implementations (v1.1 onward).</td>
+</tr>
+<tr>
+<td>source_id</td>
+<td>string</td>
+<td>required</td>
+<td>UUID for the Source which initially created the Flow. This attribute is used to ensure referential integrity by registry implementations (v1.0 only).</td>
+</tr>
+<tr>
+<td>parents</td>
+<td>[string]</td>
+<td></td>
+<td>Array of UUIDs representing the Flow IDs of Grains which came together to generate this Flow (may change over the lifetime of this Flow)</td>
+</tr>
+<tr>
+<td>grain_rate</td>
+<td>object</td>
+<td></td>
+<td>Maximum number of Grains per second for Flows derived from this Source.Corresponding Flow Grain rates may override this attribute. Grain rate matches the frame rate for video (see NMOS Content Model). Specified for periodic Sources only</td>
+</tr>
+<tr>
+<td>grain_rate.numerator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Numerator</td>
+</tr>
+<tr>
+<td>grain_rate.denominator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Denominator</td>
+</tr>
+<tr>
+<td>sample_rate</td>
+<td>object</td>
+<td></td>
+<td>Number of Audio Samples per second for this flow (required for audio flows)</td>
+</tr>
+<tr>
+<td>sample_rate.numerator</td>
+<td>number</td>
+<td></td>
+<td>Sample Rate Numerator</td>
+</tr>
+<tr>
+<td>sample_rate.denominator</td>
+<td>number</td>
+<td></td>
+<td>Sample Rate Denominator</td>
+</tr>
+<tr>
+<td>media_type</td>
+<td>string</td>
+<td></td>
+<td>Subclassification of the format using IANA assigned media types</td>
+</tr>
+<tr>
+<td>bit_depth</td>
+<td>number</td>
+<td></td>
+<td>Bit depth of the audio samples</td>
+</tr>
+<tr>
+<td>frame_width</td>
+<td>number</td>
+<td></td>
+<td>Width of the picture in pixels</td>
+</tr>
+<tr>
+<td>frame_height</td>
+<td>number</td>
+<td></td>
+<td>Height of the picture in pixels</td>
+</tr>
+<tr>
+<td>interlace_mode</td>
+<td>string</td>
+<td></td>
+<td>Interlaced video mode for the frames in this flow</td>
+</tr>
+<tr>
+<td>colorspace</td>
+<td>string</td>
+<td></td>
+<td>Colorspace used for the video</td>
+</tr>
+<tr>
+<td>transfer_characteristics</td>
+<td>string</td>
+<td></td>
+<td>Transfer Characteristic</td>
+</tr>
+<tr>
+<td>components</td>
+<td>[object]</td>
+<td></td>
+<td>Array of objects describing the components</td>
+</tr>
+<tr>
+<td>components.name</td>
+<td>string</td>
+<td></td>
+<td>Name of this component</td>
+</tr>
+<tr>
+<td>components.width</td>
+<td>number</td>
+<td></td>
+<td>Width of this component in pixels</td>
+</tr>
+<tr>
+<td>components.height</td>
+<td>number</td>
+<td></td>
+<td>Height of this component in pixels</td>
+</tr>
+<tr>
+<td>components.bit_depth</td>
+<td>number</td>
+<td></td>
+<td>Number of bits used to describe each sample</td>
+</tr>
+<tr>
+<td>did_sdid</td>
+<td>object</td>
+<td></td>
+<td>List of Data identification and secondary data identification words</td>
+</tr>
+<tr>
+<td>did_sdid.DID</td>
+<td>string</td>
+<td></td>
+<td>Data Identification Word</td>
+</tr>
+<tr>
+<td>did_sdid.SDID</td>
+<td>string</td>
+<td></td>
+<td>Secondary data identification word</td>
+</tr>
+</tbody></table>
+<h3 id='return'>Return</h3>
+<p>The resulting <code>Flow</code> instance will have the following properties:</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td></td>
+<td>Globally unique UUID identifier for the Flow</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>String formatted PTP timestamp</td>
+</tr>
+<tr>
+<td>label</td>
+<td>string</td>
+<td></td>
+<td>Freeform string label for the Flow.</td>
+</tr>
+<tr>
+<td>desc</td>
+<td>string</td>
+<td></td>
+<td>Detailed description of the resource</td>
+</tr>
+<tr>
+<td>caps</td>
+<td>[object]</td>
+<td></td>
+<td>Array of Capabilities (not yet defined)</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>[string]</td>
+<td></td>
+<td>Array of tags</td>
+</tr>
+<tr>
+<td>device_id</td>
+<td>string</td>
+<td></td>
+<td>UUID for the Device which initially created the Source. This attribute is used to ensure referential integrity by registry implementations (v1.1 onward).</td>
+</tr>
+<tr>
+<td>source_id</td>
+<td>string</td>
+<td></td>
+<td>UUID for the Source which initially created the Flow. This attribute is used to ensure referential integrity by registry implementations (v1.0 only).</td>
+</tr>
+<tr>
+<td>parents</td>
+<td>[string]</td>
+<td>[]</td>
+<td>Array of UUIDs representing the Flow IDs of Grains which came together to generate this Flow (may change over the lifetime of this Flow)</td>
+</tr>
+<tr>
+<td>format</td>
+<td>string</td>
+<td></td>
+<td>Source Format</td>
+</tr>
+<tr>
+<td>grain_rate</td>
+<td>object</td>
+<td></td>
+<td>Maximum number of Grains per second for Flows derived from this Source.Corresponding Flow Grain rates may override this attribute. Grain rate matches the frame rate for video (see NMOS Content Model). Specified for periodic Sources only</td>
+</tr>
+<tr>
+<td>grain_rate.numerator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Numerator</td>
+</tr>
+<tr>
+<td>grain_rate.denominator</td>
+<td>number</td>
+<td></td>
+<td>Grain Rate Denominator</td>
+</tr>
+<tr>
+<td>sample_rate</td>
+<td>object</td>
+<td></td>
+<td>Number of Audio Samples per second for this flow (required for audio flows)</td>
+</tr>
+<tr>
+<td>sample_rate.numerator</td>
+<td>number</td>
+<td></td>
+<td>Sample Rate Numerator</td>
+</tr>
+<tr>
+<td>sample_rate.denominator</td>
+<td>number</td>
+<td></td>
+<td>Sample Rate Denominator</td>
+</tr>
+<tr>
+<td>media_type</td>
+<td>string</td>
+<td></td>
+<td>Subclassification of the format using IANA assigned media types</td>
+</tr>
+<tr>
+<td>bit_depth</td>
+<td>number</td>
+<td></td>
+<td>Bit depth of the audio samples</td>
+</tr>
+<tr>
+<td>frame_width</td>
+<td>number</td>
+<td></td>
+<td>Width of the picture in pixels</td>
+</tr>
+<tr>
+<td>frame_height</td>
+<td>number</td>
+<td></td>
+<td>Height of the picture in pixels</td>
+</tr>
+<tr>
+<td>interlace_mode</td>
+<td>string</td>
+<td></td>
+<td>Interlaced video mode for the frames in this flow</td>
+</tr>
+<tr>
+<td>colorspace</td>
+<td>string</td>
+<td></td>
+<td>Colorspace used for the video</td>
+</tr>
+<tr>
+<td>transfer_characteristics</td>
+<td>string</td>
+<td></td>
+<td>Transfer Characteristic</td>
+</tr>
+<tr>
+<td>components</td>
+<td>[object]</td>
+<td></td>
+<td>Array of objects describing the components</td>
+</tr>
+<tr>
+<td>components.name</td>
+<td>string</td>
+<td></td>
+<td>Name of this component</td>
+</tr>
+<tr>
+<td>components.width</td>
+<td>number</td>
+<td></td>
+<td>Width of this component in pixels</td>
+</tr>
+<tr>
+<td>components.height</td>
+<td>number</td>
+<td></td>
+<td>Height of this component in pixels</td>
+</tr>
+<tr>
+<td>components.bit_depth</td>
+<td>number</td>
+<td></td>
+<td>Number of bits used to describe each sample</td>
+</tr>
+<tr>
+<td>did_sdid</td>
+<td>object</td>
+<td></td>
+<td>List of Data identification and secondary data identification words</td>
+</tr>
+<tr>
+<td>did_sdid.DID</td>
+<td>string</td>
+<td></td>
+<td>Data Identification Word</td>
+</tr>
+<tr>
+<td>did_sdid.SDID</td>
+<td>string</td>
+<td></td>
+<td>Secondary data identification word</td>
+</tr>
+</tbody></table>
+<h2 id='valid'>valid()</h2>
+<p>Returns <code>true</code> if current Flow is validated against the JSON Schema provided by NMOS IS-04. Not yet implemented.</p>

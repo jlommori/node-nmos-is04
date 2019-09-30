@@ -58,7 +58,7 @@ parse_args() {
   # vars should be declared here, with sane defaults if applicable.
 
   # Source directory & target branch.
-  deploy_directory=build
+  deploy_directory=../docs
   deploy_branch=gh-pages
 
   #if no user identity is already set in the current git environment, use this:

@@ -1,0 +1,93 @@
+<h1 id='queryapi'>QueryAPI</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">is04</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'node-nmos-is04'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">NodeRAMStore</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nx">QueryAPI</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">QueryAPI</span><span class="p">({</span>
+  <span class="na">store</span><span class="p">:</span> <span class="nx">store</span>
+<span class="p">});</span>
+
+</code></pre>
+<p>Start a NMOS IS-04 Query Service. The Query Service is compliant with the REST API as defined by <a href="https://amwa-tv.github.io/nmos-discovery-registration/branches/v1.3.x/html-APIs/QueryAPI.html">NMOS in their documentation</a> up to NMOS v1.3.</p>
+
+<p>The Query Service also supports WebSocket connections as per <a href="https://amwa-tv.github.io/nmos-discovery-registration/branches/v1.3.x/docs/4.2._Behaviour_-_Querying.html">NMOS documentation on Querying Behavior</a>. In general, the API endpoint <code>POST /subscriptions</code> allows for a WebSocket host to be created on the Query server for clients to connect to and receive real-time updates of resource changes in the store.</p>
+
+<p>The Query Services DOES NOT yet support RQL Queries, as they are specified as optional in the IS-04 v1.3 standard.</p>
+<h3 id='parameters'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>store</td>
+<td>required</td>
+<td></td>
+<td>Node Store for access to Registry information</td>
+</tr>
+<tr>
+<td>address</td>
+<td>optional</td>
+<td>&#39;localhost:3002&#39;</td>
+<td>Interface address and port</td>
+</tr>
+</tbody></table>
+<h2 id='queryapi-start'>QueryAPI.start()</h2><pre class="highlight javascript tab-javascript"><code>
+<span class="nx">QueryAPI</span><span class="p">.</span><span class="nx">start</span><span class="p">()</span>
+
+<span class="nx">QueryAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'started'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<p>Start the Query API server to interact with a particular store</p>
+<h3 id='event-39-started-39'>Event: &#39;started&#39;</h3>
+<blockquote>
+<p>Event fires</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">message</span><span class="p">:</span> <span class="s2">"NMOS IS-04 Query Service Started"</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>started</code> upon start of the query service</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friendly message for this event</td>
+</tr>
+</tbody></table>
+<h3 id='event-39-ws-39'>Event: &#39;ws&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="nx">QueryAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'ws'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p>Event fires</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">event</span><span class="p">:</span> <span class="s1">'start'</span><span class="p">,</span>
+  <span class="nx">message</span><span class="p">:</span> <span class="s2">"webSocket service started"</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires when the websocket server is started</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friendly message for this event</td>
+</tr>
+</tbody></table>
