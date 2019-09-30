@@ -36,8 +36,7 @@ class QueryAPI extends EventEmitter {
 
     this.mdns = {
       server: null,
-      hostname: params.hostname ? params.hostname : 'nmos_reg',
-      priority: params.priority ? params.priority : 100
+      hostname: params.hostname ? params.hostname : 'nmos_query'
     }
 
     this.app.use((req, res, next) => {

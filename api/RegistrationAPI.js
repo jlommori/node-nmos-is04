@@ -191,10 +191,6 @@ class RegistrationAPI extends EventEmitter {
 
   }
 
-  getPort() {
-    return this.port
-  }
-
   getStore() {
     return this.store
   }

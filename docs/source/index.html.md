@@ -7,6 +7,8 @@ toc_footers:
 includes:
   - NodeAPI
   - NodeRAMStore
+  - RegistrationAPI
+  - QueryAPI
   - models/Node
   - models/Device
   - models/Source

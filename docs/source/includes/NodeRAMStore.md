@@ -9,7 +9,7 @@ let store = new is04.NodeRAMStore();
 
 ```
 
-Create a RAM-based Store for a Node or Registration Server
+Create a RAM-based Store for a Node or Registration Server.
 
 ## getResources()
 
