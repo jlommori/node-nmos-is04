@@ -209,7 +209,7 @@
       </span>
     </a>
     <div class="toc-wrapper">
-      <img src="images/logo.png" class="logo" alt="Logo" />
+       %>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
         </div>
@@ -330,6 +330,37 @@
                   </li>
                   <li>
                     <a href="#deletereceiver" class="toc-h2 toc-link" data-title="deleteReceiver()">deleteReceiver()</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#registrationapi" class="toc-h1 toc-link" data-title="RegistrationAPI">RegistrationAPI</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#instantiation" class="toc-h2 toc-link" data-title="Instantiation">Instantiation</a>
+                  </li>
+                  <li>
+                    <a href="#registrationapi-start" class="toc-h2 toc-link" data-title="RegistrationAPI.start()">RegistrationAPI.start()</a>
+                  </li>
+                  <li>
+                    <a href="#registrationapi-stop" class="toc-h2 toc-link" data-title="RegistrationAPI.stop()">RegistrationAPI.stop()</a>
+                  </li>
+                  <li>
+                    <a href="#registrationapi-startmdns" class="toc-h2 toc-link" data-title="RegistrationAPI.startMDNS()">RegistrationAPI.startMDNS()</a>
+                  </li>
+                  <li>
+                    <a href="#registrationapi-stopmdns" class="toc-h2 toc-link" data-title="RegistrationAPI.stopMDNS()">RegistrationAPI.stopMDNS()</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#queryapi" class="toc-h1 toc-link" data-title="QueryAPI">QueryAPI</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#instantiation" class="toc-h2 toc-link" data-title="Instantiation">Instantiation</a>
+                  </li>
+                  <li>
+                    <a href="#queryapi-start" class="toc-h2 toc-link" data-title="QueryAPI.start()">QueryAPI.start()</a>
                   </li>
               </ul>
           </li>
@@ -944,7 +975,7 @@
 <span class="kd">let</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">NodeRAMStore</span><span class="p">();</span>
 
 </code></pre>
-<p>Create a RAM-based Store for a Node or Registration Server</p>
+<p>Create a RAM-based Store for a Node or Registration Server.</p>
 <h2 id='getresources'>getResources()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getResources</span><span class="p">()</span>
 </code></pre>
 <p>Get all Resources currently available in the store.</p>
@@ -2229,6 +2260,354 @@
 <pre class="highlight javascript tab-javascript"><code><span class="s1">'9cc73ed0-d601-4efe-b974-949de6ae584d'</span>
 </code></pre>
 <p>Returns ID of the deleted Receiver as a String</p>
+<h1 id='registrationapi'>RegistrationAPI</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">is04</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'node-nmos-is04'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">NodeRAMStore</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nx">RegistrationAPI</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">RegistrationAPI</span><span class="p">({</span>
+  <span class="na">store</span><span class="p">:</span> <span class="nx">store</span><span class="p">,</span>
+  <span class="na">address</span><span class="p">:</span> <span class="s1">'0.0.0.0:3001'</span>
+<span class="p">});</span>
+
+<span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'heartbeat'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">cb</span><span class="p">.</span><span class="nx">status</span><span class="p">}</span><span class="s2">: </span><span class="p">${</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2"> | Time since last: </span><span class="p">${</span><span class="nx">cb</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">timeSinceLast</span><span class="p">}</span><span class="s2">`</span> <span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<p>Start a NMOS IS-04 Registration Server. The Registration Server is compliant with the REST API as defined by <a href="https://amwa-tv.github.io/nmos-discovery-registration/tags/v1.3/html-APIs/RegistrationAPI.html#">NMOS in their documentation</a> up to NMOS v1.3</p>
+<h3 id='parameters'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>store</td>
+<td>required</td>
+<td></td>
+<td>Node Store for access to Registry information</td>
+</tr>
+<tr>
+<td>address</td>
+<td>optional</td>
+<td>&#39;localhost:3000&#39;</td>
+<td>Interface address and port</td>
+</tr>
+<tr>
+<td>hostname</td>
+<td>optional</td>
+<td>&#39;nmos_reg&#39;</td>
+<td>Hostname of Registry instance</td>
+</tr>
+<tr>
+<td>priority</td>
+<td>optional</td>
+<td>100</td>
+<td>Registry Server Priority</td>
+</tr>
+</tbody></table>
+<h3 id='event-39-heartbeat-39'>Event: &#39;heartbeat&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">status</span><span class="p">:</span> <span class="s1">'received'</span><span class="p">,</span>
+  <span class="nx">message</span><span class="p">:</span> <span class="s1">'Heartbeat received from Node'</span><span class="p">,</span>
+  <span class="nx">data</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="nx">timeSeconds</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span>
+    <span class="nx">timeSinceLast</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span>
+    <span class="nx">time</span><span class="p">:</span> <span class="nx">number</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>heartbeat</code> when a heartbeat is received from a Node. Each <code>heartbeat</code> records the Javascript time in Unix milliseconds so a &quot;ping-pong&quot; latency can be determined. Heartbeats SHOULD be received from the Node every 5 seconds.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>string</td>
+<td><code>received</code> Registration Server has received a heartbeat response from the Node</td>
+</tr>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friend message for this event</td>
+</tr>
+<tr>
+<td>data</td>
+<td>object</td>
+<td>Object with details about the heartbeat</td>
+</tr>
+<tr>
+<td>data.id</td>
+<td>string</td>
+<td>ID of the reporting Node</td>
+</tr>
+<tr>
+<td>data.timeSeconds</td>
+<td>number</td>
+<td>Time when heartbeat was received, in seconds</td>
+</tr>
+<tr>
+<td>data.timeSinceLast</td>
+<td>number</td>
+<td>Amount of time since the last heartbeat</td>
+</tr>
+<tr>
+<td>data.time</td>
+<td>number</td>
+<td>Javascript timestamp (Unix milliseconds) of when heartbeat was received</td>
+</tr>
+</tbody></table>
+<h2 id='registrationapi-start'>RegistrationAPI.start()</h2><pre class="highlight javascript tab-javascript"><code>  <span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">start</span><span class="p">()</span>
+
+  <span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'started'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+  <span class="p">})</span>
+</code></pre>
+<p>Start the Registration Server and mDNS services</p>
+<h3 id='event-39-started-39'>Event: &#39;started&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">message</span><span class="p">:</span> <span class="s2">"NMOS IS-04 Registration Server Started"</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>started</code> upon start of the registry server</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friendly message for this event</td>
+</tr>
+</tbody></table>
+<h2 id='registrationapi-stop'>RegistrationAPI.stop()</h2><pre class="highlight javascript tab-javascript"><code>  <span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">stop</span><span class="p">()</span>
+
+  <span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'stopped'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+  <span class="p">})</span>
+</code></pre>
+<p>Stop the Registration Server</p>
+<h3 id='event-39-stopped-39'>Event: &#39;stopped&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">message</span><span class="p">:</span> <span class="s2">"NMOS IS-04 Registration Server stopped"</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>stopped</code> upon start of the registry server</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friendly message for this event</td>
+</tr>
+</tbody></table>
+<h2 id='registrationapi-startmdns'>RegistrationAPI.startMDNS()</h2><pre class="highlight javascript tab-javascript"><code>
+<span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">startMDNS</span><span class="p">()</span>
+
+<span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'mdns'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">cb</span><span class="p">.</span><span class="nx">data</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p><code>mdns</code> event may return several objects</p>
+</blockquote>
+
+<p>Manually start the mDNS Services. This is automatically started with <code>start()</code>, but if the mDNS services were manually stopped, you can restart them here.</p>
+<h3 id='event-39-mdns-39'>Event: &#39;mdns&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">status</span><span class="p">:</span> <span class="s1">'advert_start'</span><span class="p">,</span>
+  <span class="nx">message</span><span class="p">:</span> <span class="s1">'mDNS Advertisement has been started'</span><span class="p">,</span>
+  <span class="nx">data</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">hostname</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="nx">txtRecord</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nl">pri</span><span class="p">:</span> <span class="nx">number</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>mdns</code> on several different events. The specific event is listed as the <code>status</code> and the object may be different per each event</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>string</td>
+<td><code>advert_start</code> Start of the mDNS Advertisement</td>
+</tr>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friend message for this event</td>
+</tr>
+<tr>
+<td>data</td>
+<td>object</td>
+<td>Additional data for this event</td>
+</tr>
+<tr>
+<td>data.hostname</td>
+<td>string</td>
+<td>mDNS Advertisement hostname</td>
+</tr>
+<tr>
+<td>data.txtRecord</td>
+<td>object</td>
+<td>txt_records included with mDNS Advertisement</td>
+</tr>
+<tr>
+<td>data.txtRecord.pri</td>
+<td>number</td>
+<td>Registration Server Priority Number</td>
+</tr>
+</tbody></table>
+<h2 id='registrationapi-stopmdns'>RegistrationAPI.stopMDNS()</h2><pre class="highlight javascript tab-javascript"><code>
+<span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">stopMDNS</span><span class="p">()</span>
+
+<span class="nx">RegistrationAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'mdns'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p><code>mdns</code> event may return several objects (see docs)</p>
+</blockquote>
+
+<p>Manually stop the mDNS Services. This is automatically stopped with <code>stop()</code> but can also stop mDNS services manually</p>
+<h3 id='event-39-mdns-39-2'>Event: &#39;mdns&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">status</span><span class="p">:</span> <span class="s1">'advert_stop'</span><span class="p">,</span>
+  <span class="nx">message</span><span class="p">:</span> <span class="s1">'mDNS Advertisement has stopped'</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>mdns</code> on several different events. The specific event is listed as the <code>status</code> and the object may be different per each event</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>string</td>
+<td><code>advert_stop</code> Stop of the mDNS Advertisement</td>
+</tr>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friend message for this event</td>
+</tr>
+</tbody></table>
+<h1 id='queryapi'>QueryAPI</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">is04</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'node-nmos-is04'</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">NodeRAMStore</span><span class="p">()</span>
+<span class="kd">let</span> <span class="nx">QueryAPI</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">QueryAPI</span><span class="p">({</span>
+  <span class="na">store</span><span class="p">:</span> <span class="nx">store</span>
+<span class="p">});</span>
+
+</code></pre>
+<p>Start a NMOS IS-04 Query Service. The Query Service is compliant with the REST API as defined by <a href="https://amwa-tv.github.io/nmos-discovery-registration/branches/v1.3.x/html-APIs/QueryAPI.html">NMOS in their documentation</a> up to NMOS v1.3.</p>
+
+<p>The Query Service also supports WebSocket connections as per <a href="https://amwa-tv.github.io/nmos-discovery-registration/branches/v1.3.x/docs/4.2._Behaviour_-_Querying.html">NMOS documentation on Querying Behavior</a>. In general, the API endpoint <code>POST /subscriptions</code> allows for a WebSocket host to be created on the Query server for clients to connect to and receive real-time updates of resource changes in the store.</p>
+
+<p>The Query Services DOES NOT yet support RQL Queries, as they are specified as optional in the IS-04 v1.3 standard.</p>
+<h3 id='parameters'>Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>store</td>
+<td>required</td>
+<td></td>
+<td>Node Store for access to Registry information</td>
+</tr>
+<tr>
+<td>address</td>
+<td>optional</td>
+<td>&#39;localhost:3002&#39;</td>
+<td>Interface address and port</td>
+</tr>
+</tbody></table>
+<h2 id='queryapi-start'>QueryAPI.start()</h2><pre class="highlight javascript tab-javascript"><code>
+<span class="nx">QueryAPI</span><span class="p">.</span><span class="nx">start</span><span class="p">()</span>
+
+<span class="nx">QueryAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'started'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<p>Start the Query API server to interact with a particular store</p>
+<h3 id='event-39-started-39'>Event: &#39;started&#39;</h3>
+<blockquote>
+<p>Event fires</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">message</span><span class="p">:</span> <span class="s2">"NMOS IS-04 Query Service Started"</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires <code>started</code> upon start of the query service</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friendly message for this event</td>
+</tr>
+</tbody></table>
+<h3 id='event-39-ws-39'>Event: &#39;ws&#39;</h3><pre class="highlight javascript tab-javascript"><code><span class="nx">QueryAPI</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'ws'</span><span class="p">,</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cb</span><span class="p">.</span><span class="nx">message</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+<blockquote>
+<p>Event fires</p>
+</blockquote>
+<pre class="highlight javascript tab-javascript"><code><span class="p">{</span>
+  <span class="nl">event</span><span class="p">:</span> <span class="s1">'start'</span><span class="p">,</span>
+  <span class="nx">message</span><span class="p">:</span> <span class="s2">"webSocket service started"</span>
+<span class="p">}</span>
+</code></pre>
+<p>Fires when the websocket server is started</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Human-friendly message for this event</td>
+</tr>
+</tbody></table>
 <h1 id='model-node'>Model: Node</h1><h2 id='instantiation'>Instantiation</h2><pre class="highlight javascript tab-javascript"><code><span class="kd">let</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">Node</span><span class="p">({</span>
   <span class="na">label</span><span class="p">:</span> <span class="s1">'Test Node'</span><span class="p">,</span>
   <span class="na">description</span><span class="p">:</span> <span class="s2">"This is a new test node"</span>

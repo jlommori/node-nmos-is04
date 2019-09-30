@@ -3,7 +3,7 @@
 <span class="kd">let</span> <span class="nx">store</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">is04</span><span class="p">.</span><span class="nx">NodeRAMStore</span><span class="p">();</span>
 
 </code></pre>
-<p>Create a RAM-based Store for a Node or Registration Server</p>
+<p>Create a RAM-based Store for a Node or Registration Server.</p>
 <h2 id='getresources'>getResources()</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">store</span><span class="p">.</span><span class="nx">getResources</span><span class="p">()</span>
 </code></pre>
 <p>Get all Resources currently available in the store.</p>
