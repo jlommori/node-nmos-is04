@@ -1,6 +1,6 @@
 {
   "name": "node-nmos-is04",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Node.js Module for NMOS IS-04 Node, Discovery, Registration & Query",
   "main": "index.js",
   "dependencies": {
@@ -17,7 +17,6 @@
     "tape": "^4.9.0"
   },
   "scripts": {
-    "test": "tape test/integration/*.js test/*.js",
     "start": "node app.js"
   },
   "repository": {
