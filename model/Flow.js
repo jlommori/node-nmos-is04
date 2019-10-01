@@ -25,6 +25,7 @@ class Flow extends Resource {
     if (params.flow_type == undefined && !params.format) { throw("Flow requires a flow_type or format to be defined ")}
 
     super({
+      type: 'flow',
       id: params.id,
       version: params.version,
       label: params.label,

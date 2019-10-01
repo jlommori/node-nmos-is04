@@ -23,7 +23,7 @@
 </code></pre>
 <p>Create new a new Device object.</p>
 <h3 id='parameters'>Parameters</h3>
-<p>Only a <code>node_id</code> is required, all other parameters are optional. All properties will be generated automatically if not provided.</p>
+<p>Only a <code>node_id</code> is required, all other parameters are optional. All properties will be generated automatically if not provided. If no ID is provided, Serial number is required to generated UUID.</p>
 
 <table><thead>
 <tr>
@@ -38,6 +38,12 @@
 <td>string</td>
 <td></td>
 <td>Globally unique UUID identifier for the Device</td>
+</tr>
+<tr>
+<td>serial</td>
+<td>string</td>
+<td></td>
+<td>Serial number of this physical device</td>
 </tr>
 <tr>
 <td>version</td>

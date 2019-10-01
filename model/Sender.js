@@ -6,7 +6,11 @@ class Sender extends Resource {
   constructor(params) {
     if (params == undefined) { throw("Sender requires parameters to be created") }
 
+    if (!params.serial && !params.id) throw("Serial number required to generate resource")
+
     super({
+      type: 'sender',
+      serial: params.serial,
       id: params.id,
       version: params.version,
       label: params.label,

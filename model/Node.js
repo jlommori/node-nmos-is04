@@ -41,7 +41,11 @@ class Node extends Resource {
     if (params == undefined) {
       params = {}
     }
+
+    if (!params.serial && !params.id) throw("Serial number required to generate resource")
     super({
+      type: 'node',
+      serial: params.serial,
       id: params.id,
       version: params.version,
       label: params.label,

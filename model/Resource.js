@@ -1,13 +1,17 @@
 
 // Describes the resource_base on which all other resources are built
 
-var uuid = require('uuid/v4');
-// var immutable = require('seamless-immutable');
-var Capabilities = require('./Capabilities.js')
-// var Transports = require('./Transports.js');
-// var Formats = require('./Formats.js');
-// var DeviceTypes = require('./DeviceTypes.js');
-// var os = require('os')
+var uuidv4 = require('uuid/v4')
+var uuidv5 = require('uuid/v5');
+
+var counts = {
+  node: 0,
+  device: 0,
+  sender: 0,
+  receiver: 0,
+  source: 0,
+  flow: 0
+}
 
 function nanoSeconds(hrtime) {
   return hrtime[0] * 1e9 + hrtime[1];
@@ -34,7 +38,10 @@ class Resource {
     if (params == undefined) {
       params = {}
     }
-    this.id = this.constructor.generateID(params.id),
+
+    if (params.type) counts[params.type]++
+
+    this.id = this.constructor.generateID(params.id, params.type, params.serial),
     this.version = this.constructor.generateVersion(params.version)
     this.label = this.constructor.generateLabel(params.label)
     this.description = this.constructor.generateDescription(params.desc)
@@ -42,9 +49,12 @@ class Resource {
     this.tags = this.constructor.generateTags(params.tags)
   }
 
-  static generateID(id) {
+  static generateID(id, type, serial) {
     if (arguments.length === 0 || id === null || id === undefined)
-      return uuid();
+      if (!type || type == 'flow') return uuidv4()
+      else {
+        return uuidv5(`${serial}${type}${counts[type]}`, '6ba7b812-9dad-11d1-80b4-00c04fd430c8')
+      }
     else return id;
   }
 
@@ -73,7 +83,7 @@ class Resource {
 
   static generateCaps(caps) {
     if (arguments.length === 0 || caps === null || caps === undefined)
-      return Capabilities;
+      return null;
     else return caps;
   }
 

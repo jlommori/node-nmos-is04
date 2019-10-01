@@ -34,11 +34,12 @@ Create new a new Receiver object.
 
 ### Parameters
 
-`device_id`, `transport`, `interface_bindings`, `receiver_type` and `caps` are required, all other parameters are optional. Optional properties will be generated automatically if not provided.
+`device_id`, `transport`, `interface_bindings`, `receiver_type` and `caps` are required, all other parameters are optional. Optional properties will be generated automatically if not provided. If no ID is provided, Serial number is required to generated UUID.
 
 Parameter | Type | Required | Description
 --------- | ---- | -------- | -----------
 id | string | | Globally unique UUID identifier for the Receiver
+serial | string | | Serial number of this physical device
 version | string | | String formatted PTP timestamp
 label | string | | Freeform string label for the Receiver.
 desc | string | | Detailed description of the resource

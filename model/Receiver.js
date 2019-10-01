@@ -7,7 +7,11 @@ class Receiver extends Resource {
     if (params == undefined) { throw("Receiver requires parameters to be created")}
     if (params.receiver_type == undefined && !params.format) { throw("Receiver requires receiver_type or format to be created")}
 
+    if (!params.serial && !params.id) throw("Serial number required to generate resource")
+
     super({
+      type: 'receiver',
+      serial: params.serial,
       id: params.id,
       version: params.version,
       label: params.label,

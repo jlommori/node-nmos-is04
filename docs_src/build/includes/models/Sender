@@ -26,7 +26,7 @@
 </code></pre>
 <p>Create new a new Sender object.</p>
 <h3 id='parameters'>Parameters</h3>
-<p><code>flow_id</code>, <code>device_id</code> &amp; <code>interface_bindings</code> are required, all other parameters are optional. Optional properties will be generated automatically if not provided.</p>
+<p><code>flow_id</code>, <code>device_id</code> &amp; <code>interface_bindings</code> are required, all other parameters are optional. Optional properties will be generated automatically if not provided. If no ID is provided, Serial number is required to generated UUID.</p>
 
 <table><thead>
 <tr>
@@ -41,6 +41,12 @@
 <td>string</td>
 <td></td>
 <td>Globally unique UUID identifier for the Sender</td>
+</tr>
+<tr>
+<td>serial</td>
+<td>string</td>
+<td></td>
+<td>Serial number of this physical device</td>
 </tr>
 <tr>
 <td>version</td>

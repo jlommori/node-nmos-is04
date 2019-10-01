@@ -34,11 +34,12 @@ Create new a new Source object.
 
 ### Parameters
 
-`device_id` and `format` are required, all other parameters are optional. All properties will be generated automatically if not provided.
+`device_id` and `format` are required, all other parameters are optional. All properties will be generated automatically if not provided. If no ID is provided, Serial number is required to generated UUID.
 
 Parameter | Type | Required | Description
 --------- | ---- | -------- | -----------
 id | string | | Globally unique UUID identifier for the Source
+serial | string | | Serial number of this physical device
 version | string | | String formatted PTP timestamp
 label | string | | Freeform string label for the Source.
 desc | string | | Detailed description of the resource

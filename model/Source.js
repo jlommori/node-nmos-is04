@@ -28,8 +28,11 @@ const _ = require('lodash')
 class Source extends Resource {
   constructor(params) {
     if (params == undefined) { throw("Source requires parameters to be created") }
+    if (!params.id && !params.serial) throw("Serial number required to generate resource")
 
     super({
+      type: 'source',
+      serial: params.serial,
       id: params.id,
       version: params.version,
       label: params.label,

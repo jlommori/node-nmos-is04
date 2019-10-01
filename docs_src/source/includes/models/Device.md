@@ -32,11 +32,12 @@ Create new a new Device object.
 
 ### Parameters
 
-Only a `node_id` is required, all other parameters are optional. All properties will be generated automatically if not provided.
+Only a `node_id` is required, all other parameters are optional. All properties will be generated automatically if not provided. If no ID is provided, Serial number is required to generated UUID.
 
 Parameter | Type | Required | Description
 --------- | ---- | -------- | -----------
 id | string | | Globally unique UUID identifier for the Device
+serial | string | | Serial number of this physical device
 version | string | | String formatted PTP timestamp
 label | string | | Freeform string label for the Device.
 desc | string | | Detailed description of the resource

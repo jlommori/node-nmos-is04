@@ -32,7 +32,10 @@ const _ = require('lodash')
 class Device extends Resource {
   constructor(params) {
     if (params == undefined) { throw("Device requires parameters to be created") }
+    if (!params.serial && !params.id) throw("Serial number required to generate resource")
     super({
+      type: 'device',
+      serial: params.serial,
       id: params.id,
       version: params.version,
       label: params.label,

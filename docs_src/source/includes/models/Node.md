@@ -31,11 +31,12 @@ Create new a new Node object.
 
 ### Parameters
 
-All parameters are optional and will take default values if not provided. Additional properties of the Node are generated automatically.
+All parameters are optional and will take default values if not provided. Additional properties of the Node are generated automatically. If no ID is provided, Serial number is required to generated UUID.
 
 Parameter | Type | Required | Description
 --------- | ---- | -------- | -----------
 id | string | | Globally unique UUID identifier for the Node
+serial | string | | Serial number of this physical device
 version | string | | String formatted PTP timestamp
 label | string | | Freeform string label for the Node.
 desc | string | | Detailed description of the resource

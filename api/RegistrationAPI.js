@@ -223,7 +223,7 @@ class RegistrationAPI extends EventEmitter {
           server.close();
         };
       } else {
-        console.log('Streampunk media ledger registration service running at http://%s:%s',
+        console.log('NMOS IS-04 Registration Server running at http://%s:%s',
           host, port);
       };
     })

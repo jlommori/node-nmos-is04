@@ -116,7 +116,6 @@ class QueryAPI extends EventEmitter {
       if (_.size(this.ws.webSockets) > 0) {
         _.each(this.ws.webSockets, (webSocket) => {
           if (webSocket.resource_path == req.body.resource_path && _.isEqual(webSocket.params, req.body.params)) {
-            console.log('websocket request already exists')
 
             webSocket.max_update_rate_ms = req.body.max_update_rate_ms
             webSocket.persist = req.body.persist
@@ -298,7 +297,6 @@ class QueryAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/:type/:id`, (req, res, next) => {
-      console.log('get :type/:id')
       if (_.includes(types, req.params.type)) {
         let type = req.params.type.slice(0, -1);
         this.singleQuery(req, this.store[`get${_.upperFirst(type)}`](req.params.id)).then((r) => {
@@ -318,7 +316,7 @@ class QueryAPI extends EventEmitter {
     })
 
     this.store.on("create", (e) => {
-      console.log('ws store create event', e)
+      // console.log('ws store create event', e)
       if (_.size(this.ws.webSockets) > 0) {
         _.each(this.ws.webSockets, (ws) => {
           if (ws.resource_path == e.topic) {
@@ -347,7 +345,7 @@ class QueryAPI extends EventEmitter {
     })
 
     this.store.on("modify", (e) => {
-      console.log('ws store modify event')
+      // console.log('ws store modify event')
       if (_.size(this.ws.webSockets > 0)) {
         _.each(this.ws.webSockets, (ws) => {
           if (ws.resource_path == e.topic) {
@@ -403,7 +401,7 @@ class QueryAPI extends EventEmitter {
     })
 
     this.store.on('delete', (e) => {
-      console.log('ws store delete event')
+      // console.log('ws store delete event')
       if (_.size(this.ws.webSockets > 0)) {
         _.each(this.ws.webSockets, (ws) => {
           if (ws.resource_path == e.topic) {
@@ -631,7 +629,7 @@ class QueryAPI extends EventEmitter {
       var port = this.server.address().port;
       if (e) {
         if (e.code == 'EADDRINUSE') {
-          console.log(`Address http://${host}:${port} already in use.`);
+          console.warn(`Address http://${host}:${port} already in use.`);
           server.close();
         } else {
           util.statusError(400, 'start() error', err)
@@ -658,7 +656,7 @@ class QueryAPI extends EventEmitter {
     this.ws.server.on('connection', (ws, req) => {
       let clientId = uuid()
       let verified = false
-      console.log('new ws connection', clientId)
+
 
       let params = (req.url.match( new RegExp("([^?=&]+)(=([^&]*))?", 'g' )) || [])
         .reduce( function (result, each, n, every) {
@@ -668,10 +666,8 @@ class QueryAPI extends EventEmitter {
         }, {})
 
       if (!params.uid) {
-        console.log('ws close: no uid parameter provided')
-        ws.close(1008, "uid parameter required for websocket connection")
+
       } else if (!_.hasIn(this.ws.webSockets, params.uid)) {
-        console.log('ws close: uid not found in ws.webSockets')
         ws.close(1008, "requested websocket uid is not available on this Query instance")
       } else {
         verified = true
@@ -709,27 +705,23 @@ class QueryAPI extends EventEmitter {
         }
 
         ws.send(JSON.stringify(grain))
-        console.log('webSockets', this.ws.webSockets)
+
       }
 
       ws.on('message', (msg) => {
-        console.log('WSS SERVER: received message', msg)
+
       })
 
       ws.on('close', (e) => {
         if (verified) {
           this.ws.webSockets[params.uid].clients.splice(this.ws.webSockets[params.uid].clients.indexOf(clientId), 1)
           if (!this.ws.webSockets[params.uid].persist && this.ws.webSockets[params.uid].clients.length == 0) {
-            console.log('all clients disconnected and non-persistent, tearring down ws')
             delete this.ws.webSockets[params.uid]
           }
         }
-        console.log('WS Close', clientId)
-        console.log('webSockets', this.ws.webSockets)
       })
 
       this.on('ws_update', (update) => {
-        console.log('ws_update', update)
 
         let grain = {
           grain_type: "event",

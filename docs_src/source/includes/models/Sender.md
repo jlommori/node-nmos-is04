@@ -35,11 +35,12 @@ Create new a new Sender object.
 
 ### Parameters
 
-`flow_id`, `device_id` & `interface_bindings` are required, all other parameters are optional. Optional properties will be generated automatically if not provided.
+`flow_id`, `device_id` & `interface_bindings` are required, all other parameters are optional. Optional properties will be generated automatically if not provided. If no ID is provided, Serial number is required to generated UUID.
 
 Parameter | Type | Required | Description
 --------- | ---- | -------- | -----------
 id | string | | Globally unique UUID identifier for the Sender
+serial | string | | Serial number of this physical device
 version | string | | String formatted PTP timestamp
 label | string | | Freeform string label for the Sender.
 desc | string | | Detailed description of the resource
