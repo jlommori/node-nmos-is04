@@ -28,7 +28,7 @@ class QueryAPI extends EventEmitter {
       }
     }
 
-    this.address = params.address ? params.address.match(/(^.+)(?=:)/g) : '0.0.0.0'
+    this.address = params.address ? params.address.match(/(^.+)(?=:)/g) : 'localhost'
     this.port = params.address ? params.address.match(/:(.+)/g)[0].slice(1) : '3002'
 
     if (!params.store) throw("Store is required to create this Registration API")
@@ -125,7 +125,7 @@ class QueryAPI extends EventEmitter {
 
             ws = {
               id: webSocket.id,
-              ws_href: `ws://${this.address}:${this.port}/ws/?uid=${webSocket.id}`,
+              ws_href: `ws://${this.address}:${parseInt(this.port)+1}/ws/?uid=${webSocket.id}`,
               max_update_rate_ms: webSocket.max_update_rate_ms,
               persist: webSocket.persist,
               secure: webSocket.secure,
@@ -136,6 +136,7 @@ class QueryAPI extends EventEmitter {
             }
 
             this.ws.webSockets[ws.id] = ws
+            this.ws.webSockets[ws.id].clients = []
             code = 200
 
           } else {
@@ -151,7 +152,7 @@ class QueryAPI extends EventEmitter {
 
             ws = {
               id: id,
-              ws_href: `ws://${this.address}:${this.port}/ws/?uid=${id}`,
+              ws_href: `ws://${this.address}:${parseInt(this.port)+1}/ws/?uid=${id}`,
               max_update_rate_ms: max_update_rate_ms,
               persist: persist,
               secure: secure,
@@ -180,7 +181,7 @@ class QueryAPI extends EventEmitter {
 
         ws = {
           id: id,
-          ws_href: `ws://${this.address}:${this.port}/ws/?uid=${id}`,
+          ws_href: `ws://${this.address}:${parseInt(this.port)+1}/ws/?uid=${id}`,
           max_update_rate_ms: max_update_rate_ms,
           persist: persist,
           secure: secure,
@@ -651,7 +652,10 @@ class QueryAPI extends EventEmitter {
       event: 'start',
       message: 'webSocket server started'
     })
-    this.ws.server = new WebSocket.Server({ port: this.port })
+    this.ws.server = new WebSocket.Server({
+      host: this.address,
+      port: parseInt(this.port) + 1
+    })
 
     this.ws.server.on('connection', (ws, req) => {
       let clientId = uuid()
