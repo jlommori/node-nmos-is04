@@ -20,6 +20,9 @@ let Source = require('../model/Source.js')
 let Flow = require('../model/Flow.js')
 let Sender = require('../model/Sender.js')
 let Receiver = require('../model/Receiver.js')
+const chalk = require('chalk')
+const _ = require('lodash')
+const moment = require('moment')
 
 function extractVersions(v) {
   var m = v.match(/^([0-9]+):([0-9]+)$/)
@@ -133,6 +136,79 @@ function generateVersion() {
   return ver;
 }
 
+class Logger {
+  // Levels:
+  //  1: Debug
+  //  2: Information
+  //  3: Warnings
+  //  4: Errors
+  constructor(name, color, level, verbose) {
+    if (typeof level == 'number') {
+      this.masterLevel = level
+    } else if (typeof level == 'string') {
+      switch (level) {
+        case "debug":
+          this.masterLevel = 1
+          break;
+        case "info":
+          this.masterLevel = 2
+          break;
+        case "warn":
+          this.masterLevel = 3
+          break;
+        case "error":
+          this.masterLevel = 4
+          break;
+      }
+    } else {
+      this.masterLevel = 3
+    }
+    
+    this.color = {
+      txtColor: color.txtColor,
+      bgColor: `bg${_.upperFirst(color.bgColor)}`
+    }
+    this.name = name
+    this.verbose = verbose
+  }
+
+  debug(msg, obj) {
+    let ts = moment().format("HH:mm:ss.SSS")
+    if (this.masterLevel < 2) {
+      console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {white  DEBUG } {gray ${msg}} `)
+      if (this.verbose && obj) console.log(obj)
+    }
+  }
+
+  info(msg, obj) {
+    let ts = moment().format("HH:mm:ss.SSS")
+    if (this.masterLevel < 3) {
+      console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {bgBlue.black  INFO } ${msg} `)
+      if (this.verbose && obj) console.log(obj)
+    }
+  }
+
+  warn(msg, obj) {
+    let ts = moment().format("HH:mm:ss.SSS")
+    if (this.masterLevel < 4) {
+      console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {bgYellow.black  WARN } ${msg} `)
+      if (this.verbose && obj) console.log(obj)
+    }
+
+  }
+
+  error(msg, obj) {
+    let ts = moment().format("HH:mm:ss.SSS")
+    if (this.masterLevel < 5) {
+      console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {bgRed.white  ERROR } ${msg} `)
+      if (this.verbose && obj) console.log(obj)
+    }
+
+  }
+
+}
+
+
 var util = {
   extractVersions : extractVersions,
   compareVersions : compareVersions,
@@ -142,7 +218,8 @@ var util = {
   statusError: statusError,
   checkValidAndForward: checkValidAndForward,
   validUUID: validUUID,
-  generateVersion: generateVersion
+  generateVersion: generateVersion,
+  Logger: Logger
 };
 
 module.exports = util;

@@ -39,6 +39,9 @@ class QueryAPI extends EventEmitter {
       hostname: params.hostname ? params.hostname : 'nmos_query'
     }
 
+    this.log = new util.Logger('QueryAPI', {txtColor: 'white', bgColor:'magenta'}, params.log ? params.log.level ? params.log.level : 2 : 2, params.log ? params.log.verbose ? params.log.verbose : false : false)
+    this.log.info('QueryAPI initialized', this)
+
     this.app.use((req, res, next) => {
       // TODO enhance this to better supports CORS
       res.header("Access-Control-Allow-Origin", "*");
@@ -56,20 +59,24 @@ class QueryAPI extends EventEmitter {
     this.app.use(bodyparser.json());
 
     this.app.get('/', function (req, res) {
+      this.log.debug('ROUTE: GET /')
       res.status(200).json(['x-nmos/']);
     });
 
     this.app.get('/x-nmos/', function (req, res) {
+      this.log.debug('ROUTE: GET /x-nmos/')
       res.status(200).json(['query/']);
     });
 
     this.app.get('/x-nmos/query/', function (req, res) {
+      this.log.debug('ROUTE: GET /x-nmos/query/')
       res.status(200).json([ "v1.0/", "v1.2" ]);
     });
 
     let base = '/x-nmos/query/:version'
 
     this.app.get(`${base}/`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmmos/query/${req.params.version}/`)
       res.status(200).json([
         "subscriptions/",
         "flows/",
@@ -82,6 +89,7 @@ class QueryAPI extends EventEmitter {
     })
 
     this.app.post(`${base}/subscriptions`, (req, res) => {
+      this.log.debug(`ROUTE: POST /x-nmmos/query/${req.params.version}/subscriptions`)
       if (!req.body.resource_path || !req.body.params) {
         res.status(400).json({
           code: 400,
@@ -220,10 +228,12 @@ class QueryAPI extends EventEmitter {
 
     //Used for debug only
     this.app.get(`${base}/subscriptions`, (req, res, next) => {
+      this.log.debug(`ROUTE: GET /x-nmmos/query/${req.params.version}/subscriptions`)
       res.status(200).json(this.ws.webSockets)
     })
 
     this.app.get(`${base}/subscriptions/:id`, (req, res, next) => {
+      this.log.debug(`ROUTE: GET /x-nmmos/query/${req.params.version}/subscriptions/${req.params.id}/`)
       if (!util.validUUID(req.params.id)) {
         res.status(400).json({
           code: 400,
@@ -245,6 +255,7 @@ class QueryAPI extends EventEmitter {
     })
 
     this.app.delete(`${base}/subscriptions/:id`, (req, res, next) => {
+      this.log.debug(`ROUTE: DELETE /x-nmmos/query/${req.params.version}/subscriptions/${id}`)
       if (!util.validUUID(req.params.id)) {
         res.status(400).json({
           code: 400,
@@ -273,7 +284,9 @@ class QueryAPI extends EventEmitter {
     let types = ["nodes", "devices", "flows", "sources", "senders", "receivers"]
 
     this.app.get(`${base}/:type`, (req, res, next) => {
+      this.log.debug(`ROUTE: GET /x-nmmos/query/${req.params.version}/${req.params.type}/`)
       if (_.includes(types, req.params.type)) {
+        this.log.info(`QUERY: get${_.upperFirst(req.params.type)}`)
         this.basicQuery(req, this.store[`get${_.upperFirst(req.params.type)}`]()).then((r) => {
           res.header("Link", r.headers.link)
           res.header("X-Paging-Limit", r.headers.limit)
@@ -298,8 +311,10 @@ class QueryAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/:type/:id`, (req, res, next) => {
+      this.log.debug(`ROUTE: GET /x-nmmos/query/${req.params.version}/${req.params.type}/${req.params.id}/`)
       if (_.includes(types, req.params.type)) {
         let type = req.params.type.slice(0, -1);
+        this.log.info(`QUERY: get${_.upperFirst(type)}(${req.params.id})`)
         this.singleQuery(req, this.store[`get${_.upperFirst(type)}`](req.params.id)).then((r) => {
           res.status(r.code).json(r.data)
         }).catch((e) => {
@@ -423,7 +438,11 @@ class QueryAPI extends EventEmitter {
 
   }
 
-  static downgradeCheck(ver, downgrade) {
+  downgradeCheck(ver, downgrade) {
+    this.log.debug('downgradeCheck(ver, downgrade)', {
+      ver: ver,
+      downgrade: downgrade
+    })
     let majorVer = ver.match(/(\d)/g)[0]
     let majorDowngrade = downgrade.match(/(\d)/g)[0]
     if (majorDowngrade != majorVer) {
@@ -433,7 +452,10 @@ class QueryAPI extends EventEmitter {
     }
   }
 
-  static getVersions(obj, store) {
+  getVersions(obj, store) {
+    this.log.debug('getVersions(obj, store)', {
+      obj: obj
+    })
     if (obj instanceof models.Node) {
       return obj.api.versions[0].match(/(v\d.\d)/g)
     } else if (obj instanceof models.Device) {
@@ -446,7 +468,11 @@ class QueryAPI extends EventEmitter {
     }
   }
 
-  static timeCheck(a, b) {
+  timeCheck(a, b) {
+    this.log.debug('timeCheck(a, b)', {
+      a: a,
+      b: b
+    })
     let aSec = a.match(/(\d+)/g)[0]
     let aNano = a.match(/(\d+)/g)[1]
     let bMin = b.match(/(\d+)/g)[0]
@@ -466,6 +492,7 @@ class QueryAPI extends EventEmitter {
   }
 
   basicQuery(req, data) {
+    this.log.debug('basicQuery(req, data)')
     return new Promise((res, rej) => {
       if (req.query['query.rql']) {
         rej({
@@ -481,7 +508,7 @@ class QueryAPI extends EventEmitter {
       let headers = {}
       if (req.query.downgrade) {
         downgrade = req.query.downgrade
-        if (!this.constructor.downgradeCheck(req.params.version, downgrade)) {
+        if (!this.downgradeCheck(req.params.version, downgrade)) {
           rej({
             code: 400,
             message: "Downgrade may not be used between major versions"
@@ -537,7 +564,7 @@ class QueryAPI extends EventEmitter {
 
       if (paging.since) {
         _.each(returnArray, (obj, index) => {
-          if (!this.constructor.timeCheck(obj.version, paging.since)) {
+          if (!this.timeCheck(obj.version, paging.since)) {
             returnArray.splice(index, 1)
           }
         })
@@ -545,7 +572,7 @@ class QueryAPI extends EventEmitter {
 
       if (paging.until) {
         _.each(returnArray, (obj, index) => {
-          if (!this.constructor.timeCheck(paging.until, obj.version)) {
+          if (!this.timeCheck(paging.until, obj.version)) {
             returnArray.splice(index, 1)
           }
         })
@@ -561,24 +588,27 @@ class QueryAPI extends EventEmitter {
         }
       }
 
-      _.each(returnArray, (obj, index) => {
-        if (req.params.version && !downgrade) {
-          if (!_.includes(this.constructor.getVersions(obj, this.store), req.params.version)) {
-            returnArray.splice(index,1)
-          }
+      // _.each(returnArray, (obj, index) => {
+      //   if (req.params.version && !downgrade) {
+      //     if (!_.includes(this.getVersions(obj, this.store), req.params.version)) {
+      //       returnArray.splice(index,1)
+      //     }
+      //   }
+      //   //TODO: Add appropriate behavior for downgrade
+      // })
+
+      if (returnArray.length > 0) {
+        headers.limit = paging.limit
+        headers.since = returnArray[0].version
+        headers.until = returnArray[(returnArray.length - 1)].version
+
+        if (paging.used) {
+
+        } else {
+          headers.link = `<${req.protocol}://${this.address}:${this.port}${req.path}?paging.since=${headers.since}&paging.limit=${headers.limit}>; rel="first", <${req.protocol}://${this.address}:${this.port}${req.path}?paging.until=${headers.until}&paging.limit=${headers.limit}>; rel="last"`
         }
-        //TODO: Add appropriate behavior for downgrade
-      })
-
-      headers.limit = paging.limit
-      headers.since = returnArray[0].version
-      headers.until = returnArray[(returnArray.length - 1)].version
-
-      if (paging.used) {
-
-      } else {
-        headers.link = `<${req.protocol}://${this.address}:${this.port}${req.path}?paging.since=${headers.since}&paging.limit=${headers.limit}>; rel="first", <${req.protocol}://${this.address}:${this.port}${req.path}?paging.until=${headers.until}&paging.limit=${headers.limit}>; rel="last"`
       }
+
 
       res({
         code: 200,
@@ -589,13 +619,17 @@ class QueryAPI extends EventEmitter {
   }
 
   singleQuery(req, data) {
+    this.log.debug('singleQuery(req, data)', {
+      req: req,
+      data: data
+    })
     return new Promise((res, rej) => {
       let obj = data
 
       if (obj) {
 
         if (req.query.downgrade) {
-          if (!this.constructor.downgradeCheck(req.params.version, req.query.downgrade)) {
+          if (!this.downgradeCheck(req.params.version, req.query.downgrade)) {
             rej({
               code: 400,
               message: "Downgrade may not be used between major versions"
@@ -603,7 +637,7 @@ class QueryAPI extends EventEmitter {
           }
         }
 
-        if (!_.includes(this.constructor.getVersions(obj, this.store), req.params.version)) {
+        if (!_.includes(this.getVersions(obj, this.store), req.params.version)) {
           rej({
             code: 409,
             message: "Node does not support requested version"
@@ -625,19 +659,19 @@ class QueryAPI extends EventEmitter {
   }
 
   start() {
+    this.log.debug('start()')
     this.server = this.app.listen(this.port, this.address, (e) => {
-      var host = this.server.address().address;
-      var port = this.server.address().port;
+
       if (e) {
         if (e.code == 'EADDRINUSE') {
-          console.warn(`Address http://${host}:${port} already in use.`);
+          this.log.warn(`Address http://${this.address}:${this.port} already in use.`)
           server.close();
         } else {
           util.statusError(400, 'start() error', err)
         }
 
       } else {
-        console.log(`NMOS IS-04 Query Service running at http://${host}:${port}`);
+        this.log.info(`NMOS IS-04 Query Service running at http://${this.address}:${this.port}`);
         this.emit('started', {
           message: 'NMOS IS-04 Query Service started'
         })
@@ -648,14 +682,19 @@ class QueryAPI extends EventEmitter {
   }
 
   startWebSockets() {
-    this.emit('ws', {
-      event: 'start',
-      message: 'webSocket server started'
-    })
+    this.log.debug('startWebSockets()')
+
     this.ws.server = new WebSocket.Server({
       host: this.address,
       port: parseInt(this.port) + 1
     })
+
+    this.emit('ws', {
+      event: 'start',
+      message: 'webSocket server started'
+    })
+
+    this.log.info('webSocket server started')
 
     this.ws.server.on('connection', (ws, req) => {
       let clientId = uuid()
@@ -703,11 +742,12 @@ class QueryAPI extends EventEmitter {
           },
           grain: {
             type: "urn:x-nmos:format:data.event",
-            topic: this.ws.webSockets[params.uid].resource_path,
+            topic: this.ws.webSockets[params.uid].resource_path + '/',
             data: grainItems
           }
         }
 
+        this.log.debug('ws send message', grain)
         ws.send(JSON.stringify(grain))
 
       }
@@ -744,7 +784,7 @@ class QueryAPI extends EventEmitter {
           },
           grain: {
             type: "urn:x-nmos:format:data.event",
-            topic: this.ws.webSockets[params.uid].resource_path,
+            topic: this.ws.webSockets[params.uid].resource_path + '/',
             data: null
           }
         }
@@ -772,7 +812,7 @@ class QueryAPI extends EventEmitter {
             }
           ]
         }
-
+        this.log.debug('ws send message', grain)
         ws.send(JSON.stringify(grain))
 
       })

@@ -73,6 +73,9 @@ class NodeAPI extends EventEmitter {
       hostname: null
     }
 
+    this.log = new util.Logger("NodeAPI", {txtColor: 'black', bgColor: 'yellow'}, params.log ? params.log.level ? params.log.level : 2 : 2, params.log ? params.log.verbose ? params.log.verbose : false : false)
+    this.log.info('NodeAPI initialized', this)
+
     this.app.use((req, res, next) => {
       //TODO: enhance this to better supports CORS
       res.header("Access-Control-Allow-Origin", "*");
@@ -90,20 +93,24 @@ class NodeAPI extends EventEmitter {
     this.app.use(bodyparser.json());
 
     this.app.get('/', (req, res) => {
+      this.log.debug('ROUTE: GET /')
       res.status(200).json(['x-nmos/']);
     });
 
     this.app.get('/x-nmos/', (req, res) => {
+      this.log.debug('ROUTE: GET /x-nmos/')
       res.status(200).json(['node/']);
     });
 
     this.app.get('/x-nmos/node/', (req, res) => {
+      this.log.debug('ROUTE: GET /x-nmos/node/')
       res.status(200).json([ "v1.1/", "v1.2" ]);
     });
 
     let base = '/x-nmos/node/:version'
 
     this.app.get(`${base}/`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/`)
       res.status(200).json([
         "self/",
         "sources/",
@@ -115,14 +122,17 @@ class NodeAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/self`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/self/`)
       res.status(200).json(this.store.getSelf())
     })
 
     this.app.get(`${base}/sources`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/sources`)
       res.status(200).json(this.store.getSources())
     })
 
     this.app.get(`${base}/sources/:id`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/sources/${req.params.id}`)
       if (!util.validUUID(req.params.id)) {
         res.status(400).json({
           code: 400,
@@ -145,10 +155,12 @@ class NodeAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/flows/`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/flows/`)
       res.status(200).json(this.store.getFlows())
     })
 
     this.app.get(`${base}/flows/:id`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/flows/${req.params.id}`)
       if (!util.validUUID(req.params.id)) {
         res.status(400).json({
           code: 400,
@@ -171,6 +183,7 @@ class NodeAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/devices`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/devices/`)
       res.status(200).json(this.store.getDevices())
     })
 
@@ -197,10 +210,12 @@ class NodeAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/senders/`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/devices/${req.params.id}/`)
       res.status(200).json(this.store.getSenders())
     })
 
     this.app.get(`${base}/senders/:id`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/senders/${req.params.id}/`)
       if (!util.validUUID(req.params.id)) {
         res.status(400).json({
           code: 400,
@@ -223,10 +238,12 @@ class NodeAPI extends EventEmitter {
     })
 
     this.app.get(`${base}/receivers`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/receivers/`)
       res.status(200).json(this.store.getReceievers())
     })
 
     this.app.get(`${base}/receivers/:id`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/receivers/${req.params.id}/`)
       if (!util.validUUID(req.params.id)) {
         res.status(400).json({
           code: 400,
@@ -250,6 +267,7 @@ class NodeAPI extends EventEmitter {
 
     //TODO: route for PUT /${base}/receivers/:id/target (deprecated) ?
     this.app.put(`${base}/receivers/:id/target`, (req, res) => {
+      this.log.debug(`ROUTE: GET /x-nmos/node/${req.params.version}/receivers/${req.params.id}/target/`)
       res.status(501).json({
         code: 501,
         error: "This resources is not available yet",
@@ -288,14 +306,15 @@ class NodeAPI extends EventEmitter {
    * @fires NodeAPI#start
    */
   start() {
+    this.log.debug('start()')
     this.server = this.app.listen(this.port, this.iface, (e) => {
       if (e) {
         if (e.code == 'EADDRINUSE') {
-          console.log('Address http://%s:%s already in use.', this.iface, this.port);
+          this.log.warn(`Address http://${this.iface}:${this.port} already in use.`)
           this.server.close();
         };
       } else {
-        console.log('Node NMOS-IS04 Node server running at http://%s:%s', this.iface, this.port);
+        this.log.info(`Node NMOS-IS04 Node server running at http://${this.iface}:${this.port}`);
         this.startMDNS()
       };
     });
@@ -323,11 +342,15 @@ class NodeAPI extends EventEmitter {
    * @fires NodeAPI#stopped
    */
   stop() {
-    console.log('Node NMOS-IS04 Node server at http://%s:%s shutting down', this.iface, this.port);
+    this.log.debug('stop()')
+
     this.server.close()
     if (this.mdns.server) this.mdns.server.stop()
     if (this.mdns.browser) this.mdns.browser.stop()
     this.updateRegistry('disconnect')
+
+    this.log.info(`NMOS IS-04 Node server at http://${this.iface}:${this.port} has stopped`)
+
     /**
      * IS-04 Node has stopped
      * @event NodeAPI#stopped
@@ -344,6 +367,7 @@ class NodeAPI extends EventEmitter {
    * @fires NodeAPI#mdns_advert_start
    */
   startMDNS() {
+    this.log.debug('startMDNS()')
     let node = this.store.getSelf()
 
     _.each(node.api.endpoints, (endpoint) => {
@@ -383,6 +407,8 @@ class NodeAPI extends EventEmitter {
 
       this.mdns.server.start();
 
+      this.log.info('mDNS Advertisement has started.')
+
       /**
        * mDNS Advertisement has been started for this Node
        *
@@ -418,6 +444,7 @@ class NodeAPI extends EventEmitter {
       this.mdns.browser = mdns.createBrowser(mdns.tcp('nmos-register'))
       if (!this.regServer.static) {
         this.mdns.browser.start()
+        this.log.info('mDNS Browse for Registration Servers has been started')
         /**
          * mDNS Advertisement has been started for this Node
          * @event NodeAPI#mdns_browse_start
@@ -460,8 +487,10 @@ class NodeAPI extends EventEmitter {
    * @property {string} message mDNS Event Message
    */
   stopMDNS() {
+    this.log.debug('stopMDNS()')
     if (this.mdns.server) {
       this.mdns.server.stop()
+      this.log.info("Node mDNS Advertisement has stopped")
       /**
        * mDNS Advertisement has been stopped for this Node
        * @event NodeAPI#mdns_advert_stop
@@ -475,6 +504,7 @@ class NodeAPI extends EventEmitter {
 
     if (this.mdns.browser) {
       this.mdns.browser.stop()
+      this.log.info('Node mDNS browse for registration servers have stopped')
       /**
        * mDNS Browse has been stopped for this Node
        * @event NodeAPI#mdns_browse_stop
@@ -489,6 +519,7 @@ class NodeAPI extends EventEmitter {
   }
 
   selectCandidate() {
+    this.log.debug('selectCandidate()')
     if (this.mdns.candidates.length > 0) {
       var selected = this.mdns.candidates.sort(function (x, y) {
         return parseInt(x.txtRecord.pri) > parseInt(y.txtRecord.pri);
@@ -519,6 +550,7 @@ class NodeAPI extends EventEmitter {
   }
 
   resetMDNSAd(status) {
+    this.log.debug('resetMDNSAd()')
     if (status === "connected") {
       let txt_records = {
         api_proto: "http",
@@ -555,6 +587,10 @@ class NodeAPI extends EventEmitter {
   }
 
     async updateRegistry(status, params) {
+      this.log.debug('updateRegistry(status, params)', {
+        status: status,
+        params: params
+      })
 
     if (!params) params = {}
 
@@ -617,7 +653,11 @@ class NodeAPI extends EventEmitter {
     }
 
     async function makeRequest(type, data, base) {
-      // console.log('makeRequest: ', base)
+      this.log.debug('makeRequest(type, data, base)', {
+        type: type,
+        data: data,
+        base: base
+      })
       try {
         const res = await axios({
           method: 'POST',
@@ -639,6 +679,10 @@ class NodeAPI extends EventEmitter {
   }
 
   async heartbeat(base, id) {
+    this.log.debug('heartbeat(base, id)', {
+      base: base,
+      id: id
+    })
     this.emit("heartbeat", {
       status: "sent",
       message: "Heartbeat sent to Registration Server",

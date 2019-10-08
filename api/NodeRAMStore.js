@@ -37,16 +37,17 @@ const EventEmitter = require('events');
  * @return {(NodeRAMStore|Error)} New node RAM store or an error.
  */
 class NodeRAMStore extends EventEmitter {
-  constructor() {
+  constructor(params) {
+    if (!params) params = {}
     super()
-    // console.log('NodeRAMStore init', self)
+    
     /**
      * Details of this [node]{@link Node}. For use by the node API, not when in
      * use as a registry.
      * @type {Node}
      */
     // this.setSelf(node).then(() => {
-    //   console.log('setSelf completed')
+
     // }).catch((e) => {
     //   console.error('setSelf Err', e)
     // })
@@ -82,6 +83,9 @@ class NodeRAMStore extends EventEmitter {
      */
     this.receivers = {};
 
+    this.log = new util.Logger('NodeRAMStore', {txtColor: 'black', bgColor: 'green'}, params.log ? params.log.level ? params.log.level : 2 : 2, params.log ? params.log.verbose ? params.log.verbose : false : false)
+    this.log.info('NodeRAMStore initialized', this)
+
   }
 
 
@@ -89,6 +93,7 @@ class NodeRAMStore extends EventEmitter {
 
 
   getResources() {
+    this.log.debug('getResources()')
     return {
       self: this.self,
       nodes: this.nodes,
@@ -101,6 +106,7 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getResourceIDs() {
+    this.log.debug('getResourceIDs()')
     let nodeIds = []
     let deviceIds = []
     let sourceIds = []
@@ -127,6 +133,7 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getResourceCounts() {
+    this.log.debug('getResourceCounts()')
     let s = 0
     if (this.self) s = 1
     return {
@@ -142,29 +149,47 @@ class NodeRAMStore extends EventEmitter {
 
   // SELF
   getSelf() {
+    this.log.debug('getSelf()')
     return this.self
   }
 
   setSelf(node) {
+    this.log.debug('setSelf(node)', {
+      node: node
+    })
     var current = this.self
     if (!util.isType(node, 'Node')) {
-      throw util.statusError(400, "Object is not of the Node type")
+      this.log.error('Object is not of the Node type', node)
+      throw util.statusError(400)
     }
 
     if (!node.valid()) {
-      throw util.statusError(400, "Node structure is not valid")
+      this.log.error("Node structure is not valid", node)
+      throw util.statusError(400)
     }
 
     if (this.self && node.id !== this.self.id) {
-      throw util.statusError(400, "A replacement Node value must have the same identifier '" + this.self.id + "' as this Node this store represents.")
+      this.log.error("A replacement Node value must have the same identifier '" + this.self.id + "' as this Node this store represents.", {
+        node: node,
+        self: this.self
+      })
+      throw util.statusError(400)
     }
 
     if (this.self && node.version === this.self.version) {
-      throw util.statusError(400, "The replacement Node must have a different version number")
+      this.log.error("The replacement Node must have a different version number", {
+        node: node,
+        self: this.self
+      })
+      throw util.statusError(400)
     }
 
     if (this.self && util.compareVersions(node.version, this.self.version) !== -1) {
-      throw util.statusError(400, "The replacement Node must have a newer version number")
+      this.log.error("The replacement Node must have a newer version number", {
+        node: node,
+        self: this.self
+      })
+      throw util.statusError(400)
     }
 
     this.self = node
@@ -179,8 +204,17 @@ class NodeRAMStore extends EventEmitter {
 
   // NODES
   putNode(node) {
-    if (!util.isType(node, 'Node')) { throw util.statusError(400, "Object is not of the Node type") }
-    if (!util.checkValidAndForward(node, this.nodes, 'node')) { throw util.statusError(400, "Object is not valid") }
+    this.log.debug('putNode(node)', {
+      node: node
+    })
+    if (!util.isType(node, 'Node')) { 
+      this.log.error("Object is not of the Node type", node)
+      throw util.statusError(400) 
+    }
+    if (!util.checkValidAndForward(node, this.nodes, 'node')) { 
+      this.log.error("Object is not valid", node)
+      throw util.statusError(400) 
+    }
 
     if (!this.nodes[node.id]) {
       this.nodes[node.id] = node
@@ -200,20 +234,28 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getNodes() {
+    this.log.debug('getNodes()')
     return this.nodes
   }
 
   getNode(id) {
-    // console.log('getNode', id)
-    if (!id || !util.validUUID(id) || typeof id != "string") { throw util.statusError(400, "Query must be a valid UUID") }
+    this.log.debug('getNode(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != "string") { 
+      this.log.error('Query must be a valid UUID', id)
+      throw util.statusError(400) }
 
     return _.find(this.nodes, (o) => { return o.id == id })
   }
 
   deleteNode(id) {
-    console.log('delete node', id)
+    this.log.debug('deleteNode(id)', {
+      id: id
+    })
     if (!id || typeof id != 'string' || !util.validUUID(id)) {
-      throw util.statusError(400, "Query must be a valid UUID")
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400)
     }
 
     this.emit('delete', {
@@ -226,17 +268,30 @@ class NodeRAMStore extends EventEmitter {
 
   // DEVICES
   putDevice(device) {
-    // console.log('putDevice', device)
-    if (!util.isType(device, 'Device')) { throw util.statusError(400, "Object is not of the Device type") }
-    if (!util.checkValidAndForward(device, this.devices, 'Device')) { throw util.statusError(400, "Object is not valid") }
+    this.log.debug('putDevice(device)', {
+      device: device
+    })
+    if (!util.isType(device, 'Device')) { 
+      this.log.error("Object is not of the Device type", device)
+      throw util.statusError(400) }
+    if (!util.checkValidAndForward(device, this.devices, 'Device')) { 
+      this.log.error("Object is not valid", device)
+      throw util.statusError(400) }
 
     if (this.self) { //if self exists, this is a node, not registry
       if (device.node_id !== this.self.id) {
-        throw util.statusError(400, "Device node_id must reference this node")
+        this.log.error("Device node_id must reference this node", {
+          device: device,
+          self: this.self
+        })
+        throw util.statusError(400)
       }
     } else {
       if (Object.keys(this.nodes).indexOf(device.node_id) < 0) {
-        throw util.statusError(400, "Device node_id property must reference existing node")
+        this.log.error('Device node_id property must reference existing node', {
+          device: device
+        })
+        throw util.statusError(400)
       }
     }
 
@@ -257,34 +312,46 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getDevices(query) {
-    // console.log('getDevices', query)
-    // if (typeof query == "object") {
-    //   _.each(query, (q) => {
-    //     if (!util.validUUID(q)) {
-    //       throw util.statusError(400, "Query array must contain only UUIDs")
-    //     }
-    //   })
-    //   return _.filter(this.devices, (o) => { return _.includes(query, o.id)})
-    // } else if (typeof query == "string") {
-    //   return this.getDevice(query)
-    // } else {
-    //   return this.devices
-    // }
-    //
+    this.log.debug('getDevices(query)', {
+      query: query
+    })
+    if (typeof query == "object") {
+      _.each(query, (q) => {
+        if (!util.validUUID(q)) {
+          this.log.error("Query array must contain only UUIDs", {
+            query: q
+          })
+          throw util.statusError(400)
+        }
+      })
+      return _.filter(this.devices, (o) => { return _.includes(query, o.id)})
+    } else if (typeof query == "string") {
+      return this.getDevice(query)
+    } else {
+      return this.devices
+    }
+
     return this.devices
   }
 
   getDevice(id) {
-    // console.log('getDevice', id)
-    if (!id || !util.validUUID(id) || typeof id != "string") { throw util.statusError(400, "Query must be a valid UUID") }
+    this.log.debug('getDevice(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != "string") { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
 
     return _.find(this.devices, (o) => { return o.id == id })
   }
 
   deleteDevice(id) {
-    console.log('delete device', id)
+    this.log.debug('deleteDevice(id)', {
+      id: id
+    })
     if (!id || typeof id != 'string' || !util.validUUID(id)) {
-      throw util.statusError(400, "Query must be a valid UUID")
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400)
     }
 
     this.emit('delete', {
@@ -297,10 +364,18 @@ class NodeRAMStore extends EventEmitter {
 
   //Sources
   putSource(source) {
-    // console.log('putSource', source)
-    if (!util.isType(source, 'Source')) { throw util.statusError(400, "Object is not of the Source type") }
-    if (!util.checkValidAndForward(source, this.sources, 'Source')) { throw util.statusError(400, "Object is not valid") }
-    if (!_.has(this.devices, source.device_id)) { throw util.statusError(400, "Source device_id must be a Device on this Node") }
+    this.log.debug('putSource(source)', {
+      source: source
+    })
+    if (!util.isType(source, 'Source')) { 
+      this.log.error("Object is not of the Source type", source)
+      throw util.statusError(400) }
+    if (!util.checkValidAndForward(source, this.sources, 'Source')) { 
+      this.log.error("Object is not valid", source)
+      throw util.statusError(400) }
+    if (!_.has(this.devices, source.device_id)) { 
+      this.log.error("Source device_id must be a Device on this Node", source)
+      throw util.statusError(400) }
 
     if (!this.sources[source.id]) {
       this.sources[source.id] = source
@@ -319,27 +394,46 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getSources(query) {
-    // if (typeof query == "object") {
-    //   _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-    //
-    //   return _.filter(this.sources, (o) => { return _.includes(query, o.id) })
-    // } else if (typeof query == "string") {
-    //   return this.getSource(query)
-    // } else {
-    //   return this.sources
-    // }
+    this.log.debug('getSources(query)', {
+      query: query
+    })
+    if (typeof query == "object") {
+      _.each(query, (q) => { if (!util.validUUID(q)) { 
+        this.log.error("Query array must contain only UUIDs", {
+          query: q
+        })
+        throw util.statusError(400) } })
+
+      return _.filter(this.sources, (o) => { return _.includes(query, o.id) })
+    } else if (typeof query == "string") {
+      return this.getSource(query)
+    } else {
+      return this.sources
+    }
     return this.sources
   }
 
   getSource(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
+    this.log.debug('getSource(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
 
     return _.find(this.sources, (o) => { return o.id == id })
   }
 
   deleteSource(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
-    if (!_.has(this.sources, (o) => { o.id == id })) { throw util.statusError(400, "Source not present on this node") }
+    this.log.debug('deleteSource(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
+    if (!_.has(this.sources, (o) => { o.id == id })) { 
+      this.log.error("Source not present on this node", id)
+      throw util.statusError(400) }
 
 
     this.emit('modify', {
@@ -352,11 +446,21 @@ class NodeRAMStore extends EventEmitter {
 
   //Flows
   putFlow(flow) {
-    // console.log('putFlow', flow)
-    if (!util.isType(flow, 'Flow')) { throw util.statusError(400, "Object is not of the Flow type") }
-    if (!util.checkValidAndForward(flow, this.flows, 'Flow')) { throw util.statusError(400, "Object is not valid") }
-    if (!_.has(this.devices, flow.device_id)) { throw util.statusError(400, "Flow device_id must be a Device on this Node") }
-    if (!_.has(this.sources, flow.source_id)) { throw util.statusError(400, "Flow source_id must be a Source on this Node") }
+    this.log.debug('putFlow(flow)', {
+      flow: flow
+    })
+    if (!util.isType(flow, 'Flow')) { 
+      this.log.error("Object is not of the Flow type", flow)
+      throw util.statusError(400) }
+    if (!util.checkValidAndForward(flow, this.flows, 'Flow')) { 
+      this.log.error("Object is not valid", flow)
+      throw util.statusError(400) }
+    if (!_.has(this.devices, flow.device_id)) { 
+      this.log.error("Flow device_id must be a Device on this Node", flow)
+      throw util.statusError(400) }
+    if (!_.has(this.sources, flow.source_id)) { 
+      this.log.error("Flow source_id must be a Source on this Node", flow)
+      throw util.statusError(400) }
 
     if (!this.flows[flow.id]) {
       this.flows[flow.id] = flow
@@ -375,27 +479,39 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getFlows(q) {
-    // if (q) {
-    //   let arr = _.values(this.flows)
-    //   console.log('parse', parse(q))
-    //   return rql.executeQuery(q, {}, arr)
-    //   // _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-    //   // return _.filter(this.flows, (o) => { return _.includes(query, o.id) })
-    // } else {
-    //   return this.flows
-    // }
+    this.log.debug('getFlows(q)', {
+      q: q
+    })
+    if (q) {
+      let arr = _.values(this.flows)
+      return rql.executeQuery(q, {}, arr)
+    } else {
+      return this.flows
+    }
     return this.flows
   }
 
   getFlow(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
+    this.log.debug('getFlow(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
 
     return _.find(this.flows, (o) => { return o.id == id })
   }
 
   deleteFlow(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
-    if (!_.has(this.flows, (o) => { o.id == id })) { throw util.statusError(400, "Flow not present on this node") }
+    this.log.debug('deleteFlow(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
+    if (!_.has(this.flows, (o) => { o.id == id })) { 
+      this.log.error("Flow not present on this node", id)
+      throw util.statusError(400) }
 
 
     this.emit('delete', {
@@ -408,12 +524,22 @@ class NodeRAMStore extends EventEmitter {
 
   //Senders
   putSender(sender) {
-    // console.log('putSender', sender)
-    if (!util.isType(sender, 'Sender')) { throw util.statusError(400, "Object is not of the Sender type")}
-    if (!util.checkValidAndForward(sender, this.senders, 'Sender')) { throw util.statusError(400, "Object is not valid")}
-    if (!_.has(this.devices, sender.device_id)) { throw util.statusError(400, "Sender device_id must be a Device on this Node")}
+    this.log.debug('putSender(sender)', {
+      sender: sender
+    })
+    if (!util.isType(sender, 'Sender')) { 
+      this.log.error("Object is not of the Sender type", sender)
+      throw util.statusError(400)}
+    if (!util.checkValidAndForward(sender, this.senders, 'Sender')) { 
+      this.log.error("Object is not valid", sender)
+      throw util.statusError(400)}
+    if (!_.has(this.devices, sender.device_id)) { 
+      this.log.error("Sender device_id must be a Device on this Node", sender)
+      throw util.statusError(400)}
     if (sender.flow_id) {
-      if (!_.has(this.flows, sender.flow_id)) { throw util.statusError(400, "Sender flow_id must be a Flow on this Node")}
+      if (!_.has(this.flows, sender.flow_id)) { 
+        this.log.error("Sender flow_id must be a Flow on this Node", sender)
+        throw util.statusError(400)}
     }
 
 
@@ -434,26 +560,45 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getSenders(query) {
-    // if (typeof query == "object") {
-    //   _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-    //   return _.filter(this.senders, (o) => { return _.includes(query, o.id) })
-    // } else if (typeof query == "string") {
-    //   return this.getSender(query)
-    // } else {
-    //   return this.senders
-    // }
+    this.log.debug('getSenders(query)', {
+      query: query
+    })
+    if (typeof query == "object") {
+      _.each(query, (q) => { if (!util.validUUID(q)) { 
+        this.log.error("Query array must contain only UUIDs", {
+          query: q
+        })
+        throw util.statusError(400) } })
+      return _.filter(this.senders, (o) => { return _.includes(query, o.id) })
+    } else if (typeof query == "string") {
+      return this.getSender(query)
+    } else {
+      return this.senders
+    }
     return this.senders
   }
 
   getSender(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
+    this.log.debug('getSender(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
 
     return _.find(this.senders, (o) => { return o.id == id })
   }
 
   deleteSender(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
-    if (!_.has(this.senders, (o) => { o.id == id })) { throw util.statusError(400, "Sender not present on this node") }
+    this.log.debug('deleteSender(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
+    if (!_.has(this.senders, (o) => { o.id == id })) { 
+      this.log.error("Sender not present on this node", id)
+      throw util.statusError(400) }
 
     this.emit('delete', {
       topic: '/senders',
@@ -465,10 +610,19 @@ class NodeRAMStore extends EventEmitter {
 
   //Receivers
   putReceiver(receiver) {
-    // console.log('putReceiver', receiver)
-    if (!util.isType(receiver, 'Receiver')) { throw util.statusError(400, "Object is not of the Receiver type")}
-    if (!util.checkValidAndForward(receiver, this.receivers, 'Receiver')) { throw util.statusError(400, 'Object is not valid')}
-    if (!_.has(this.devices, receiver.device_id)) { throw util.statusError(400, "Receiver device_id must be a Device on this Node")}
+    this.log.debug('putReceiver(receiver)', {
+      receiver: receiver
+    })
+
+    if (!util.isType(receiver, 'Receiver')) { 
+      this.log.error("Object is not of the Receiver type", receiver)
+      throw util.statusError(400)}
+    if (!util.checkValidAndForward(receiver, this.receivers, 'Receiver')) { 
+      this.log.error('Object is not valid', receiver)
+      throw util.statusError(400)}
+    if (!_.has(this.devices, receiver.device_id)) { 
+      this.log.error("Receiver device_id must be a Device on this Node", receiver)
+      throw util.statusError(400)}
 
     if (!this.receivers[receiver.id]) {
       this.receivers[receiver.id] = receiver
@@ -487,26 +641,45 @@ class NodeRAMStore extends EventEmitter {
   }
 
   getReceivers(query) {
-    // if (typeof query == "object") {
-    //   _.each(query, (q) => { if (!util.validUUID(q)) { throw util.statusError(400, "Query array must contain only UUIDs") } })
-    //   return _.filter(this.receivers, (o) => { return _.includes(query, o.id) })
-    // } else if (typeof query == "string") {
-    //   return this.getReceiver(query)
-    // } else {
-    //   return this.receivers
-    // }
+    this.log.debug('getReceivers(query)', {
+      query: query
+    })
+    if (typeof query == "object") {
+      _.each(query, (q) => { if (!util.validUUID(q)) { 
+        this.log.error("Query array must contain only UUIDs", {
+          query: q
+        })
+        throw util.statusError(400) } })
+      return _.filter(this.receivers, (o) => { return _.includes(query, o.id) })
+    } else if (typeof query == "string") {
+      return this.getReceiver(query)
+    } else {
+      return this.receivers
+    }
     return this.receivers
   }
 
   getReceiver(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
+    this.log.debug('getReceiver(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
 
     return _.find(this.receivers, (o) => { return o.id == id })
   }
 
   deleteReceiver(id) {
-    if (!id || !util.validUUID(id) || typeof id != 'string') { throw util.statusError(400, "Query must be a valid UUID") }
-    if (!_.has(this.receivers, (o) => { o.id == id })) { throw util.statusError(400, "Sender not present on this node") }
+    this.log.debug('deleteReceiver(id)', {
+      id: id
+    })
+    if (!id || !util.validUUID(id) || typeof id != 'string') { 
+      this.log.error("Query must be a valid UUID", id)
+      throw util.statusError(400) }
+    if (!_.has(this.receivers, (o) => { o.id == id })) { 
+      this.log.error("Sender not present on this node", id)
+      throw util.statusError(400) }
 
     this.emit('delete', {
       topic: '/receivers',
