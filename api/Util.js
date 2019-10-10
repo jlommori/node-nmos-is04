@@ -172,36 +172,36 @@ class Logger {
     this.verbose = verbose
   }
 
-  debug(msg, obj) {
+  debug(msg, obj, override) {
     let ts = moment().format("HH:mm:ss.SSS")
     if (this.masterLevel < 2) {
       console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {white  DEBUG } {gray ${msg}} `)
-      if (this.verbose && obj) console.log(obj)
+      if ((this.verbose && obj) || (override && obj)) console.log(obj)
     }
   }
 
-  info(msg, obj) {
+  info(msg, obj, override) {
     let ts = moment().format("HH:mm:ss.SSS")
     if (this.masterLevel < 3) {
       console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {bgBlue.black  INFO } ${msg} `)
-      if (this.verbose && obj) console.log(obj)
+      if ((this.verbose && obj) || (override && obj)) console.log(obj)
     }
   }
 
-  warn(msg, obj) {
+  warn(msg, obj, override) {
     let ts = moment().format("HH:mm:ss.SSS")
     if (this.masterLevel < 4) {
       console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {bgYellow.black  WARN } ${msg} `)
-      if (this.verbose && obj) console.log(obj)
+      if ((this.verbose && obj) || (override && obj)) console.log(obj)
     }
 
   }
 
-  error(msg, obj) {
+  error(msg, obj, override) {
     let ts = moment().format("HH:mm:ss.SSS")
     if (this.masterLevel < 5) {
       console.log(chalk`{black ${ts}} {${this.color.bgColor}.${this.color.txtColor}  ${this.name} } {bgRed.white  ERROR } ${msg} `)
-      if (this.verbose && obj) console.log(obj)
+      if ((this.verbose && obj) || (override && obj)) console.log(obj)
     }
 
   }

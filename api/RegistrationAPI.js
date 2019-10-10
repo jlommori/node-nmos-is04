@@ -285,7 +285,15 @@ class RegistrationAPI extends EventEmitter {
 
   startHealthCheck() {
     this.healthCheckInterval = setInterval(() => {
-      this.log.debug('healthCheckInterval')
+      this.log.info('healthCheckInterval() current counts:', {
+        nodes: _.size(this.getStore().getNodes()),
+        devices: _.size(this.getStore().getDevices()),
+        sources: _.size(this.getStore().getSources()),
+        flows: _.size(this.getStore().getFlows()),
+        senders: _.size(this.getStore().getSenders()),
+        receivers: _.size(this.getStore().getReceivers())
+      }, true)
+      
       const curTime = Date.now() / 1000;
       Object.keys(this.nodeHealth).map(nodeID => {
         if (this.nodeHealth[nodeID] < curTime - 12) {
